@@ -1,3 +1,31 @@
-[gd_scene format=3 uid="uid://d1g51jjhyvob0"]
+[gd_scene load_steps=4 format=3 uid="uid://d1g51jjhyvob0"]
+
+[ext_resource type="PackedScene" uid="uid://btqhprrmcfga" path="res://scenes/piece.tscn" id="1_w38ba"]
+
+[sub_resource type="SystemFont" id="SystemFont_urym1"]
+font_names = PackedStringArray("Hack")
+
+[sub_resource type="LabelSettings" id="LabelSettings_wqpwt"]
+font = SubResource("SystemFont_urym1")
 
 [node name="Tetris" type="TetrisBoard"]
+
+[node name="BackgroundBoard" type="ColorRect" parent="."]
+offset_right = 200.0
+offset_bottom = 400.0
+color = Color(0, 0, 0, 1)
+
+[node name="BackgroundNext" type="ColorRect" parent="."]
+offset_left = 224.0
+offset_right = 296.0
+offset_bottom = 64.0
+color = Color(0, 0, 0, 1)
+
+[node name="LabelNextPiece" type="Label" parent="BackgroundNext"]
+offset_right = 72.0
+offset_bottom = 19.0
+text = "Next"
+label_settings = SubResource("LabelSettings_wqpwt")
+
+[node name="Piece" parent="." instance=ExtResource("1_w38ba")]
+position = Vector2(8, 0)
