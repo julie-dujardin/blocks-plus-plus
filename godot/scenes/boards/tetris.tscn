@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://d1g51jjhyvob0"]
+
+[node name="Tetris" type="TetrisBoard"]
