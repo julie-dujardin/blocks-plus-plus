@@ -1,5 +1,6 @@
 use godot::classes::InputEvent;
 use godot::prelude::*;
+use std::f32::consts::PI;
 
 use crate::block::Block;
 
@@ -23,6 +24,7 @@ pub struct Piece {
     blocks: VariantArray,
     block_size: Vector2,
     center_block_position: Vector2,
+    rotation: real,
 
     shape_blocks: Dictionary,
     shape_bounds: Dictionary,
@@ -33,26 +35,46 @@ pub struct Piece {
 #[godot_api]
 impl Piece {
     fn mov(&mut self, direction: Vector2) {
-        let curr_position = self.base().get_position();
-        let block_size = self.block_size;
-        self.base_mut().set_position(
-            Vector2::new(
-                match direction {
-                    Vector2::LEFT => -1.,
-                    _ => 1.,
-                } * block_size.x,
-                0.,
-            ) + curr_position,
-        )
+        let new_position = self.center_block_position + direction;
+
+        let bounds = self
+            .shape_bounds
+            .get(self.shape.to_godot())
+            .unwrap()
+            .to::<VariantArray>();
+        let bounding_rectangle = bounds.at(0).to::<Vector2>();
+        let center_offset = bounds.at(1).to::<Vector2>();
+
+        let bottom_right_rotated =
+            (center_offset + bounding_rectangle).rotated(self.rotation) + new_position;
+        let top_left_rotated = center_offset.rotated(self.rotation) + new_position;
+        let top_left = Vector2::new(
+            bottom_right_rotated.x.min(top_left_rotated.x).round(),
+            bottom_right_rotated.y.min(top_left_rotated.y).round(),
+        );
+        let bottom_right = Vector2::new(
+            bottom_right_rotated.x.max(top_left_rotated.x).round(),
+            bottom_right_rotated.y.max(top_left_rotated.y).round(),
+        );
+
+        if top_left.x >= 0. && bottom_right.x < 10. {
+            self.center_block_position = new_position;
+
+            let position = self.block_size * self.center_block_position;
+            self.base_mut().set_position(position);
+        }
     }
+
+    fn down(&mut self) {}
 
     fn drop(&mut self) {}
 
     fn rotate(&mut self) {
+        self.rotation = (self.rotation + PI / 2.) % (PI * 2.);
         for block in self.blocks.iter_shared() {
             let mut block_ref = block.to::<Gd<Block>>();
             let mut block = block_ref.bind_mut();
-            let new_cell = Vector2::new(-block.board_offset.y, block.board_offset.x);
+            let new_cell = block.board_offset.rotated(PI / 2.);
             block.board_offset = new_cell;
             block.update_position();
         }
@@ -66,6 +88,7 @@ impl INode2D for Piece {
             blocks: varray![],
             shape: Shape::O, // TODO override this after instantiation but before add_child
             center_block_position: Vector2::new(5., 2.),
+            rotation: 0.,
             block_size: Vector2::ZERO, // Gets set in self.ready()
             shape_blocks: dict![
                 // Shapes rotate around their (0, 0) block
@@ -79,13 +102,13 @@ impl INode2D for Piece {
             ],
             shape_bounds: dict![
                 // for each shape, its (width, height), (x/y offset of upper left bounding rectangle relative to center)
-                "I": varray![Vector2::new(4., 1.), Vector2::new(-1., 0.)],
-                "O": varray![Vector2::new(2., 2.), Vector2::new(0., 0.)],
-                "T": varray![Vector2::new(3., 2.), Vector2::new(-1., -1.)],  // The (-1., -1.) point is not a block, but it is part of the bounding rectangle
-                "J": varray![Vector2::new(2., 3.), Vector2::new(-1., -1.)],
-                "L": varray![Vector2::new(2., 3.), Vector2::new(0., -1.)],
-                "S": varray![Vector2::new(3., 2.), Vector2::new(-1., 0.)],
-                "Z": varray![Vector2::new(3., 2.), Vector2::new(-1., 0.)],
+                "I": varray![Vector2::new(3., 0.), Vector2::new(-1., 0.)],
+                "O": varray![Vector2::new(1., 1.), Vector2::new(0., 0.)],
+                "T": varray![Vector2::new(2., 1.), Vector2::new(-1., -1.)],  // The (-1., -1.) point is not a block, but it is part of the bounding rectangle
+                "J": varray![Vector2::new(1., 3.), Vector2::new(-1., -1.)],
+                "L": varray![Vector2::new(1., 2.), Vector2::new(0., -1.)],
+                "S": varray![Vector2::new(2., 1.), Vector2::new(-1., 0.)],
+                "Z": varray![Vector2::new(2., 1.), Vector2::new(-1., 0.)],
             ],
             base,
         }
