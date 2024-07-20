@@ -6,7 +6,7 @@ use crate::block::Block;
 
 #[derive(GodotConvert, Var, Export)]
 #[godot(via=GString)]
-enum Shape {
+pub enum Shape {
     I,
     O,
     T,
@@ -34,7 +34,7 @@ pub struct Piece {
 
 #[godot_api]
 impl Piece {
-    fn get_bounds(&self, position: Vector2) -> (Vector2, Vector2) {
+    fn get_bounds(&self, position: Vector2, rotation: real) -> (Vector2, Vector2) {
         let bounds = self
             .shape_bounds
             .get(self.shape.to_godot())
@@ -44,8 +44,8 @@ impl Piece {
         let center_offset = bounds.at(1).to::<Vector2>();
 
         let bottom_right_rotated =
-            (center_offset + bounding_rectangle).rotated(self.rotation) + position;
-        let top_left_rotated = center_offset.rotated(self.rotation) + position;
+            (center_offset + bounding_rectangle).rotated(rotation) + position;
+        let top_left_rotated = center_offset.rotated(rotation) + position;
         let top_left = Vector2::new(
             bottom_right_rotated.x.min(top_left_rotated.x).round(),
             bottom_right_rotated.y.min(top_left_rotated.y).round(),
@@ -67,7 +67,7 @@ impl Piece {
     fn mov(&mut self, direction: Vector2) {
         let new_position = self.center_block_position + direction;
 
-        let (top_left, bottom_right) = self.get_bounds(new_position);
+        let (top_left, bottom_right) = self.get_bounds(new_position, self.rotation);
         if top_left.x >= 0. && bottom_right.x < 10. {
             self.change_position(new_position)
         }
@@ -76,10 +76,10 @@ impl Piece {
     fn down(&mut self) -> bool {
         let new_position = self.center_block_position + Vector2::DOWN;
 
-        let (_, bottom_right) = self.get_bounds(new_position);
+        let (_, bottom_right) = self.get_bounds(new_position, self.rotation);
         if bottom_right.y < 20. {
             self.change_position(new_position);
-            return true
+            return true;
         }
         false
     }
@@ -90,21 +90,45 @@ impl Piece {
 
     fn rotate(&mut self, clockwise: bool) {
         let additional_rotation = match self.shape {
-            Shape::O => 0.,  // o should not be rotated
+            Shape::O => 0., // o should not be rotated
             // Those pieces only have 2 different rotations
-            Shape::S => if self.rotation == 0. {PI / 2.} else {-PI / 2.},
-            Shape::Z => if self.rotation == 0. {PI / 2.} else {-PI / 2.},
-            Shape::I => if self.rotation == 0. {PI / 2.} else {-PI / 2.},
+            Shape::S => {
+                if self.rotation == 0. {
+                    PI / 2.
+                } else {
+                    -PI / 2.
+                }
+            }
+            Shape::Z => {
+                if self.rotation == 0. {
+                    PI / 2.
+                } else {
+                    -PI / 2.
+                }
+            }
+            Shape::I => {
+                if self.rotation == 0. {
+                    PI / 2.
+                } else {
+                    -PI / 2.
+                }
+            }
             // Other pieces can be rotated 4 ways
             _ => PI / 2.,
         };
-        self.rotation = (self.rotation + additional_rotation) % (PI * 2.) * if clockwise {1.} else {-1.};
-        for block in self.blocks.iter_shared() {
-            let mut block_ref = block.to::<Gd<Block>>();
-            let mut block = block_ref.bind_mut();
-            let new_cell = block.board_offset.rotated(additional_rotation);
-            block.board_offset = new_cell;
-            block.update_position();
+        let new_rotation =
+            (self.rotation + additional_rotation) % (PI * 2.) * if clockwise { 1. } else { -1. };
+
+        let (top_left, bottom_right) = self.get_bounds(self.center_block_position, new_rotation);
+        if top_left.x >= 0. && bottom_right.x < 10. && bottom_right.y < 20. {
+            self.rotation = new_rotation;
+            for block in self.blocks.iter_shared() {
+                let mut block_ref = block.to::<Gd<Block>>();
+                let mut block = block_ref.bind_mut();
+                let new_cell = block.board_offset.rotated(additional_rotation);
+                block.board_offset = new_cell;
+                block.update_position();
+            }
         }
     }
 }
@@ -158,8 +182,8 @@ impl INode2D for Piece {
             self.base_mut().set_position(piece_position);
 
             {
-                let mut block_ref = block.bind_mut();
-                block_ref.board_offset = block_offset.to::<Vector2>();
+                let mut block_bind = block.bind_mut();
+                block_bind.board_offset = block_offset.to::<Vector2>();
             }
 
             self.blocks.push(block.to_variant());

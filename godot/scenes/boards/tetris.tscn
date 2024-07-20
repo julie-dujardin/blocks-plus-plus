@@ -1,6 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://d1g51jjhyvob0"]
-
-[ext_resource type="PackedScene" uid="uid://btqhprrmcfga" path="res://scenes/piece.tscn" id="1_w38ba"]
+[gd_scene load_steps=3 format=3 uid="uid://d1g51jjhyvob0"]
 
 [sub_resource type="SystemFont" id="SystemFont_urym1"]
 font_names = PackedStringArray("Hack")
@@ -32,6 +30,3 @@ offset_right = 72.0
 offset_bottom = 19.0
 text = "Next"
 label_settings = SubResource("LabelSettings_wqpwt")
-
-[node name="Piece" parent="." instance=ExtResource("1_w38ba")]
-position = Vector2(8, 0)
