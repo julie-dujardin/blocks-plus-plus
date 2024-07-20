@@ -70,11 +70,18 @@ impl Piece {
     fn drop(&mut self) {}
 
     fn rotate(&mut self) {
-        self.rotation = (self.rotation + PI / 2.) % (PI * 2.);
+        let additional_rotation = match self.shape {
+            Shape::O => 0.,
+            Shape::S => if self.rotation == 0. {PI / 2.} else {-PI / 2.},
+            Shape::Z => if self.rotation == 0. {PI / 2.} else {-PI / 2.},
+            Shape::I => if self.rotation == 0. {PI / 2.} else {-PI / 2.},
+            _ => PI / 2.,
+        };
+        self.rotation = (self.rotation + additional_rotation) % (PI * 2.);
         for block in self.blocks.iter_shared() {
             let mut block_ref = block.to::<Gd<Block>>();
             let mut block = block_ref.bind_mut();
-            let new_cell = block.board_offset.rotated(PI / 2.);
+            let new_cell = block.board_offset.rotated(additional_rotation);
             block.board_offset = new_cell;
             block.update_position();
         }
@@ -105,7 +112,7 @@ impl INode2D for Piece {
                 "I": varray![Vector2::new(3., 0.), Vector2::new(-1., 0.)],
                 "O": varray![Vector2::new(1., 1.), Vector2::new(0., 0.)],
                 "T": varray![Vector2::new(2., 1.), Vector2::new(-1., -1.)],  // The (-1., -1.) point is not a block, but it is part of the bounding rectangle
-                "J": varray![Vector2::new(1., 3.), Vector2::new(-1., -1.)],
+                "J": varray![Vector2::new(1., 2.), Vector2::new(-1., -1.)],
                 "L": varray![Vector2::new(1., 2.), Vector2::new(0., -1.)],
                 "S": varray![Vector2::new(2., 1.), Vector2::new(-1., 0.)],
                 "Z": varray![Vector2::new(2., 1.), Vector2::new(-1., 0.)],
