@@ -1,4 +1,3 @@
-use godot::classes::InputEvent;
 use godot::prelude::*;
 use std::f32::consts::PI;
 
@@ -21,7 +20,7 @@ pub enum Shape {
 pub struct Piece {
     #[export]
     shape: Shape,
-    blocks: VariantArray,
+    pub blocks: VariantArray,
     block_size: Vector2,
     center_block_position: Vector2,
     rotation: real,
@@ -64,7 +63,7 @@ impl Piece {
         self.base_mut().set_position(position);
     }
 
-    fn mov(&mut self, direction: Vector2) {
+    pub fn mov(&mut self, direction: Vector2) {
         let new_position = self.center_block_position + direction;
 
         let (top_left, bottom_right) = self.get_bounds(new_position, self.rotation);
@@ -73,7 +72,7 @@ impl Piece {
         }
     }
 
-    fn down(&mut self) -> bool {
+    pub fn down(&mut self) -> bool {
         let new_position = self.center_block_position + Vector2::DOWN;
 
         let (_, bottom_right) = self.get_bounds(new_position, self.rotation);
@@ -84,11 +83,11 @@ impl Piece {
         false
     }
 
-    fn drop(&mut self) {
+    pub fn drp(&mut self) {
         while self.down() {}
     }
 
-    fn rotate(&mut self, clockwise: bool) {
+    pub fn rotate(&mut self, clockwise: bool) {
         let additional_rotation = match self.shape {
             Shape::O => 0., // o should not be rotated
             // Those pieces only have 2 different rotations
@@ -188,18 +187,6 @@ impl INode2D for Piece {
 
             self.blocks.push(block.to_variant());
             self.base_mut().add_child(block.clone().upcast());
-        }
-    }
-
-    fn input(&mut self, event: Gd<InputEvent>) {
-        if event.is_action_pressed("down".into()) {
-            self.drop();
-        } else if event.is_action_pressed("up".into()) {
-            self.rotate(true);
-        } else if event.is_action_pressed("left".into()) {
-            self.mov(Vector2::LEFT);
-        } else if event.is_action_pressed("right".into()) {
-            self.mov(Vector2::RIGHT);
         }
     }
 }
