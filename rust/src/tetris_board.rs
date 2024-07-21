@@ -46,9 +46,11 @@ impl TetrisBoard {
     }
 
     fn add_current_piece_to_line(&mut self) {
+        let mut removed_lines = 0;
+        let mut check_heights = HashSet::new();
+        let mut lowest_removed_height = 21;
         if let Some(piece) = &mut self.active_piece {
             let piece_bind = piece.bind_mut();
-            let mut check_heights = HashSet::new();
             for block in piece_bind.blocks.iter_shared() {
                 let block_ref = block.to::<Gd<Block>>();
 
@@ -66,11 +68,48 @@ impl TetrisBoard {
             }
 
             // TODO check height too high (>=16) => game over
-            // TODO check full line & delete & add new
+
+            for height in check_heights {
+                godot_print!("checking line {}", height);
+                if self.lines[height].iter().filter(|c| c.is_some()).count() == 10 {
+                    self.score += 1;
+                    removed_lines += 1;
+                    lowest_removed_height = if height < lowest_removed_height {
+                        height
+                    } else {
+                        lowest_removed_height
+                    };
+                }
+            }
         };
+        self.godot_print_lines();
+
+        if removed_lines > 0 {
+            for _ in lowest_removed_height..lowest_removed_height + removed_lines {
+                for cell_opt in &mut self.lines[lowest_removed_height] {
+                    let cell = cell_opt.as_mut().unwrap();
+                    cell.clone().free();
+                }
+                self.lines.remove(lowest_removed_height);
+                self.push_new_line();
+            }
+
+            for height in lowest_removed_height..20 {
+                godot_print!("lowering line {} by {}", height, removed_lines);
+                for i in 0..10 {
+                    if let Some(block_ref) = &mut self.lines[height][i] {
+                        let mut block = block_ref.bind_mut();
+                        block.board_offset = Vector2::new(
+                            block.board_offset.x,
+                            block.board_offset.y + removed_lines as f32,
+                        );
+                        block.update_position();
+                    }
+                }
+            }
+        }
 
         self.active_piece = None;
-        self.godot_print_lines();
     }
 
     fn godot_print_lines(&self) {
@@ -177,7 +216,7 @@ impl TetrisBoard {
         }
     }
 }
-g
+
 #[godot_api]
 impl INode2D for TetrisBoard {
     fn init(base: Base<Node2D>) -> Self {
@@ -201,7 +240,7 @@ impl INode2D for TetrisBoard {
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
-        if let Some(_) = &mut self.active_piece {
+        if self.active_piece.is_some() {
             {
                 if event.is_action_pressed("down".into()) {
                     self.drop_piece();
