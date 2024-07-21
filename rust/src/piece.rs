@@ -3,7 +3,7 @@ use godot::prelude::*;
 use rand::prelude::IndexedRandom;
 use std::f32::consts::PI;
 
-#[derive(GodotConvert, Var, Export)]
+#[derive(Clone, GodotConvert, Var, Export)]
 #[godot(via=GString)]
 pub enum Shape {
     I,
@@ -19,7 +19,7 @@ pub enum Shape {
 #[class(base=Node2D)]
 pub struct Piece {
     #[export]
-    shape: Shape,
+    pub shape: Shape,
     pub blocks: VariantArray,
     block_size: Vector2,
     pub center_block_position: Vector2,
@@ -160,7 +160,7 @@ impl INode2D for Piece {
         Piece {
             blocks: varray![],
             shape: Shape::O, // TODO override this after instantiation but before add_child
-            center_block_position: Vector2::new(5., 2.),
+            center_block_position: Vector2::new(0., 0.),
             rotation: 0.,
             block_size: Vector2::ZERO, // Gets set in self.ready()
             shape_blocks: dict![

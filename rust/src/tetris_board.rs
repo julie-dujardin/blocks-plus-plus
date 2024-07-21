@@ -126,7 +126,12 @@ impl TetrisBoard {
 
     fn spawn_new_piece(&mut self) {
         // TODO use next piece instead of random
-        let piece = Piece::spawn_random();
+        let mut piece = Piece::spawn_random();
+
+        {
+            let mut piece_bind = piece.bind_mut();
+            piece_bind.center_block_position = Vector2::new(5., 2.);
+        }
 
         self.base_mut().add_child(piece.clone().upcast());
         self.active_piece = Some(piece);

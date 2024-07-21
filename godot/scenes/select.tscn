@@ -7,19 +7,19 @@
 [node name="Border" type="ColorRect" parent="."]
 offset_left = -1.0
 offset_top = -1.0
-offset_right = 97.0
+offset_right = 125.0
 offset_bottom = 81.0
 
 [node name="Background" type="ColorRect" parent="."]
-offset_right = 96.0
+offset_right = 124.0
 offset_bottom = 80.0
 color = Color(0, 0, 0, 1)
 
 [node name="SelectOption0" parent="." instance=ExtResource("1_nxsqt")]
-position = Vector2(24, 64)
+position = Vector2(32, 64)
 
 [node name="SelectOption1" parent="." instance=ExtResource("1_nxsqt")]
-position = Vector2(48, 64)
+position = Vector2(64, 64)
 
 [node name="SelectOption2" parent="." instance=ExtResource("1_nxsqt")]
-position = Vector2(72, 64)
+position = Vector2(96, 64)
