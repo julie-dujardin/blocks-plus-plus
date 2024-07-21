@@ -45,7 +45,7 @@ impl Select {
     fn reset(&mut self) {
         if self.curr_check_index > 0 {
             self.curr_check_index = 0;
-            for mut prompt in &mut self.prompts {
+            for prompt in &mut self.prompts {
                 prompt.set_modulate(Color::from_rgb(105. / 255., 105. / 255., 105. / 255.));
             }
         }

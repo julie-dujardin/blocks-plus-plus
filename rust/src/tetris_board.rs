@@ -141,20 +141,28 @@ impl TetrisBoard {
             piece_bind.position_for_ui();
         }
         self.next_pieces.push(piece);
+        if self.active_piece.is_none() {
+            self.spawn_new_piece();
+        }
     }
 
     fn spawn_new_piece(&mut self) {
-        // TODO use next piece instead of random
-        //   reset its position with piece.update_position()
-        let mut piece = Piece::spawn_random();
+        let piece_opt = self.next_pieces.pop();
+        match piece_opt {
+            None => {
+                // TODO game over
+            }
+            Some(mut piece) => {
+                {
+                    let mut piece_bind = piece.bind_mut();
+                    piece_bind.center_block_position = Vector2::new(5., 2.);
+                    piece_bind.update_position();
+                }
 
-        {
-            let mut piece_bind = piece.bind_mut();
-            piece_bind.center_block_position = Vector2::new(5., 2.);
+                self.base_mut().add_child(piece.clone().upcast());
+                self.active_piece = Some(piece);
+            }
         }
-
-        self.base_mut().add_child(piece.clone().upcast());
-        self.active_piece = Some(piece);
     }
 
     fn push_new_line(&mut self) {
