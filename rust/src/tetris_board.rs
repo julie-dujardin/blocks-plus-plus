@@ -65,12 +65,13 @@ impl TetrisBoard {
                 };
                 check_heights.insert(height);
                 self.lines[height][x] = Some(block_ref);
+
+                if height >= 16 {
+                    // TODO handle game over
+                }
             }
 
-            // TODO check height too high (>=16) => game over
-
             for height in check_heights {
-                godot_print!("checking line {}", height);
                 if self.lines[height].iter().filter(|c| c.is_some()).count() == 10 {
                     self.score += 1;
                     removed_lines += 1;
@@ -82,7 +83,6 @@ impl TetrisBoard {
                 }
             }
         };
-        self.godot_print_lines();
 
         if removed_lines > 0 {
             for _ in lowest_removed_height..lowest_removed_height + removed_lines {
@@ -95,7 +95,6 @@ impl TetrisBoard {
             }
 
             for height in lowest_removed_height..20 {
-                godot_print!("lowering line {} by {}", height, removed_lines);
                 for i in 0..10 {
                     if let Some(block_ref) = &mut self.lines[height][i] {
                         let mut block = block_ref.bind_mut();
@@ -110,6 +109,7 @@ impl TetrisBoard {
         }
 
         self.active_piece = None;
+        self.godot_print_lines();
     }
 
     fn godot_print_lines(&self) {

@@ -31,3 +31,8 @@ offset_right = 72.0
 offset_bottom = 19.0
 text = "Next"
 label_settings = SubResource("LabelSettings_wqpwt")
+
+[node name="TimerPieceDown" type="Timer" parent="."]
+autostart = true
+
+[connection signal="timeout" from="TimerPieceDown" to="." method="down_piece"]
