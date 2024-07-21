@@ -26,6 +26,7 @@ offset_bottom = 64.0
 color = Color(0, 0, 0, 1)
 
 [node name="LabelNextPiece" type="Label" parent="BackgroundNext"]
+layout_mode = 0
 offset_right = 72.0
 offset_bottom = 19.0
 text = "Next"

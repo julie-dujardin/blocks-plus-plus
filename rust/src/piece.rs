@@ -22,7 +22,7 @@ pub struct Piece {
     shape: Shape,
     pub blocks: VariantArray,
     block_size: Vector2,
-    center_block_position: Vector2,
+    pub center_block_position: Vector2,
     rotation: real,
 
     shape_blocks: Dictionary,

@@ -1,10 +1,10 @@
-use std::collections::HashSet;
 use crate::block::Block;
 use crate::piece::Piece;
 use crate::piece::Shape;
 use godot::classes::InputEvent;
 use godot::prelude::*;
 use rand::prelude::IndexedRandom;
+use std::collections::HashSet;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
@@ -20,23 +20,49 @@ pub struct TetrisBoard {
 
 #[godot_api]
 impl TetrisBoard {
-    // fn add_piece_to_line(&mut self, piece: GdMut<Piece>) {
-    //     let mut check_heights = HashSet::new();
-    //     for block in piece.blocks.iter_shared() {
-    //         let mut block_ref = block.to::<Gd<Block>>();
-    //         let mut block = block_ref.bind();
-    //
-    //         let height = block.board_offset.y as usize - 19;
-    //         check_heights.insert(height);
-    //         self.lines[height][block.board_offset.x as usize] = Some(block_ref);
-    //     }
-    //
-    //     // TODO check height too high (>=16) => game over
-    //     // TODO check full line & delete & add new
-    // }
+    fn add_current_piece_to_line(&mut self) {
+        if let Some(piece) = &mut self.active_piece {
+            let piece_bind = piece.bind_mut();
+            let mut check_heights = HashSet::new();
+            for block in piece_bind.blocks.iter_shared() {
+                let block_ref = block.to::<Gd<Block>>();
+
+                let (height, x) = {
+                    let block = block_ref.bind();
+                    (
+                        19 - (block.board_offset.y + piece_bind.center_block_position.y).round()
+                            as usize,
+                        (block.board_offset.x + piece_bind.center_block_position.x).round(),
+                    )
+                };
+                check_heights.insert(height);
+                self.lines[height][x as usize] = Some(block_ref);
+            }
+
+            // TODO check height too high (>=16) => game over
+            // TODO check full line & delete & add new
+        };
+
+        self.active_piece = None;
+        self.godot_print_lines();
+    }
+
+    fn godot_print_lines(&self) {
+        godot_print!("current lines:");
+        for line in self.lines.iter().rev() {
+            let mut line_str = String::new();
+            for cell in line {
+                line_str.push(match cell {
+                    Some(_) => '█',
+                    None => ' ',
+                })
+            }
+            godot_print!("|{}|", line_str);
+        }
+    }
 
     fn spawn_new_piece(&mut self) {
-        // TODO reuse next piece
+        // TODO use next piece
 
         let piece_scene: Gd<PackedScene> = load("res://scenes/piece.tscn");
         let mut piece = piece_scene.instantiate_as::<Piece>();
@@ -54,9 +80,9 @@ impl TetrisBoard {
                     Shape::Z,
                     Shape::T,
                 ]
-                    .choose(&mut rng)
-                    .unwrap()
-                    .to_godot(),
+                .choose(&mut rng)
+                .unwrap()
+                .to_godot(),
             );
         }
 
@@ -92,14 +118,14 @@ impl INode2D for TetrisBoard {
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
+        let mut insert_piece = false;
         if let Some(piece) = &mut self.active_piece {
             {
                 let mut piece_bind = piece.bind_mut();
 
                 if event.is_action_pressed("down".into()) {
                     piece_bind.drp();
-                    // self.add_piece_to_line(piece_bind);
-                    // self.spawn_new_piece();
+                    insert_piece = true;
                 } else if event.is_action_pressed("up".into()) {
                     piece_bind.rotate(true);
                 } else if event.is_action_pressed("left".into()) {
@@ -108,6 +134,10 @@ impl INode2D for TetrisBoard {
                     piece_bind.mov(Vector2::RIGHT);
                 }
             }
+        }
+        if insert_piece {
+            self.add_current_piece_to_line();
+            self.spawn_new_piece();
         }
     }
 }
