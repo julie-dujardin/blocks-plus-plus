@@ -1,7 +1,7 @@
-use godot::prelude::*;
-use std::f32::consts::PI;
-
 use crate::block::Block;
+use godot::prelude::*;
+use rand::prelude::IndexedRandom;
+use std::f32::consts::PI;
 
 #[derive(GodotConvert, Var, Export)]
 #[godot(via=GString)]
@@ -33,6 +33,32 @@ pub struct Piece {
 
 #[godot_api]
 impl Piece {
+    pub fn spawn_random() -> Gd<Piece> {
+        let piece_scene: Gd<PackedScene> = load("res://scenes/piece.tscn");
+        let mut piece = piece_scene.instantiate_as::<Piece>();
+
+        {
+            let mut piece_bind = piece.bind_mut();
+            let mut rng = rand::thread_rng();
+            piece_bind.set_shape(
+                [
+                    Shape::I,
+                    Shape::O,
+                    Shape::J,
+                    Shape::L,
+                    Shape::S,
+                    Shape::Z,
+                    Shape::T,
+                ]
+                .choose(&mut rng)
+                .unwrap()
+                .to_godot(),
+            );
+        }
+
+        piece
+    }
+
     fn get_bounds(&self, position: Vector2, rotation: real) -> (Vector2, Vector2) {
         let bounds = self
             .shape_bounds

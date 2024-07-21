@@ -7,6 +7,7 @@
 mod block;
 mod piece;
 mod piece_select;
+mod select;
 mod tetris_board;
 
 use godot::prelude::*;

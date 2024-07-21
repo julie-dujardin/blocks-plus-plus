@@ -1,36 +1,56 @@
 [gd_scene load_steps=3 format=3 uid="uid://d1g51jjhyvob0"]
 
-[sub_resource type="SystemFont" id="SystemFont_urym1"]
-font_names = PackedStringArray("Hack")
+[ext_resource type="FontFile" uid="uid://tvarju4030k4" path="res://assets/font/Pixel.ttf" id="1_ai8ig"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_wqpwt"]
-font = SubResource("SystemFont_urym1")
+font = ExtResource("1_ai8ig")
+font_size = 18
 
 [node name="Tetris" type="TetrisBoard"]
 
-[node name="BackgroundBoard" type="ColorRect" parent="."]
-offset_right = 200.0
-offset_bottom = 400.0
+[node name="BorderBoard" type="ColorRect" parent="."]
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 201.0
+offset_bottom = 401.0
+
+[node name="BackgroundBoard" type="ColorRect" parent="BorderBoard"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 201.0
+offset_bottom = 401.0
 color = Color(0, 0, 0, 1)
 
-[node name="Line2D" type="Line2D" parent="BackgroundBoard"]
+[node name="Line2D" type="Line2D" parent="BorderBoard/BackgroundBoard"]
 position = Vector2(0, 80)
 points = PackedVector2Array(0, 0, 200, 0)
 width = 1.0
 default_color = Color(0.863436, 4.33177e-07, 1.05888e-06, 1)
 
-[node name="BackgroundNext" type="ColorRect" parent="."]
-offset_left = 224.0
-offset_right = 296.0
-offset_bottom = 64.0
+[node name="BorderNext" type="ColorRect" parent="."]
+offset_left = 223.0
+offset_top = -1.0
+offset_right = 321.0
+offset_bottom = 81.0
+
+[node name="BackgroundNext" type="ColorRect" parent="BorderNext"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 97.0
+offset_bottom = 81.0
 color = Color(0, 0, 0, 1)
 
-[node name="LabelNextPiece" type="Label" parent="BackgroundNext"]
+[node name="LabelNextPiece" type="Label" parent="BorderNext/BackgroundNext"]
 layout_mode = 0
-offset_right = 72.0
-offset_bottom = 19.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 94.0
+offset_bottom = 26.0
 text = "Next"
 label_settings = SubResource("LabelSettings_wqpwt")
+horizontal_alignment = 1
 
 [node name="TimerPieceDown" type="Timer" parent="."]
 autostart = true

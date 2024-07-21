@@ -1,9 +1,7 @@
 use crate::block::Block;
 use crate::piece::Piece;
-use crate::piece::Shape;
 use godot::classes::InputEvent;
 use godot::prelude::*;
-use rand::prelude::IndexedRandom;
 use std::collections::HashSet;
 
 #[derive(GodotClass)]
@@ -127,29 +125,8 @@ impl TetrisBoard {
     }
 
     fn spawn_new_piece(&mut self) {
-        // TODO use next piece
-
-        let piece_scene: Gd<PackedScene> = load("res://scenes/piece.tscn");
-        let mut piece = piece_scene.instantiate_as::<Piece>();
-
-        {
-            let mut piece_bind = piece.bind_mut();
-            let mut rng = rand::thread_rng();
-            piece_bind.set_shape(
-                [
-                    Shape::I,
-                    Shape::O,
-                    Shape::J,
-                    Shape::L,
-                    Shape::S,
-                    Shape::Z,
-                    Shape::T,
-                ]
-                .choose(&mut rng)
-                .unwrap()
-                .to_godot(),
-            );
-        }
+        // TODO use next piece instead of random
+        let piece = Piece::spawn_random();
 
         self.base_mut().add_child(piece.clone().upcast());
         self.active_piece = Some(piece);

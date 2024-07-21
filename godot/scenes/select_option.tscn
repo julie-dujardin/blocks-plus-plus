@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dodn33gucp5mu"]
+
+[ext_resource type="Texture2D" uid="uid://606cfa0hbeu1" path="res://assets/arrow.png" id="1_kjvqn"]
+
+[node name="SelectOption" type="Sprite2D"]
+modulate = Color(0.411765, 0.411765, 0.411765, 1)
+scale = Vector2(4, 4)
+texture = ExtResource("1_kjvqn")
