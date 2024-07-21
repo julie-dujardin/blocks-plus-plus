@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bfnrfbm4fpg50"]
 
 [ext_resource type="PackedScene" uid="uid://d1g51jjhyvob0" path="res://scenes/boards/tetris.tscn" id="1_pn1nu"]
-[ext_resource type="PackedScene" uid="uid://d283jg2mnih7p" path="res://scenes/boards/piece_select.tscn" id="2_7sq47"]
+[ext_resource type="PackedScene" uid="uid://ec18ywdi03dw" path="res://scenes/select.tscn" id="2_t6wl0"]
 
 [node name="Main" type="Node2D"]
 
@@ -13,5 +13,14 @@ color = Color(0, 0, 0, 1)
 [node name="Tetris" parent="." instance=ExtResource("1_pn1nu")]
 position = Vector2(176, 8)
 
-[node name="PieceSelect" parent="." instance=ExtResource("2_7sq47")]
+[node name="Select0" parent="." instance=ExtResource("2_t6wl0")]
 position = Vector2(8, 8)
+
+[node name="Select1" parent="." instance=ExtResource("2_t6wl0")]
+position = Vector2(8, 115)
+
+[node name="Select2" parent="." instance=ExtResource("2_t6wl0")]
+position = Vector2(8, 221)
+
+[node name="Select3" parent="." instance=ExtResource("2_t6wl0")]
+position = Vector2(8, 328)

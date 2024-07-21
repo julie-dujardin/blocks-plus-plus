@@ -1,6 +1,7 @@
 use crate::block::Block;
 use crate::piece::Piece;
 use godot::classes::InputEvent;
+use godot::engine::ColorRect;
 use godot::prelude::*;
 use std::collections::HashSet;
 
@@ -124,8 +125,26 @@ impl TetrisBoard {
         }
     }
 
+    pub fn add_next_piece(&mut self, mut piece: Gd<Piece>) {
+        if self.next_pieces.len() > 0 {
+            return;
+        }
+        piece.clone().reparent(self.base_mut().to_godot().upcast());
+        let background_position = self
+            .base()
+            .get_node_as::<ColorRect>("BorderNext")
+            .get_position() + Vector2::new(1., 1.);
+        piece.set_position(background_position);
+        {
+            let mut piece_bind = piece.bind_mut();
+            piece_bind.position_for_ui();
+        }
+        self.next_pieces.push(piece);
+    }
+
     fn spawn_new_piece(&mut self) {
         // TODO use next piece instead of random
+        //   reset its position with piece.update_position()
         let mut piece = Piece::spawn_random();
 
         {

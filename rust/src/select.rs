@@ -1,4 +1,5 @@
 use crate::piece::{Piece, Shape};
+use crate::tetris_board::TetrisBoard;
 use godot::classes::{InputEvent, Sprite2D};
 use godot::prelude::*;
 use rand::prelude::IndexedRandom;
@@ -31,14 +32,12 @@ pub struct Select {
 impl Select {
     fn check_input(&mut self, input: InputOptions) {
         if input == self.sequence[self.curr_check_index] {
-            self.prompts[self.curr_check_index]
-                .set_modulate(Color::from_rgb(1., 1., 1.));
+            self.prompts[self.curr_check_index].set_modulate(Color::from_rgb(1., 1., 1.));
             self.curr_check_index += 1;
             if self.curr_check_index >= SELECT_COUNT {
                 self.success();
             }
-        }
-        else {
+        } else {
             self.reset();
         }
     }
@@ -47,15 +46,21 @@ impl Select {
         if self.curr_check_index > 0 {
             self.curr_check_index = 0;
             for mut prompt in &mut self.prompts {
-                prompt.set_modulate(Color::from_rgb(105./255., 105./255., 105./255.));
+                prompt.set_modulate(Color::from_rgb(105. / 255., 105. / 255., 105. / 255.));
             }
         }
     }
 
     fn success(&mut self) {
         self.reset();
-        // TODO move piece
-        self.piece.clone().free();
+
+        let mut tetris_board = self
+            .base()
+            .get_parent()
+            .unwrap()
+            .get_node_as::<TetrisBoard>("Tetris");
+        let mut tetris_board = tetris_board.bind_mut();
+        tetris_board.add_next_piece(self.piece.clone());
 
         self.sequence = Select::random_sequence();
         self.piece = Piece::spawn_random();
@@ -102,29 +107,9 @@ impl INode2D for Select {
             let piece = &mut self.piece.clone();
             self.base_mut().add_child(piece.clone().upcast());
         };
-        self.piece.set_position(Vector2::new(42., 2.));
         {
-            let shape = {
-                let piece_bind = &self.piece.bind();
-                piece_bind.shape.clone()
-            };
-            match shape {
-                Shape::I => {
-                    self.piece.set_position(Vector2::new(42., 22.));
-                }
-                Shape::T => {
-                    self.piece.set_position(Vector2::new(42., 22.));
-                }
-                Shape::J => {
-                    self.piece.set_rotation(PI / 2.);
-                    self.piece.set_position(Vector2::new(62., 22.));
-                }
-                Shape::L => {
-                    self.piece.set_rotation(PI / 2.);
-                    self.piece.set_position(Vector2::new(62., 2.));
-                }
-                _ => {}
-            }
+            let mut piece_bind = self.piece.bind_mut();
+            piece_bind.position_for_ui();
         }
     }
 

@@ -152,6 +152,35 @@ impl Piece {
             }
         }
     }
+
+    pub fn position_for_ui(&mut self) {
+        let base_offset = self.base().get_position() + Vector2::new(42., 2.);
+        match self.shape {
+            Shape::I => {
+                self.base_mut().set_position(base_offset + Vector2::new(42., 22.));
+            }
+            Shape::T => {
+                self.base_mut().set_position(base_offset + Vector2::new(42., 22.));
+            }
+            Shape::J => {
+                self.base_mut().set_rotation(PI / 2.);
+                self.base_mut().set_position(base_offset + Vector2::new(62., 22.));
+            }
+            Shape::L => {
+                self.base_mut().set_rotation(PI / 2.);
+                self.base_mut().set_position(base_offset + Vector2::new(62., 2.));
+            }
+            _ => {
+                self.base_mut().set_position(base_offset);
+            }
+        }
+    }
+
+    pub fn update_position(&mut self) {
+        let piece_position = self.center_block_position * self.block_size;
+        self.base_mut().set_rotation(0.);
+        self.base_mut().set_position(piece_position);
+    }
 }
 
 #[godot_api]
@@ -199,8 +228,6 @@ impl INode2D for Piece {
         {
             let mut block = block_scene.instantiate_as::<Block>();
             self.block_size = block.call("get_size".into(), &[]).to::<Vector2>();
-            let piece_position = self.center_block_position * self.block_size;
-            self.base_mut().set_position(piece_position);
 
             {
                 let mut block_bind = block.bind_mut();
@@ -210,5 +237,6 @@ impl INode2D for Piece {
             self.blocks.push(block.to_variant());
             self.base_mut().add_child(block.clone().upcast());
         }
+        self.update_position();
     }
 }
