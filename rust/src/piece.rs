@@ -83,10 +83,6 @@ impl Piece {
         false
     }
 
-    pub fn drp(&mut self) {
-        while self.down() {}
-    }
-
     pub fn rotate(&mut self, clockwise: bool) {
         let additional_rotation = match self.shape {
             Shape::O => 0., // o should not be rotated
