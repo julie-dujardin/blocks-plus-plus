@@ -154,21 +154,27 @@ impl Piece {
     }
 
     pub fn position_for_ui(&mut self) {
-        let base_offset = self.base().get_position() + Vector2::new(42., 2.);
+        let base_offset = self.base().get_position() + Vector2::new(42., 7.);
         match self.shape {
             Shape::I => {
-                self.base_mut().set_position(base_offset + Vector2::new(42., 22.));
+                self.base_mut().set_position(base_offset + Vector2::new(0., 10.));
             }
             Shape::T => {
-                self.base_mut().set_position(base_offset + Vector2::new(42., 22.));
+                self.base_mut().set_position(base_offset + Vector2::new(10., 20.));
             }
             Shape::J => {
                 self.base_mut().set_rotation(PI / 2.);
-                self.base_mut().set_position(base_offset + Vector2::new(62., 22.));
+                self.base_mut().set_position(base_offset + Vector2::new(30., 20.));
             }
             Shape::L => {
                 self.base_mut().set_rotation(PI / 2.);
-                self.base_mut().set_position(base_offset + Vector2::new(62., 2.));
+                self.base_mut().set_position(base_offset + Vector2::new(30., 0.));
+            }
+            Shape::S => {
+                self.base_mut().set_position(base_offset + Vector2::new(10., 0.));
+            }
+            Shape::Z => {
+                self.base_mut().set_position(base_offset + Vector2::new(10., 0.));
             }
             _ => {
                 self.base_mut().set_position(base_offset);

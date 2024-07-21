@@ -127,13 +127,14 @@ impl TetrisBoard {
 
     pub fn add_next_piece(&mut self, mut piece: Gd<Piece>) {
         if self.next_pieces.len() > 0 {
+            piece.free();
             return;
         }
         piece.clone().reparent(self.base_mut().to_godot().upcast());
         let background_position = self
             .base()
             .get_node_as::<ColorRect>("BorderNext")
-            .get_position() + Vector2::new(1., 1.);
+            .get_position() + Vector2::new(1., 25.);
         piece.set_position(background_position);
         {
             let mut piece_bind = piece.bind_mut();
