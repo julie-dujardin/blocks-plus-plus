@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bfnrfbm4fpg50"]
+[gd_scene load_steps=5 format=3 uid="uid://bfnrfbm4fpg50"]
 
 [ext_resource type="PackedScene" uid="uid://d1g51jjhyvob0" path="res://scenes/boards/tetris.tscn" id="1_pn1nu"]
 [ext_resource type="PackedScene" uid="uid://ec18ywdi03dw" path="res://scenes/tetris/select.tscn" id="2_t6wl0"]
 [ext_resource type="PackedScene" uid="uid://bcre4yukfctml" path="res://scenes/ui/hud.tscn" id="3_bug85"]
+[ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="4_20qdw"]
 
 [node name="Main" type="MainBoard"]
 
@@ -33,4 +34,30 @@ position = Vector2(8, 328)
 
 [node name="Hud" parent="." instance=ExtResource("3_bug85")]
 
+[node name="TimerGameOver" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="LabelGameOver" type="Label" parent="."]
+visible = false
+offset_top = 512.0
+offset_right = 1152.0
+offset_bottom = 647.0
+theme = ExtResource("4_20qdw")
+theme_override_colors/font_color = Color(0.862745, 0, 0, 1)
+theme_override_font_sizes/font_size = 72
+text = "Game Over"
+horizontal_alignment = 1
+
+[connection signal="game_over" from="Tetris" to="." method="on_game_over"]
+[connection signal="game_over" from="Tetris" to="Select0" method="handle_game_over"]
+[connection signal="game_over" from="Tetris" to="Select1" method="handle_game_over"]
+[connection signal="game_over" from="Tetris" to="Select2" method="handle_game_over"]
+[connection signal="game_over" from="Tetris" to="Select3" method="handle_game_over"]
 [connection signal="start_game" from="Hud" to="." method="start_game"]
+[connection signal="timeout" from="TimerGameOver" to="Tetris" method="reset_board"]
+[connection signal="timeout" from="TimerGameOver" to="Select0" method="reset"]
+[connection signal="timeout" from="TimerGameOver" to="Select1" method="reset"]
+[connection signal="timeout" from="TimerGameOver" to="Select2" method="reset"]
+[connection signal="timeout" from="TimerGameOver" to="Select3" method="reset"]
+[connection signal="timeout" from="TimerGameOver" to="Hud" method="on_game_over_timer_timeout"]

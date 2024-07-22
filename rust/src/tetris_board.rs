@@ -1,6 +1,7 @@
 use crate::block::Block;
 use crate::piece::Piece;
 use godot::classes::InputEvent;
+use godot::classes::Timer;
 use godot::engine::ColorRect;
 use godot::prelude::*;
 use std::collections::HashSet;
@@ -13,12 +14,51 @@ pub struct TetrisBoard {
     active_piece: Option<Gd<Piece>>,
     next_pieces: Vec<Gd<Piece>>,
     lines: Vec<[Option<Gd<Block>>; 10]>,
+    game_over: bool,
 
     base: Base<Node2D>,
 }
 
 #[godot_api]
 impl TetrisBoard {
+    #[signal]
+    fn game_over();
+
+    #[func]
+    fn reset_board(&mut self) {
+        let mut piece_down_timer = self.base().get_node_as::<Timer>("TimerPieceDown");
+        piece_down_timer.stop();
+
+        for line in self.lines.iter() {
+            for cell_opt in line {
+                match cell_opt {
+                    Some(cell) => cell.clone().free(),
+                    None => {}
+                }
+            }
+        }
+        self.lines.clear();
+        for _ in 0..20 {
+            self.push_new_line();
+        }
+
+        for piece in &mut self.next_pieces {
+            piece.clone().free();
+        }
+        self.next_pieces.clear();
+        if let Some(piece) = &mut self.active_piece {
+            piece.clone().free();
+        }
+        self.active_piece = None;
+
+        self.base_mut().hide();
+    }
+
+    fn handle_game_over(&mut self) {
+        self.game_over = true;
+        self.base_mut().emit_signal("game_over".into(), &[]);
+    }
+
     fn check_collision_with_lines(&mut self) -> bool {
         if let Some(piece) = &mut self.active_piece {
             let piece_bind = piece.bind_mut();
@@ -48,6 +88,7 @@ impl TetrisBoard {
         let mut removed_lines = 0;
         let mut check_heights = HashSet::new();
         let mut lowest_removed_height = 21;
+        let mut too_high = false;
         if let Some(piece) = &mut self.active_piece {
             let piece_bind = piece.bind_mut();
             for block in piece_bind.blocks.iter_shared() {
@@ -66,7 +107,7 @@ impl TetrisBoard {
                 self.lines[height][x] = Some(block_ref);
 
                 if height >= 16 {
-                    // TODO handle game over
+                    too_high = true;
                 }
             }
 
@@ -82,6 +123,9 @@ impl TetrisBoard {
                 }
             }
         };
+        if too_high {
+            self.handle_game_over();
+        }
 
         if removed_lines > 0 {
             for _ in lowest_removed_height..lowest_removed_height + removed_lines {
@@ -126,7 +170,11 @@ impl TetrisBoard {
     }
 
     pub fn add_next_piece(&mut self, mut piece: Gd<Piece>) {
-        if self.next_pieces.len() > 0 {
+        self.game_over = false;
+        let mut piece_down_timer = self.base().get_node_as::<Timer>("TimerPieceDown");
+        piece_down_timer.start();
+
+        if !self.next_pieces.is_empty() {
             piece.free();
             return;
         }
@@ -147,11 +195,13 @@ impl TetrisBoard {
         }
     }
 
-    fn spawn_new_piece(&mut self) {
+    pub fn spawn_new_piece(&mut self) {
         let piece_opt = self.next_pieces.pop();
         match piece_opt {
             None => {
-                // TODO game over
+                if self.active_piece.is_none() {
+                    self.handle_game_over();
+                }
             }
             Some(mut piece) => {
                 {
@@ -172,6 +222,8 @@ impl TetrisBoard {
 
     #[func]
     fn down_piece(&mut self) -> bool {
+        if self.game_over {return false;}
+
         let mut reached_bottom = false;
         if let Some(piece) = &mut self.active_piece {
             let mut piece_bind = piece.bind_mut();
@@ -236,6 +288,7 @@ impl INode2D for TetrisBoard {
             active_piece: None,
             next_pieces: vec![],
             lines: vec![],
+            game_over: false,
             base,
         };
 
@@ -246,12 +299,8 @@ impl INode2D for TetrisBoard {
         tb
     }
 
-    fn ready(&mut self) {
-        self.spawn_new_piece();
-    }
-
     fn input(&mut self, event: Gd<InputEvent>) {
-        if self.active_piece.is_some() {
+        if self.active_piece.is_some() && !self.game_over {
             {
                 if event.is_action_pressed("down".into()) {
                     self.drop_piece();

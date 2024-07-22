@@ -1,5 +1,6 @@
+use godot::classes::{Label, Timer};
+use crate::select::{Select};
 use godot::prelude::*;
-use crate::select::Select;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
@@ -11,14 +12,26 @@ pub struct MainBoard {
 impl MainBoard {
     #[func]
     fn start_game(&mut self) {
-        self.base_mut()
-            .get_node_as::<Select>("Select0").show();
-        self.base_mut()
-            .get_node_as::<Select>("Select1").show();
-        self.base_mut()
-            .get_node_as::<Select>("Select2").show();
-        self.base_mut()
-            .get_node_as::<Select>("Select3").show();
+        self.base_mut().get_node_as::<Select>("Select0").show();
+        self.base_mut().get_node_as::<Select>("Select1").show();
+        self.base_mut().get_node_as::<Select>("Select2").show();
+        self.base_mut().get_node_as::<Select>("Select3").show();
+        self.base_mut().get_node_as::<Label>("LabelGameOver").hide();
+    }
+
+    #[func]
+    fn on_game_over(&mut self) {
+        self.base_mut().get_node_as::<Label>("LabelGameOver").show();
+        self.base_mut().get_node_as::<Timer>("TimerGameOver").start();
+    }
+
+    #[func]
+    fn on_game_over_timer_timeout(&mut self) {
+        self.base_mut().get_node_as::<Select>("Select0").hide();
+        self.base_mut().get_node_as::<Select>("Select1").hide();
+        self.base_mut().get_node_as::<Select>("Select2").hide();
+        self.base_mut().get_node_as::<Select>("Select3").hide();
+        self.base_mut().get_node_as::<Select>("Tetris").hide();
     }
 }
 

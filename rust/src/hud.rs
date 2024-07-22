@@ -1,3 +1,4 @@
+use godot::engine::Button;
 use godot::prelude::*;
 
 #[derive(GodotClass)]
@@ -19,12 +20,15 @@ impl Hud {
 
     #[func]
     fn on_quit_button_pressed(&mut self) {
-        // TODO quit game
+        self.base_mut().get_tree().unwrap().quit();
     }
 
     #[func]
     fn on_game_over_timer_timeout(&mut self) {
-        // TODO
+        self.base_mut()
+            .get_node_as::<Button>("ButtonPlay")
+            .set_text("Replay".into());
+        self.base_mut().show();
     }
 }
 

@@ -24,12 +24,29 @@ pub struct Select {
     sequence: Vec<InputOptions>,
     prompts: Vec<Gd<Sprite2D>>,
     curr_check_index: usize,
+    game_over: bool,
 
     base: Base<Node2D>,
 }
 
 #[godot_api]
 impl Select {
+    #[func]
+    fn reset(&mut self) {
+        self.base_mut().hide();
+        self.game_over = false;
+        self.curr_check_index = 0;
+        self.sequence = Select::random_sequence();
+        self.piece.clone().free();
+        self.piece = Piece::spawn_random();
+        self.ready();
+    }
+
+    #[func]
+    fn handle_game_over(&mut self) {
+        self.game_over = true;
+    }
+
     fn check_input(&mut self, input: InputOptions) {
         if input == self.sequence[self.curr_check_index] {
             self.prompts[self.curr_check_index].set_modulate(Color::from_rgb(1., 1., 1.));
@@ -38,11 +55,11 @@ impl Select {
                 self.success();
             }
         } else {
-            self.reset();
+            self.reset_check();
         }
     }
 
-    fn reset(&mut self) {
+    fn reset_check(&mut self) {
         if self.curr_check_index > 0 {
             self.curr_check_index = 0;
             for prompt in &mut self.prompts {
@@ -52,7 +69,7 @@ impl Select {
     }
 
     fn success(&mut self) {
-        self.reset();
+        self.reset_check();
 
         let mut tetris_board = self
             .base()
@@ -85,6 +102,7 @@ impl INode2D for Select {
             sequence: Select::random_sequence(),
             prompts: vec![],
             curr_check_index: 0,
+            game_over: false,
             base,
         }
     }
@@ -115,14 +133,16 @@ impl INode2D for Select {
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
-        if event.is_action_pressed("up".into()) {
-            self.check_input(InputOptions::Up);
-        } else if event.is_action_pressed("left".into()) {
-            self.check_input(InputOptions::Left);
-        } else if event.is_action_pressed("right".into()) {
-            self.check_input(InputOptions::Right);
-        } else if event.is_action_pressed("down".into()) {
-            self.reset();
+        if !self.game_over {
+            if event.is_action_pressed("up".into()) {
+                self.check_input(InputOptions::Up);
+            } else if event.is_action_pressed("left".into()) {
+                self.check_input(InputOptions::Left);
+            } else if event.is_action_pressed("right".into()) {
+                self.check_input(InputOptions::Right);
+            } else if event.is_action_pressed("down".into()) {
+                self.reset_check();
+            }
         }
     }
 }
