@@ -1,6 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://b5iydxdsydel7"]
 
 [ext_resource type="PackedScene" uid="uid://lbhsqlii2lu7" path="res://scenes/breakout/ball.tscn" id="1_01ybq"]
+[ext_resource type="PackedScene" uid="uid://grehn0f7rrgi" path="res://scenes/breakout/breakout_player.tscn" id="2_vgool"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_vojec"]
 b = Vector2(0, 288)
@@ -14,9 +15,6 @@ b = Vector2(0, 288)
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_j0y4m"]
 a = Vector2(424, 0)
 b = Vector2(0, 0)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xdwab"]
-size = Vector2(40, 8)
 
 [node name="BreakoutBoard" type="BreakoutBoard"]
 
@@ -49,17 +47,9 @@ points = PackedVector2Array(0, 288, 424, 288)
 width = 1.0
 default_color = Color(0.862745, 0, 0, 1)
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
-position = Vector2(192, 256)
-metadata/_edit_group_ = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
-position = Vector2(20, 4)
-shape = SubResource("RectangleShape2D_xdwab")
-
-[node name="ColorRect" type="ColorRect" parent="CharacterBody2D"]
-offset_right = 40.0
-offset_bottom = 8.0
-
 [node name="Ball" parent="." instance=ExtResource("1_01ybq")]
 position = Vector2(208, 232)
+
+[node name="BreakoutPlayer" parent="." instance=ExtResource("2_vgool")]
+speed = 350.0
+position = Vector2(192, 256)
