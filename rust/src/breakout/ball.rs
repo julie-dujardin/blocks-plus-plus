@@ -3,7 +3,7 @@ use godot::builtin::Vector2;
 use godot::classes::{CharacterBody2D, ICharacterBody2D};
 use godot::engine::StaticBody2D;
 use godot::obj::{Base, WithBaseField};
-use godot::prelude::{godot_api, GodotClass};
+use godot::prelude::{godot_api, GodotClass, ToGodot};
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -36,8 +36,7 @@ impl Ball {
     pub fn set_movement(&mut self, can_move: bool) {
         if can_move {
             self.current_velocity = Vector2::new(self.start_speed / 2., -self.start_speed / 2.);
-        }
-        else {
+        } else {
             self.current_velocity = Vector2::ZERO;
             self.base_mut().set_velocity(Vector2::ZERO);
         }
@@ -55,27 +54,33 @@ impl ICharacterBody2D for Ball {
     }
 
     fn physics_process(&mut self, _delta: f64) {
-        let current_velocity = self.current_velocity;
-        self.base_mut().set_velocity(current_velocity);
-        self.base_mut().move_and_slide();
+        if self.current_velocity != Vector2::ZERO {
+            let current_velocity = self.current_velocity;
+            self.base_mut().set_velocity(current_velocity);
+            self.base_mut().move_and_slide();
 
-        if self.base_mut().is_on_ceiling() || self.base_mut().is_on_floor() {
-            self.current_velocity.y = -current_velocity.y;
-        }
-        if self.base_mut().is_on_wall() {
-            self.current_velocity.x = -current_velocity.x;
-        }
+            if self.base_mut().is_on_ceiling() || self.base_mut().is_on_floor() {
+                self.current_velocity.y = -current_velocity.y;
+            }
+            if self.base_mut().is_on_wall() {
+                self.current_velocity.x = -current_velocity.x;
+            }
 
-        for slide in 0..self.base().get_slide_collision_count() {
-            let collision = self.base_mut().get_slide_collision(slide);
-            let collider = collision.unwrap().get_collider().unwrap();
-
-            if let Ok(brick) = collider.clone().try_cast::<Brick>() {
-                brick.free();
-                self.base_mut().emit_signal("broke_brick".into(), &[]);
-            } else if let Ok(area) = collider.try_cast::<StaticBody2D>() {
-                if area.get_name() == "Bottom".into() {
-                    self.handle_game_over();
+            for slide in 0..self.base().get_slide_collision_count() {
+                let collision_opt = self.base_mut().get_slide_collision(slide);
+                if let Some(collision) = collision_opt {
+                    let collider_opt = collision.get_collider();
+                    if let Some(collider) = collider_opt {
+                        if let Ok(brick) = collider.clone().try_cast::<Brick>() {
+                            self.base_mut()
+                                .emit_signal("broke_brick".into(), &[brick.to_variant()]);
+                            brick.free();
+                        } else if let Ok(area) = collider.try_cast::<StaticBody2D>() {
+                            if area.get_name() == "Bottom".into() {
+                                self.handle_game_over();
+                            }
+                        }
+                    }
                 }
             }
         }

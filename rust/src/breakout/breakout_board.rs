@@ -1,10 +1,11 @@
+use crate::breakout::ball::Ball;
 use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
-use godot::builtin::Vector2;
+use godot::builtin::{Variant, Vector2};
 use godot::classes::{INode2D, Node2D, PackedScene};
+use godot::log::godot_print;
 use godot::obj::{Base, Gd, WithBaseField};
 use godot::prelude::{godot_api, load, GodotClass};
-use crate::breakout::ball::Ball;
 
 const BRICK_PER_LINE: usize = 10;
 
@@ -13,7 +14,8 @@ const BRICK_PER_LINE: usize = 10;
 pub struct BreakoutBoard {
     #[export]
     score: i64,
-    lines: Vec<[Option<Gd<Brick>>; BRICK_PER_LINE]>,
+    bricks: Vec<Gd<Brick>>,
+    brick_size: Vector2,
 
     base: Base<Node2D>,
 }
@@ -32,12 +34,19 @@ impl BreakoutBoard {
         let mut ball_bind = ball.bind_mut();
         ball_bind.reset();
 
+        for brick in &self.bricks {
+            brick.clone().free();
+        }
+        self.bricks.clear();
+
         self.base_mut().hide();
     }
 
     #[func]
-    fn on_broke_brick(&mut self) {
+    fn on_broke_brick(&mut self, brick_var: Variant) {
         self.score += 1;
+        let brick = brick_var.to::<Gd<Brick>>();
+        self.bricks.retain(|x| *x != brick);
     }
 
     #[func]
@@ -66,23 +75,24 @@ impl BreakoutBoard {
     }
 
     pub fn push_new_line(&mut self) {
-        // TODO move existing lines down
+        for brick in &mut self.bricks {
+            brick.move_local_y(self.brick_size.y + 10.);
+        }
 
         let brick_scene: Gd<PackedScene> = load("res://scenes/breakout/brick.tscn");
-        let new_line = core::array::from_fn(|i| {
+
+        for i in 0..BRICK_PER_LINE {
             let mut brick = brick_scene.instantiate_as::<Brick>();
 
-            let brick_size = {
+            self.brick_size = {
                 let brick_bind = brick.bind_mut();
                 brick_bind.get_size()
             };
-            brick.set_position(Vector2::new((brick_size.x + 2.) * i as f32 + 2., 10.));
+            brick.set_position(Vector2::new((self.brick_size.x + 2.) * i as f32 + 2., 10.));
             self.base_mut().add_child(brick.clone().upcast());
 
-            Some(brick)
-        });
-
-        self.lines.insert(0, new_line);
+            self.bricks.push(brick);
+        }
     }
 }
 
@@ -91,7 +101,8 @@ impl INode2D for BreakoutBoard {
     fn init(base: Base<Node2D>) -> Self {
         BreakoutBoard {
             score: 0,
-            lines: vec![],
+            bricks: vec![],
+            brick_size: Vector2::ZERO,
             base,
         }
     }

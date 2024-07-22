@@ -66,7 +66,11 @@ impl TetrisBoard {
 
     fn score_up(&mut self) {
         self.score += 1;
-        let mut breakout_board = self.base().get_parent().unwrap().get_node_as::<BreakoutBoard>("BreakoutBoard");
+        let mut breakout_board = self
+            .base()
+            .get_parent()
+            .unwrap()
+            .get_node_as::<BreakoutBoard>("BreakoutBoard");
         breakout_board.show();
         let mut breakout_board_bind = breakout_board.bind_mut();
         breakout_board_bind.push_new_line();
