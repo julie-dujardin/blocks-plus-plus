@@ -222,7 +222,9 @@ impl TetrisBoard {
 
     #[func]
     fn down_piece(&mut self) -> bool {
-        if self.game_over {return false;}
+        if self.game_over {
+            return false;
+        }
 
         let mut reached_bottom = false;
         if let Some(piece) = &mut self.active_piece {

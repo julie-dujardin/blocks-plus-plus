@@ -1,5 +1,5 @@
+use crate::tetris::select::Select;
 use godot::classes::{Label, Timer};
-use crate::tetris::select::{Select};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
@@ -22,7 +22,9 @@ impl MainBoard {
     #[func]
     fn on_game_over(&mut self) {
         self.base_mut().get_node_as::<Label>("LabelGameOver").show();
-        self.base_mut().get_node_as::<Timer>("TimerGameOver").start();
+        self.base_mut()
+            .get_node_as::<Timer>("TimerGameOver")
+            .start();
     }
 
     #[func]
