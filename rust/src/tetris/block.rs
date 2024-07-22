@@ -30,7 +30,7 @@ impl Block {
     }
 
     #[func]
-    fn get_size(&self) -> Vector2 {
+    pub fn get_size(&self) -> Vector2 {
         self.base()
             .get_node_as::<CollisionShape2D>("CollisionShape2D")
             .get_shape()

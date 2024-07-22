@@ -6,15 +6,14 @@
 b = Vector2(0, 288)
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_q84af"]
-b = Vector2(512, 0)
+b = Vector2(422, 0)
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_ow7o5"]
-a = Vector2(208, -128)
-b = Vector2(208, 160)
+b = Vector2(0, 288)
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_j0y4m"]
-a = Vector2(512, 288)
-b = Vector2(0, 288)
+a = Vector2(424, 0)
+b = Vector2(0, 0)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xdwab"]
 size = Vector2(40, 8)
@@ -30,25 +29,28 @@ shape = SubResource("SegmentShape2D_vojec")
 shape = SubResource("SegmentShape2D_q84af")
 
 [node name="CollisionShape2DRight" type="CollisionShape2D" parent="Walls"]
-position = Vector2(304, 128)
+position = Vector2(424, 0)
 shape = SubResource("SegmentShape2D_ow7o5")
 
 [node name="Line2D" type="Line2D" parent="Walls"]
-points = PackedVector2Array(0, 288, 0, 0, 512, 0, 512, 288)
+points = PackedVector2Array(0, 288, 0, 0, 424, 0, 424, 288)
 width = 1.0
 
 [node name="Bottom" type="Area2D" parent="."]
+position = Vector2(0, 288)
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Bottom"]
 shape = SubResource("SegmentShape2D_j0y4m")
 
 [node name="Line2D" type="Line2D" parent="Bottom"]
-points = PackedVector2Array(0, 288, 512, 288)
+position = Vector2(0, -288)
+points = PackedVector2Array(0, 288, 424, 288)
 width = 1.0
 default_color = Color(0.862745, 0, 0, 1)
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
-position = Vector2(232, 256)
+position = Vector2(192, 256)
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
@@ -60,4 +62,4 @@ offset_right = 40.0
 offset_bottom = 8.0
 
 [node name="Ball" parent="." instance=ExtResource("1_01ybq")]
-position = Vector2(248, 232)
+position = Vector2(208, 232)

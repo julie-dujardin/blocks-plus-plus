@@ -239,10 +239,10 @@ impl INode2D for Piece {
             .iter_shared()
         {
             let mut block = block_scene.instantiate_as::<Block>();
-            self.block_size = block.call("get_size".into(), &[]).to::<Vector2>();
 
             {
                 let mut block_bind = block.bind_mut();
+                self.block_size = block_bind.get_size();
                 block_bind.board_offset = block_offset.to::<Vector2>();
             }
 
