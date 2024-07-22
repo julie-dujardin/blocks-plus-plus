@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://d1g51jjhyvob0" path="res://scenes/boards/tetris.tscn" id="1_pn1nu"]
 [ext_resource type="PackedScene" uid="uid://ec18ywdi03dw" path="res://scenes/tetris/select.tscn" id="2_t6wl0"]
-[ext_resource type="PackedScene" uid="uid://bcre4yukfctml" path="res://scenes/ui/start_screen.tscn" id="3_bug85"]
+[ext_resource type="PackedScene" uid="uid://bcre4yukfctml" path="res://scenes/ui/hud.tscn" id="3_bug85"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="MainBoard"]
 
 [node name="BackgroundMain" type="ColorRect" parent="."]
 offset_right = 1224.0
@@ -12,18 +12,25 @@ offset_bottom = 736.0
 color = Color(0, 0, 0, 1)
 
 [node name="Tetris" parent="." instance=ExtResource("1_pn1nu")]
+visible = false
 position = Vector2(176, 8)
 
 [node name="Select0" parent="." instance=ExtResource("2_t6wl0")]
+visible = false
 position = Vector2(8, 8)
 
 [node name="Select1" parent="." instance=ExtResource("2_t6wl0")]
+visible = false
 position = Vector2(8, 115)
 
 [node name="Select2" parent="." instance=ExtResource("2_t6wl0")]
+visible = false
 position = Vector2(8, 221)
 
 [node name="Select3" parent="." instance=ExtResource("2_t6wl0")]
+visible = false
 position = Vector2(8, 328)
 
-[node name="StartScreen" parent="." instance=ExtResource("3_bug85")]
+[node name="Hud" parent="." instance=ExtResource("3_bug85")]
+
+[connection signal="start_game" from="Hud" to="." method="start_game"]

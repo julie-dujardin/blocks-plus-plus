@@ -7,7 +7,7 @@
 font = ExtResource("1_fy6m2")
 font_size = 50
 
-[node name="StartScreen" type="Node"]
+[node name="Hud" type="Hud"]
 
 [node name="LabelTitle" type="Label" parent="."]
 offset_top = 128.0
@@ -33,3 +33,6 @@ offset_right = 728.0
 offset_bottom = 368.0
 theme = ExtResource("2_66ttw")
 text = "Quit"
+
+[connection signal="button_down" from="ButtonPlay" to="." method="on_start_button_pressed"]
+[connection signal="button_down" from="ButtonQuit" to="." method="on_quit_button_pressed"]

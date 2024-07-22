@@ -1,4 +1,4 @@
-use crate::piece::{Piece, Shape};
+use crate::piece::Piece;
 use crate::tetris_board::TetrisBoard;
 use godot::classes::{InputEvent, Sprite2D};
 use godot::prelude::*;
@@ -59,6 +59,7 @@ impl Select {
             .get_parent()
             .unwrap()
             .get_node_as::<TetrisBoard>("Tetris");
+        tetris_board.show();
         let mut tetris_board = tetris_board.bind_mut();
         tetris_board.add_next_piece(self.piece.clone());
 

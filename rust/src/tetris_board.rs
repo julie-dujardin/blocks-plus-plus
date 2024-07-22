@@ -134,7 +134,8 @@ impl TetrisBoard {
         let background_position = self
             .base()
             .get_node_as::<ColorRect>("BorderNext")
-            .get_position() + Vector2::new(1., 25.);
+            .get_position()
+            + Vector2::new(1., 25.);
         piece.set_position(background_position);
         {
             let mut piece_bind = piece.bind_mut();

@@ -5,6 +5,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 mod block;
+mod hud;
+mod main_board;
 mod piece;
 mod piece_select;
 mod select;

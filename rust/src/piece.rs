@@ -157,24 +157,30 @@ impl Piece {
         let base_offset = self.base().get_position() + Vector2::new(42., 7.);
         match self.shape {
             Shape::I => {
-                self.base_mut().set_position(base_offset + Vector2::new(0., 10.));
+                self.base_mut()
+                    .set_position(base_offset + Vector2::new(0., 10.));
             }
             Shape::T => {
-                self.base_mut().set_position(base_offset + Vector2::new(10., 20.));
+                self.base_mut()
+                    .set_position(base_offset + Vector2::new(10., 20.));
             }
             Shape::J => {
                 self.base_mut().set_rotation(PI / 2.);
-                self.base_mut().set_position(base_offset + Vector2::new(30., 20.));
+                self.base_mut()
+                    .set_position(base_offset + Vector2::new(30., 20.));
             }
             Shape::L => {
                 self.base_mut().set_rotation(PI / 2.);
-                self.base_mut().set_position(base_offset + Vector2::new(30., 0.));
+                self.base_mut()
+                    .set_position(base_offset + Vector2::new(30., 0.));
             }
             Shape::S => {
-                self.base_mut().set_position(base_offset + Vector2::new(10., 0.));
+                self.base_mut()
+                    .set_position(base_offset + Vector2::new(10., 0.));
             }
             Shape::Z => {
-                self.base_mut().set_position(base_offset + Vector2::new(10., 0.));
+                self.base_mut()
+                    .set_position(base_offset + Vector2::new(10., 0.));
             }
             _ => {
                 self.base_mut().set_position(base_offset);
