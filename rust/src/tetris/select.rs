@@ -35,7 +35,7 @@ impl Select {
     fn reset(&mut self) {
         self.base_mut().hide();
         self.game_over = false;
-        self.curr_check_index = 0;
+        self.reset_check();
         self.sequence = Select::random_sequence();
         self.piece.clone().free();
         self.piece = Piece::spawn_random();
@@ -60,11 +60,9 @@ impl Select {
     }
 
     fn reset_check(&mut self) {
-        if self.curr_check_index > 0 {
-            self.curr_check_index = 0;
-            for prompt in &mut self.prompts {
-                prompt.set_modulate(Color::from_rgb(105. / 255., 105. / 255., 105. / 255.));
-            }
+        self.curr_check_index = 0;
+        for prompt in &mut self.prompts {
+            prompt.set_modulate(Color::from_rgb(105. / 255., 105. / 255., 105. / 255.));
         }
     }
 

@@ -54,15 +54,19 @@ theme_override_font_sizes/font_size = 72
 text = "Game Over"
 horizontal_alignment = 1
 
+[connection signal="global_game_over" from="." to="Tetris" method="on_parent_game_over"]
+[connection signal="global_game_over" from="." to="Select0" method="handle_game_over"]
+[connection signal="global_game_over" from="." to="Select1" method="handle_game_over"]
+[connection signal="global_game_over" from="." to="Select2" method="handle_game_over"]
+[connection signal="global_game_over" from="." to="Select3" method="handle_game_over"]
+[connection signal="global_game_over" from="." to="BreakoutBoard" method="on_parent_game_over"]
 [connection signal="game_over" from="Tetris" to="." method="on_game_over"]
-[connection signal="game_over" from="Tetris" to="Select0" method="handle_game_over"]
-[connection signal="game_over" from="Tetris" to="Select1" method="handle_game_over"]
-[connection signal="game_over" from="Tetris" to="Select2" method="handle_game_over"]
-[connection signal="game_over" from="Tetris" to="Select3" method="handle_game_over"]
+[connection signal="game_over" from="BreakoutBoard" to="." method="on_game_over"]
 [connection signal="start_game" from="Hud" to="." method="start_game"]
 [connection signal="timeout" from="TimerGameOver" to="Tetris" method="reset_board"]
 [connection signal="timeout" from="TimerGameOver" to="Select0" method="reset"]
 [connection signal="timeout" from="TimerGameOver" to="Select1" method="reset"]
 [connection signal="timeout" from="TimerGameOver" to="Select2" method="reset"]
 [connection signal="timeout" from="TimerGameOver" to="Select3" method="reset"]
+[connection signal="timeout" from="TimerGameOver" to="BreakoutBoard" method="reset"]
 [connection signal="timeout" from="TimerGameOver" to="Hud" method="on_game_over_timer_timeout"]

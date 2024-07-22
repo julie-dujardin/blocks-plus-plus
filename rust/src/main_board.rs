@@ -10,6 +10,9 @@ pub struct MainBoard {
 
 #[godot_api]
 impl MainBoard {
+    #[signal]
+    fn global_game_over();
+
     #[func]
     fn start_game(&mut self) {
         self.base_mut().get_node_as::<Select>("Select0").show();
@@ -25,6 +28,8 @@ impl MainBoard {
         self.base_mut()
             .get_node_as::<Timer>("TimerGameOver")
             .start();
+
+        self.base_mut().emit_signal("global_game_over".into(), &[]);
     }
 
     #[func]
@@ -33,7 +38,6 @@ impl MainBoard {
         self.base_mut().get_node_as::<Select>("Select1").hide();
         self.base_mut().get_node_as::<Select>("Select2").hide();
         self.base_mut().get_node_as::<Select>("Select3").hide();
-        self.base_mut().get_node_as::<Select>("Tetris").hide();
     }
 }
 

@@ -55,8 +55,12 @@ impl TetrisBoard {
         self.base_mut().hide();
     }
 
-    fn handle_game_over(&mut self) {
+    #[func]
+    fn on_parent_game_over(&mut self) {
         self.game_over = true;
+    }
+
+    fn handle_game_over(&mut self) {
         self.base_mut().emit_signal("game_over".into(), &[]);
     }
 

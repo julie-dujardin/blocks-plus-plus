@@ -24,6 +24,18 @@ impl BreakoutBoard {
     fn game_over();
 
     #[func]
+    fn reset(&mut self) {
+        let mut player = self.base().get_node_as::<BreakoutPlayer>("BreakoutPlayer");
+        player.set_position(Vector2::new(192., 256.));
+
+        let mut ball = self.base().get_node_as::<Ball>("Ball");
+        let mut ball_bind = ball.bind_mut();
+        ball_bind.reset();
+
+        self.base_mut().hide();
+    }
+
+    #[func]
     fn on_broke_brick(&mut self) {
         self.score += 1;
     }
@@ -34,8 +46,12 @@ impl BreakoutBoard {
     }
 
     #[func]
-    fn on_game_over(&mut self) {
+    fn on_parent_game_over(&mut self) {
         self.set_movement(false);
+    }
+
+    #[func]
+    fn on_game_over(&mut self) {
         self.base_mut().emit_signal("game_over".into(), &[]);
     }
 

@@ -25,8 +25,11 @@ impl Ball {
 
     fn handle_game_over(&mut self) {
         self.base_mut().emit_signal("game_over".into(), &[]);
-        self.current_velocity = Vector2::ZERO;
-        self.base_mut().set_velocity(Vector2::ZERO);
+        self.reset();
+    }
+
+    pub fn reset(&mut self) {
+        self.set_movement(false);
         self.base_mut().set_position(Vector2::new(208., 232.))
     }
 
@@ -36,6 +39,7 @@ impl Ball {
         }
         else {
             self.current_velocity = Vector2::ZERO;
+            self.base_mut().set_velocity(Vector2::ZERO);
         }
     }
 }
