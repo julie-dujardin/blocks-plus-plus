@@ -1,4 +1,4 @@
-use crate::block::Block;
+use crate::tetris::block::Block;
 use godot::prelude::*;
 use rand::prelude::IndexedRandom;
 use std::f32::consts::PI;

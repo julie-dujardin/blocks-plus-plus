@@ -1,5 +1,5 @@
-use crate::block::Block;
-use crate::piece::Piece;
+use crate::tetris::block::Block;
+use crate::tetris::piece::Piece;
 use godot::classes::InputEvent;
 use godot::classes::Timer;
 use godot::engine::ColorRect;

@@ -1,5 +1,5 @@
-use crate::piece::Piece;
-use crate::tetris_board::TetrisBoard;
+use crate::tetris::piece::Piece;
+use crate::tetris::tetris_board::TetrisBoard;
 use godot::classes::{InputEvent, Sprite2D};
 use godot::prelude::*;
 use rand::prelude::IndexedRandom;

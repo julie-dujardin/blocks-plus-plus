@@ -1,5 +1,5 @@
 use godot::classes::{Label, Timer};
-use crate::select::{Select};
+use crate::tetris::select::{Select};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
