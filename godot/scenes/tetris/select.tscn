@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ec18ywdi03dw"]
 
-[ext_resource type="PackedScene" uid="uid://dodn33gucp5mu" path="res://scenes/select_option.tscn" id="1_nxsqt"]
+[ext_resource type="PackedScene" uid="uid://dodn33gucp5mu" path="res://scenes/tetris/select_option.tscn" id="1_nxsqt"]
 
 [node name="Select" type="Select"]
 

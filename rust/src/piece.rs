@@ -34,7 +34,7 @@ pub struct Piece {
 #[godot_api]
 impl Piece {
     pub fn spawn_random() -> Gd<Piece> {
-        let piece_scene: Gd<PackedScene> = load("res://scenes/piece.tscn");
+        let piece_scene: Gd<PackedScene> = load("res://scenes/tetris/piece.tscn");
         let mut piece = piece_scene.instantiate_as::<Piece>();
 
         {
@@ -194,7 +194,7 @@ impl INode2D for Piece {
     fn init(base: Base<Node2D>) -> Self {
         Piece {
             blocks: varray![],
-            shape: Shape::O, // TODO override this after instantiation but before add_child
+            shape: Shape::O, // override this after instantiation but before add_child
             center_block_position: Vector2::new(0., 0.),
             rotation: 0.,
             block_size: Vector2::ZERO, // Gets set in self.ready()
@@ -223,7 +223,7 @@ impl INode2D for Piece {
     }
 
     fn ready(&mut self) {
-        let block_scene: Gd<PackedScene> = load("res://scenes/block.tscn");
+        let block_scene: Gd<PackedScene> = load("res://scenes/tetris/block.tscn");
 
         for block_offset in self
             .shape_blocks

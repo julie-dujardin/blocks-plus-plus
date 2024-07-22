@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3 uid="uid://bcre4yukfctml"]
+
+[ext_resource type="FontFile" uid="uid://tvarju4030k4" path="res://assets/font/Pixel.ttf" id="1_fy6m2"]
+[ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="2_66ttw"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_jk1ty"]
+font = ExtResource("1_fy6m2")
+font_size = 50
+
+[node name="StartScreen" type="Node"]
+
+[node name="LabelTitle" type="Label" parent="."]
+offset_top = 128.0
+offset_right = 1152.0
+offset_bottom = 191.0
+text = "Blocks ++"
+label_settings = SubResource("LabelSettings_jk1ty")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonPlay" type="Button" parent="."]
+offset_left = 432.0
+offset_top = 240.0
+offset_right = 728.0
+offset_bottom = 288.0
+theme = ExtResource("2_66ttw")
+text = "Play"
+
+[node name="ButtonQuit" type="Button" parent="."]
+offset_left = 432.0
+offset_top = 320.0
+offset_right = 728.0
+offset_bottom = 368.0
+theme = ExtResource("2_66ttw")
+text = "Quit"
