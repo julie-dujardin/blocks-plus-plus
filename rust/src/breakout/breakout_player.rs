@@ -18,10 +18,7 @@ impl BreakoutPlayer {}
 #[godot_api]
 impl ICharacterBody2D for BreakoutPlayer {
     fn init(base: Base<CharacterBody2D>) -> Self {
-        BreakoutPlayer {
-            speed: 350.,
-            base,
-        }
+        BreakoutPlayer { speed: 350., base }
     }
 
     fn physics_process(&mut self, _delta: f64) {

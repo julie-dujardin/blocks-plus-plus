@@ -34,7 +34,7 @@ shape = SubResource("SegmentShape2D_ow7o5")
 points = PackedVector2Array(0, 288, 0, 0, 424, 0, 424, 288)
 width = 1.0
 
-[node name="Bottom" type="Area2D" parent="."]
+[node name="Bottom" type="StaticBody2D" parent="."]
 position = Vector2(0, 288)
 metadata/_edit_group_ = true
 
