@@ -3,7 +3,6 @@ use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
 use godot::builtin::{Variant, Vector2};
 use godot::classes::{INode2D, Node2D, PackedScene};
-use godot::log::godot_print;
 use godot::obj::{Base, Gd, WithBaseField};
 use godot::prelude::{godot_api, load, GodotClass};
 

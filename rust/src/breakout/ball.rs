@@ -25,7 +25,7 @@ impl Ball {
 
     fn handle_game_over(&mut self) {
         self.base_mut().emit_signal("game_over".into(), &[]);
-        self.reset();
+        self.set_movement(false);
     }
 
     pub fn reset(&mut self) {
