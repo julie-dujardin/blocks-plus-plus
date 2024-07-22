@@ -54,3 +54,4 @@ position = Vector2(208, 232)
 position = Vector2(192, 256)
 
 [connection signal="broke_brick" from="Ball" to="." method="on_broke_brick"]
+[connection signal="game_over" from="Ball" to="." method="on_game_over"]

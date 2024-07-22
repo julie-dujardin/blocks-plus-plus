@@ -1,3 +1,4 @@
+use crate::breakout::breakout_board::BreakoutBoard;
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
 use godot::classes::InputEvent;
@@ -59,6 +60,15 @@ impl TetrisBoard {
         self.base_mut().emit_signal("game_over".into(), &[]);
     }
 
+    fn score_up(&mut self) {
+        self.score += 1;
+        let mut breakout_board = self.base().get_parent().unwrap().get_node_as::<BreakoutBoard>("BreakoutBoard");
+        breakout_board.show();
+        let mut breakout_board_bind = breakout_board.bind_mut();
+        breakout_board_bind.push_new_line();
+        breakout_board_bind.on_game_started();
+    }
+
     fn check_collision_with_lines(&mut self) -> bool {
         if let Some(piece) = &mut self.active_piece {
             let piece_bind = piece.bind_mut();
@@ -89,6 +99,7 @@ impl TetrisBoard {
         let mut check_heights = HashSet::new();
         let mut lowest_removed_height = 21;
         let mut too_high = false;
+        let mut scored_up = false;
         if let Some(piece) = &mut self.active_piece {
             let piece_bind = piece.bind_mut();
             for block in piece_bind.blocks.iter_shared() {
@@ -113,7 +124,7 @@ impl TetrisBoard {
 
             for height in check_heights {
                 if self.lines[height].iter().filter(|c| c.is_some()).count() == 10 {
-                    self.score += 1;
+                    scored_up = true;
                     removed_lines += 1;
                     lowest_removed_height = if height < lowest_removed_height {
                         height
@@ -123,6 +134,9 @@ impl TetrisBoard {
                 }
             }
         };
+        if scored_up {
+            self.score_up();
+        }
         if too_high {
             self.handle_game_over();
         }

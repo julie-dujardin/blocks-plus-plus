@@ -20,11 +20,23 @@ impl Ball {
     #[signal]
     fn broke_brick();
 
-    fn game_over(&mut self) {
+    #[signal]
+    fn game_over();
+
+    fn handle_game_over(&mut self) {
         self.base_mut().emit_signal("game_over".into(), &[]);
         self.current_velocity = Vector2::ZERO;
         self.base_mut().set_velocity(Vector2::ZERO);
         self.base_mut().set_position(Vector2::new(208., 232.))
+    }
+
+    pub fn set_movement(&mut self, can_move: bool) {
+        if can_move {
+            self.current_velocity = Vector2::new(self.start_speed / 2., -self.start_speed / 2.);
+        }
+        else {
+            self.current_velocity = Vector2::ZERO;
+        }
     }
 }
 
@@ -36,10 +48,6 @@ impl ICharacterBody2D for Ball {
             current_velocity: Vector2::ZERO,
             base,
         }
-    }
-
-    fn ready(&mut self) {
-        self.current_velocity = Vector2::new(self.start_speed / 2., -self.start_speed / 2.);
     }
 
     fn physics_process(&mut self, _delta: f64) {
@@ -63,7 +71,7 @@ impl ICharacterBody2D for Ball {
                 self.base_mut().emit_signal("broke_brick".into(), &[]);
             } else if let Ok(area) = collider.try_cast::<StaticBody2D>() {
                 if area.get_name() == "Bottom".into() {
-                    self.game_over();
+                    self.handle_game_over();
                 }
             }
         }

@@ -34,6 +34,7 @@ visible = false
 position = Vector2(8, 328)
 
 [node name="BreakoutBoard" parent="." instance=ExtResource("3_v20ct")]
+visible = false
 position = Vector2(400, 120)
 
 [node name="Hud" parent="." instance=ExtResource("3_rms5c")]
