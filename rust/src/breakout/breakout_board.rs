@@ -19,6 +19,11 @@ pub struct BreakoutBoard {
 
 #[godot_api]
 impl BreakoutBoard {
+    #[func]
+    fn on_broke_brick(&mut self) {
+        self.score += 1;
+    }
+
     fn push_new_line(&mut self) {
         // TODO move existing lines down
 
