@@ -51,5 +51,4 @@ default_color = Color(0.862745, 0, 0, 1)
 position = Vector2(208, 232)
 
 [node name="BreakoutPlayer" parent="." instance=ExtResource("2_vgool")]
-speed = 350.0
 position = Vector2(192, 256)
