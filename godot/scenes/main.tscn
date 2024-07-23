@@ -1,10 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://bfnrfbm4fpg50"]
+[gd_scene load_steps=9 format=3 uid="uid://bfnrfbm4fpg50"]
 
 [ext_resource type="PackedScene" uid="uid://d1g51jjhyvob0" path="res://scenes/tetris/tetris.tscn" id="1_mmer5"]
 [ext_resource type="PackedScene" uid="uid://ec18ywdi03dw" path="res://scenes/tetris/select.tscn" id="2_ucd5e"]
 [ext_resource type="PackedScene" uid="uid://bcre4yukfctml" path="res://scenes/ui/hud.tscn" id="3_rms5c"]
 [ext_resource type="PackedScene" uid="uid://b5iydxdsydel7" path="res://scenes/breakout/breakout_board.tscn" id="3_v20ct"]
 [ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="4_bonvd"]
+[ext_resource type="FontFile" uid="uid://tvarju4030k4" path="res://assets/font/Pixel.ttf" id="6_d3kbr"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_k3aa1"]
+font = ExtResource("6_d3kbr")
+font_size = 20
+
+[sub_resource type="LabelSettings" id="LabelSettings_xhmh7"]
+font = ExtResource("6_d3kbr")
+font_size = 20
 
 [node name="Main" type="MainBoard"]
 
@@ -54,6 +63,29 @@ theme_override_font_sizes/font_size = 72
 text = "Game Over"
 horizontal_alignment = 1
 
+[node name="Score" type="Node2D" parent="."]
+visible = false
+position = Vector2(552, 8)
+
+[node name="LabelScore" type="Label" parent="Score"]
+offset_right = 272.0
+offset_bottom = 24.0
+text = "Score 0"
+label_settings = SubResource("LabelSettings_k3aa1")
+horizontal_alignment = 2
+
+[node name="LabelHigh" type="Label" parent="Score"]
+offset_top = 32.0
+offset_right = 272.0
+offset_bottom = 58.0
+text = "High 0"
+label_settings = SubResource("LabelSettings_xhmh7")
+horizontal_alignment = 2
+
+[node name="TimerScoreUpTimeout" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
 [connection signal="global_game_over" from="." to="Tetris" method="on_parent_game_over"]
 [connection signal="global_game_over" from="." to="Select0" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="Select1" method="handle_game_over"]
@@ -61,8 +93,11 @@ horizontal_alignment = 1
 [connection signal="global_game_over" from="." to="Select3" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="BreakoutBoard" method="on_parent_game_over"]
 [connection signal="game_over" from="Tetris" to="." method="on_game_over"]
+[connection signal="scored" from="Tetris" to="." method="on_score_up"]
 [connection signal="game_over" from="BreakoutBoard" to="." method="on_game_over"]
+[connection signal="scored" from="BreakoutBoard" to="." method="on_score_up"]
 [connection signal="start_game" from="Hud" to="." method="start_game"]
+[connection signal="timeout" from="TimerGameOver" to="." method="on_game_over_timer_timeout"]
 [connection signal="timeout" from="TimerGameOver" to="Tetris" method="reset_board"]
 [connection signal="timeout" from="TimerGameOver" to="Select0" method="reset"]
 [connection signal="timeout" from="TimerGameOver" to="Select1" method="reset"]
@@ -70,3 +105,4 @@ horizontal_alignment = 1
 [connection signal="timeout" from="TimerGameOver" to="Select3" method="reset"]
 [connection signal="timeout" from="TimerGameOver" to="BreakoutBoard" method="reset"]
 [connection signal="timeout" from="TimerGameOver" to="Hud" method="on_game_over_timer_timeout"]
+[connection signal="timeout" from="TimerScoreUpTimeout" to="." method="reset_score_color"]

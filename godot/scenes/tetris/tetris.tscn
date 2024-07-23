@@ -51,6 +51,7 @@ horizontal_alignment = 1
 autostart = true
 
 [node name="TimerSuccess" type="Timer" parent="."]
+wait_time = 0.4
 
 [connection signal="timeout" from="TimerPieceDown" to="." method="down_piece"]
 [connection signal="timeout" from="TimerSuccess" to="." method="reset_color"]

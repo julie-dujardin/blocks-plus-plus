@@ -13,8 +13,6 @@ const BRICK_PER_LINE: usize = 10;
 #[derive(GodotClass)]
 #[class(base=Node2D)]
 pub struct BreakoutBoard {
-    #[export]
-    score: i64,
     bricks: Vec<Gd<Brick>>,
     brick_size: Vector2,
 
@@ -25,6 +23,9 @@ pub struct BreakoutBoard {
 impl BreakoutBoard {
     #[signal]
     fn game_over();
+
+    #[signal]
+    fn scored();
 
     #[func]
     fn reset(&mut self) {
@@ -57,9 +58,9 @@ impl BreakoutBoard {
 
     #[func]
     fn on_broke_brick(&mut self, brick_var: Variant) {
-        self.score += 1;
         self.set_color(COLOR_SUCCESS);
         self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+        self.base_mut().emit_signal("scored".into(), &[]);
 
         let brick = brick_var.to::<Gd<Brick>>();
         self.bricks.retain(|x| *x != brick);
@@ -118,7 +119,6 @@ impl BreakoutBoard {
 impl INode2D for BreakoutBoard {
     fn init(base: Base<Node2D>) -> Self {
         BreakoutBoard {
-            score: 0,
             bricks: vec![],
             brick_size: Vector2::ZERO,
             base,

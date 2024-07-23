@@ -11,8 +11,6 @@ use std::collections::HashSet;
 #[derive(GodotClass)]
 #[class(base=Node2D)]
 pub struct TetrisBoard {
-    #[export]
-    score: i64,
     active_piece: Option<Gd<Piece>>,
     next_pieces: Vec<Gd<Piece>>,
     lines: Vec<[Option<Gd<Block>>; 10]>,
@@ -25,6 +23,9 @@ pub struct TetrisBoard {
 impl TetrisBoard {
     #[signal]
     fn game_over();
+
+    #[signal]
+    fn scored();
 
     #[func]
     fn reset_board(&mut self) {
@@ -95,11 +96,11 @@ impl TetrisBoard {
     }
 
     fn score_up(&mut self) {
-        self.score += 1;
         self.base_mut()
             .get_node_as::<ColorRect>("BorderBoard")
             .set_modulate(COLOR_SUCCESS);
         self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+        self.base_mut().emit_signal("scored".into(), &[]);
 
         let mut breakout_board = self
             .base()
@@ -345,7 +346,6 @@ impl TetrisBoard {
 impl INode2D for TetrisBoard {
     fn init(base: Base<Node2D>) -> Self {
         let mut tb = TetrisBoard {
-            score: 0,
             active_piece: None,
             next_pieces: vec![],
             lines: vec![],
