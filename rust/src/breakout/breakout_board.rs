@@ -1,8 +1,10 @@
 use crate::breakout::ball::Ball;
 use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
+use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND};
 use godot::builtin::{Variant, Vector2};
 use godot::classes::{INode2D, Node2D, PackedScene};
+use godot::engine::StaticBody2D;
 use godot::obj::{Base, Gd, WithBaseField};
 use godot::prelude::{godot_api, load, GodotClass};
 
@@ -39,6 +41,10 @@ impl BreakoutBoard {
         self.bricks.clear();
 
         self.base_mut().hide();
+
+        self.base_mut()
+            .get_node_as::<StaticBody2D>("Walls")
+            .set_modulate(COLOR_FOREGROUND);
     }
 
     #[func]
@@ -60,6 +66,9 @@ impl BreakoutBoard {
 
     #[func]
     fn on_game_over(&mut self) {
+        self.base_mut()
+            .get_node_as::<StaticBody2D>("Walls")
+            .set_modulate(COLOR_FAILURE);
         self.base_mut().emit_signal("game_over".into(), &[]);
     }
 

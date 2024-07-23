@@ -53,14 +53,14 @@ impl TetrisBoard {
         }
         self.active_piece = None;
 
+        self.base_mut().hide();
+
         self.base_mut()
             .get_node_as::<ColorRect>("BorderBoard")
             .set_modulate(COLOR_FOREGROUND);
         self.base_mut()
             .get_node_as::<ColorRect>("BorderNext")
             .set_modulate(COLOR_FOREGROUND);
-
-        self.base_mut().hide();
     }
 
     #[func]
