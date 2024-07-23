@@ -1,9 +1,9 @@
 use crate::breakout::ball::Ball;
 use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
-use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND};
-use godot::builtin::{Variant, Vector2};
-use godot::classes::{INode2D, Node2D, PackedScene};
+use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
+use godot::builtin::{Color, Variant, Vector2};
+use godot::classes::{INode2D, Node2D, PackedScene, Timer};
 use godot::engine::StaticBody2D;
 use godot::obj::{Base, Gd, WithBaseField};
 use godot::prelude::{godot_api, load, GodotClass};
@@ -41,15 +41,26 @@ impl BreakoutBoard {
         self.bricks.clear();
 
         self.base_mut().hide();
+        self.reset_color();
+    }
 
+    #[func]
+    fn reset_color(&mut self) {
+        self.set_color(COLOR_FOREGROUND);
+    }
+
+    fn set_color(&mut self, color: Color) {
         self.base_mut()
             .get_node_as::<StaticBody2D>("Walls")
-            .set_modulate(COLOR_FOREGROUND);
+            .set_modulate(color);
     }
 
     #[func]
     fn on_broke_brick(&mut self, brick_var: Variant) {
         self.score += 1;
+        self.set_color(COLOR_SUCCESS);
+        self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+
         let brick = brick_var.to::<Gd<Brick>>();
         self.bricks.retain(|x| *x != brick);
     }
@@ -62,13 +73,12 @@ impl BreakoutBoard {
     #[func]
     fn on_parent_game_over(&mut self) {
         self.set_movement(false);
+        self.base_mut().get_node_as::<Timer>("TimerSuccess").stop();
     }
 
     #[func]
     fn on_game_over(&mut self) {
-        self.base_mut()
-            .get_node_as::<StaticBody2D>("Walls")
-            .set_modulate(COLOR_FAILURE);
+        self.set_color(COLOR_FAILURE);
         self.base_mut().emit_signal("game_over".into(), &[]);
     }
 

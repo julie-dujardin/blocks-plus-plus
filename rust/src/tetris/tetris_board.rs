@@ -1,5 +1,5 @@
 use crate::breakout::breakout_board::BreakoutBoard;
-use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND};
+use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
 use godot::classes::InputEvent;
@@ -54,18 +54,27 @@ impl TetrisBoard {
         self.active_piece = None;
 
         self.base_mut().hide();
+        self.reset_color();
+    }
 
+    #[func]
+    fn reset_color(&mut self) {
+        self.set_color(COLOR_FOREGROUND);
+    }
+
+    fn set_color(&mut self, color: Color) {
         self.base_mut()
             .get_node_as::<ColorRect>("BorderBoard")
-            .set_modulate(COLOR_FOREGROUND);
+            .set_modulate(color);
         self.base_mut()
             .get_node_as::<ColorRect>("BorderNext")
-            .set_modulate(COLOR_FOREGROUND);
+            .set_modulate(color);
     }
 
     #[func]
     fn on_parent_game_over(&mut self) {
         self.game_over = true;
+        self.base_mut().get_node_as::<Timer>("TimerSuccess").stop();
     }
 
     fn handle_game_over(&mut self, no_piece_left: bool) {
@@ -87,6 +96,11 @@ impl TetrisBoard {
 
     fn score_up(&mut self) {
         self.score += 1;
+        self.base_mut()
+            .get_node_as::<ColorRect>("BorderBoard")
+            .set_modulate(COLOR_SUCCESS);
+        self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+
         let mut breakout_board = self
             .base()
             .get_parent()

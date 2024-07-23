@@ -53,5 +53,10 @@ position = Vector2(208, 232)
 [node name="BreakoutPlayer" parent="." instance=ExtResource("2_vgool")]
 position = Vector2(192, 256)
 
+[node name="TimerSuccess" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
 [connection signal="broke_brick" from="Ball" to="." method="on_broke_brick"]
 [connection signal="game_over" from="Ball" to="." method="on_game_over"]
+[connection signal="timeout" from="TimerSuccess" to="." method="reset_color"]
