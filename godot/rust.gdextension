@@ -4,13 +4,13 @@ compatibility_minimum = 4.1
 reloadable = true
 
 [libraries]
-linux.debug.x86_64 = "res://../rust/target/debug/libtetris_plus_plus.so"
-linux.release.x86_64 = "res://../rust/target/release/libtetris_plus_plus.so"
-windows.debug.x86_64 = "res://../rust/target/debug/tetris_plus_plus.dll"
-windows.release.x86_64 = "res://../rust/target/release/tetris_plus_plus.dll"
-macos.debug = "res://../rust/target/debug/libtetris_plus_plus.dylib"
-macos.release = "res://../rust/target/release/libtetris_plus_plus.dylib"
-macos.debug.arm64 = "res://../rust/target/debug/libtetris_plus_plus.dylib"
-macos.release.arm64 = "res://../rust/target/release/libtetris_plus_plus.dylib"
-web.debug.wasm32 = "res://../rust/target/wasm32-unknown-emscripten/debug/tetris_plus_plus.wasm"
-web.release.wasm32 = "res://../rust/target/wasm32-unknown-emscripten/release/tetris_plus_plus.wasm"
+linux.debug.x86_64 = "res://../rust/target/debug/libblocks_plus_plus.so"
+linux.release.x86_64 = "res://../rust/target/release/libblocks_plus_plus.so"
+windows.debug.x86_64 = "res://../rust/target/debug/blocks_plus_plus.dll"
+windows.release.x86_64 = "res://../rust/target/release/blocks_plus_plus.dll"
+macos.debug = "res://../rust/target/debug/libblocks_plus_plus.dylib"
+macos.release = "res://../rust/target/release/libblocks_plus_plus.dylib"
+macos.debug.arm64 = "res://../rust/target/debug/libblocks_plus_plus.dylib"
+macos.release.arm64 = "res://../rust/target/release/libblocks_plus_plus.dylib"
+web.debug.wasm32 = "res://../rust/target/wasm32-unknown-emscripten/debug/blocks_plus_plus.wasm"
+web.release.wasm32 = "res://../rust/target/wasm32-unknown-emscripten/release/blocks_plus_plus.wasm"
