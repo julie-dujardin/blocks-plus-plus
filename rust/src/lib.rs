@@ -5,10 +5,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 mod breakout;
+mod constants;
 mod hud;
 mod main_board;
 mod tetris;
-mod constants;
 
 use godot::prelude::*;
 

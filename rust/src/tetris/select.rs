@@ -1,10 +1,10 @@
+use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::piece::Piece;
 use crate::tetris::tetris_board::TetrisBoard;
 use godot::classes::{InputEvent, Sprite2D, Timer};
 use godot::prelude::*;
 use rand::prelude::IndexedRandom;
 use std::f32::consts::PI;
-use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 
 const SELECT_COUNT: usize = 3;
 
@@ -56,9 +56,7 @@ impl Select {
     fn handle_game_over(&mut self) {
         self.game_over = true;
 
-        self.base_mut()
-            .get_node_as::<Timer>("TimerSuccess")
-            .stop();
+        self.base_mut().get_node_as::<Timer>("TimerSuccess").stop();
     }
 
     fn check_input(&mut self, input: InputOptions) {
@@ -81,18 +79,18 @@ impl Select {
     }
 
     fn success(&mut self) {
-        let mut tetris_board = self
-            .base()
-            .get_parent()
-            .unwrap()
-            .get_node_as::<TetrisBoard>("Tetris");
-        tetris_board.show();
-        let mut tetris_board = tetris_board.bind_mut();
-        tetris_board.add_next_piece(self.piece.clone());
+        if !self.game_over {
+            let mut tetris_board = self
+                .base()
+                .get_parent()
+                .unwrap()
+                .get_node_as::<TetrisBoard>("Tetris");
+            tetris_board.show();
+            let mut tetris_board = tetris_board.bind_mut();
+            tetris_board.add_next_piece(self.piece.clone());
 
-        self.base_mut()
-            .get_node_as::<Timer>("TimerSuccess")
-            .start();
+            self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+        }
     }
 
     fn random_sequence() -> Vec<InputOptions> {

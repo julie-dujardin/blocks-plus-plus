@@ -14,15 +14,12 @@ offset_top = -1.0
 offset_right = 201.0
 offset_bottom = 401.0
 
-[node name="BackgroundBoard" type="ColorRect" parent="BorderBoard"]
-layout_mode = 0
-offset_left = 1.0
-offset_top = 1.0
-offset_right = 201.0
-offset_bottom = 401.0
+[node name="BackgroundBoard" type="ColorRect" parent="."]
+offset_right = 200.0
+offset_bottom = 400.0
 color = Color(0, 0, 0, 1)
 
-[node name="Line2D" type="Line2D" parent="BorderBoard/BackgroundBoard"]
+[node name="Line2D" type="Line2D" parent="BackgroundBoard"]
 position = Vector2(0, 80)
 points = PackedVector2Array(0, 0, 200, 0)
 width = 1.0
@@ -35,19 +32,17 @@ offset_right = 349.0
 offset_bottom = 90.0
 
 [node name="BackgroundNext" type="ColorRect" parent="BorderNext"]
-layout_mode = 0
 offset_left = 1.0
 offset_top = 1.0
 offset_right = 125.0
 offset_bottom = 90.0
 color = Color(0, 0, 0, 1)
 
-[node name="LabelNextPiece" type="Label" parent="BorderNext/BackgroundNext"]
-layout_mode = 0
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 122.0
-offset_bottom = 27.0
+[node name="LabelNextPiece" type="Label" parent="BorderNext"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 123.0
+offset_bottom = 28.0
 text = "Next"
 label_settings = SubResource("LabelSettings_wqpwt")
 horizontal_alignment = 1

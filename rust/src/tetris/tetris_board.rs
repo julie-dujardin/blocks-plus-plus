@@ -1,4 +1,5 @@
 use crate::breakout::breakout_board::BreakoutBoard;
+use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
 use godot::classes::InputEvent;
@@ -52,6 +53,13 @@ impl TetrisBoard {
         }
         self.active_piece = None;
 
+        self.base_mut()
+            .get_node_as::<ColorRect>("BorderBoard")
+            .set_modulate(COLOR_FOREGROUND);
+        self.base_mut()
+            .get_node_as::<ColorRect>("BorderNext")
+            .set_modulate(COLOR_FOREGROUND);
+
         self.base_mut().hide();
     }
 
@@ -60,8 +68,21 @@ impl TetrisBoard {
         self.game_over = true;
     }
 
-    fn handle_game_over(&mut self) {
-        self.base_mut().emit_signal("game_over".into(), &[]);
+    fn handle_game_over(&mut self, no_piece_left: bool) {
+        if !self.game_over {
+            self.game_over = true;
+            self.base_mut().emit_signal("game_over".into(), &[]);
+
+            if no_piece_left {
+                self.base_mut()
+                    .get_node_as::<ColorRect>("BorderNext")
+                    .set_modulate(COLOR_FAILURE);
+            } else {
+                self.base_mut()
+                    .get_node_as::<ColorRect>("BorderBoard")
+                    .set_modulate(COLOR_FAILURE);
+            }
+        }
     }
 
     fn score_up(&mut self) {
@@ -146,7 +167,7 @@ impl TetrisBoard {
             self.score_up();
         }
         if too_high {
-            self.handle_game_over();
+            self.handle_game_over(false);
         }
 
         if removed_lines > 0 {
@@ -218,22 +239,24 @@ impl TetrisBoard {
     }
 
     pub fn spawn_new_piece(&mut self) {
-        let piece_opt = self.next_pieces.pop();
-        match piece_opt {
-            None => {
-                if self.active_piece.is_none() {
-                    self.handle_game_over();
+        if !self.game_over {
+            let piece_opt = self.next_pieces.pop();
+            match piece_opt {
+                None => {
+                    if self.active_piece.is_none() {
+                        self.handle_game_over(true);
+                    }
                 }
-            }
-            Some(mut piece) => {
-                {
-                    let mut piece_bind = piece.bind_mut();
-                    piece_bind.center_block_position = Vector2::new(5., 2.);
-                    piece_bind.update_position();
-                }
+                Some(mut piece) => {
+                    {
+                        let mut piece_bind = piece.bind_mut();
+                        piece_bind.center_block_position = Vector2::new(5., 2.);
+                        piece_bind.update_position();
+                    }
 
-                self.base_mut().add_child(piece.clone().upcast());
-                self.active_piece = Some(piece);
+                    self.base_mut().add_child(piece.clone().upcast());
+                    self.active_piece = Some(piece);
+                }
             }
         }
     }
