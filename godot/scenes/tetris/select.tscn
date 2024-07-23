@@ -23,3 +23,9 @@ position = Vector2(64, 64)
 
 [node name="SelectOption2" parent="." instance=ExtResource("1_nxsqt")]
 position = Vector2(96, 64)
+
+[node name="TimerSuccess" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[connection signal="timeout" from="TimerSuccess" to="." method="success_reset"]

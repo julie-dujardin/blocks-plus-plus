@@ -4,7 +4,6 @@
 size = Vector2(5, 5)
 
 [node name="Ball" type="Ball"]
-start_speed = 200.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(2.5, 2.5)

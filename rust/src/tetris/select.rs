@@ -1,9 +1,10 @@
 use crate::tetris::piece::Piece;
 use crate::tetris::tetris_board::TetrisBoard;
-use godot::classes::{InputEvent, Sprite2D};
+use godot::classes::{InputEvent, Sprite2D, Timer};
 use godot::prelude::*;
 use rand::prelude::IndexedRandom;
 use std::f32::consts::PI;
+use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 
 const SELECT_COUNT: usize = 3;
 
@@ -32,10 +33,19 @@ pub struct Select {
 #[godot_api]
 impl Select {
     #[func]
+    fn success_reset(&mut self) {
+        self.reset_color();
+
+        self.sequence = Select::random_sequence();
+        self.piece = Piece::spawn_random();
+        self.ready();
+    }
+
+    #[func]
     fn reset(&mut self) {
         self.base_mut().hide();
         self.game_over = false;
-        self.reset_check();
+        self.reset_color();
         self.sequence = Select::random_sequence();
         self.piece.clone().free();
         self.piece = Piece::spawn_random();
@@ -45,30 +55,32 @@ impl Select {
     #[func]
     fn handle_game_over(&mut self) {
         self.game_over = true;
+
+        self.base_mut()
+            .get_node_as::<Timer>("TimerSuccess")
+            .stop();
     }
 
     fn check_input(&mut self, input: InputOptions) {
         if input == self.sequence[self.curr_check_index] {
-            self.prompts[self.curr_check_index].set_modulate(Color::from_rgb(1., 1., 1.));
+            self.prompts[self.curr_check_index].set_modulate(COLOR_SUCCESS);
             self.curr_check_index += 1;
             if self.curr_check_index >= SELECT_COUNT {
                 self.success();
             }
         } else {
-            self.reset_check();
+            self.reset_color();
         }
     }
 
-    fn reset_check(&mut self) {
+    fn reset_color(&mut self) {
         self.curr_check_index = 0;
         for prompt in &mut self.prompts {
-            prompt.set_modulate(Color::from_rgb(105. / 255., 105. / 255., 105. / 255.));
+            prompt.set_modulate(COLOR_FOREGROUND);
         }
     }
 
     fn success(&mut self) {
-        self.reset_check();
-
         let mut tetris_board = self
             .base()
             .get_parent()
@@ -78,9 +90,9 @@ impl Select {
         let mut tetris_board = tetris_board.bind_mut();
         tetris_board.add_next_piece(self.piece.clone());
 
-        self.sequence = Select::random_sequence();
-        self.piece = Piece::spawn_random();
-        self.ready();
+        self.base_mut()
+            .get_node_as::<Timer>("TimerSuccess")
+            .start();
     }
 
     fn random_sequence() -> Vec<InputOptions> {
@@ -139,7 +151,7 @@ impl INode2D for Select {
             } else if event.is_action_pressed("right".into()) {
                 self.check_input(InputOptions::Right);
             } else if event.is_action_pressed("down".into()) {
-                self.reset_check();
+                self.reset_color();
             }
         }
     }

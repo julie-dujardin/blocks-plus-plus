@@ -8,6 +8,7 @@ mod breakout;
 mod hud;
 mod main_board;
 mod tetris;
+mod constants;
 
 use godot::prelude::*;
 
