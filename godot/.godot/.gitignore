@@ -1,4 +1,6 @@
 shader_cache/
 editor/
 imported/
+exported/
+export_credentials.cfg
 *cache*

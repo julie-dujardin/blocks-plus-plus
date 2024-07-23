@@ -2,6 +2,8 @@
 name = "tetris-plus-plus"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/julie-42/blocks-plus-plus"
 
 [lib]
 crate-type = ["cdylib"]
