@@ -141,7 +141,7 @@ impl INode2D for Select {
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
-        if !self.game_over {
+        if !self.game_over && self.curr_check_index < SELECT_COUNT {
             if event.is_action_pressed("up".into()) {
                 self.check_input(InputOptions::Up);
             } else if event.is_action_pressed("left".into()) {

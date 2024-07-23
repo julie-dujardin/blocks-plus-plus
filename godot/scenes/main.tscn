@@ -65,7 +65,8 @@ horizontal_alignment = 1
 
 [node name="Score" type="Node2D" parent="."]
 visible = false
-position = Vector2(552, 8)
+position = Vector2(875, 8)
+metadata/_edit_group_ = true
 
 [node name="LabelScore" type="Label" parent="Score"]
 offset_right = 272.0

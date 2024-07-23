@@ -210,7 +210,6 @@ impl TetrisBoard {
         }
 
         self.active_piece = None;
-        self.godot_print_lines();
     }
 
     fn godot_print_lines(&self) {
