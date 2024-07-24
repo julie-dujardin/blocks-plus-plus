@@ -1,0 +1,29 @@
+name: Rust
+
+on: push
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  lint:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Clippy
+        run: |
+          cd rust
+          cargo clippy
+      - name: Run rustfmt
+        run: |
+          cd rust
+          cargo fmt --check
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cd rust
+          cargo build --verbose --release
