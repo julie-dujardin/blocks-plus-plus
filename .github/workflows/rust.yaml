@@ -10,7 +10,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -58,13 +59,13 @@ jobs:
     runs-on: ${{ matrix.platform.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         if: contains(matrix.platform.target, 'wasm')
         with:
             toolchain: nightly
-            target: wasm32-unknown-emscripten
+            target: ${{ matrix.platform.target }}
       - name: Install Emscripten
         if: contains(matrix.platform.target, 'wasm')
         run: |
