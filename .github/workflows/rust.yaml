@@ -4,6 +4,7 @@ on: push
 
 env:
   CARGO_TERM_COLOR: always
+  EMSCRIPTEN_VERSION: 3.1.39
 
 jobs:
   lint:
@@ -60,19 +61,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install latest nightly
-        uses: dtolnay/rust-toolchain@stable
-        if: contains(matrix.platform.target, 'wasm')
-        with:
-            toolchain: nightly
-            target: ${{ matrix.platform.target }}
       - name: Install Emscripten
         if: contains(matrix.platform.target, 'wasm')
         run: |
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
-          ./emsdk install 3.1.39
-          ./emsdk activate 3.1.39
+          ./emsdk install ${EMSCRIPTEN_VERSION}
+          ./emsdk activate ${EMSCRIPTEN_VERSION}
           source ./emsdk_env.sh
       - name: Cache
         uses: Swatinem/rust-cache@v2
@@ -84,9 +79,10 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           command: build
-          args: "--locked --release"
+          args: "--locked --release ${{ contains(matrix.platform.target, 'wasm') && '-Zbuild-std' || ' '}}"
           strip: true
           working-directory: rust
+          toolchain: ${{ contains(matrix.platform.target, 'wasm') && 'nightly' || 'stable' }}
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
