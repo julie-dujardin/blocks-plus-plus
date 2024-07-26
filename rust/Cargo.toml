@@ -9,5 +9,9 @@ repository = "https://github.com/julie-42/blocks-plus-plus"
 crate-type = ["cdylib"]
 
 [dependencies]
-godot = { git = "https://github.com/godot-rust/gdext", branch = "master" }
 rand = "0.9.0-alpha.1"
+
+[dependencies.godot]
+git = "https://github.com/godot-rust/gdext"
+branch = "master"
+features = ["experimental-wasm", "lazy-function-tables"]
