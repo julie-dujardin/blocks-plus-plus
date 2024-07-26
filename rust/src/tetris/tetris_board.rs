@@ -212,6 +212,7 @@ impl TetrisBoard {
         self.active_piece = None;
     }
 
+    #[func]
     fn godot_print_lines(&self) {
         godot_print!("current lines:");
         for line in self.lines.iter().rev() {
