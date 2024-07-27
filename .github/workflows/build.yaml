@@ -94,6 +94,7 @@ jobs:
           path: rust/target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
   
   build-godot:
+    # Based on https://github.com/abarichello/godot-ci
     strategy:
       fail-fast: false
       matrix:
