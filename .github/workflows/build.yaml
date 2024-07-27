@@ -34,7 +34,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - build_for: Linux-x86_64
+          - build_for: linux-x86_64
             os: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
             bin: libblocks_plus_plus.so
@@ -44,17 +44,17 @@ jobs:
             target: wasm32-unknown-emscripten
             bin: blocks_plus_plus.wasm
 
-          - build_for: Windows-x86_64
+          - build_for: windows-x86_64
             os: windows-latest
             target: x86_64-pc-windows-msvc
             bin: blocks_plus_plus.dll
 
-          - build_for: macOS-x86_64
+          - build_for: macos-x86_64
             os: macOS-latest
             target: x86_64-apple-darwin
             bin: libblocks_plus_plus.dylib
 
-          - build_for: macOS-aarch64
+          - build_for: macos-aarch64
             os: macOS-latest
             target: aarch64-apple-darwin
             bin: libblocks_plus_plus.dylib
@@ -98,7 +98,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - build_for: Linux-x86_64
+          - build_for: linux-x86_64
             export: linux_x11
             target: x86_64-unknown-linux-gnu
             bin: libblocks_plus_plus.so
@@ -110,19 +110,19 @@ jobs:
             bin: blocks_plus_plus.wasm
             export_name: index.html
 
-          - build_for: Windows-x86_64
+          - build_for: windows-x86_64
             export: windows
             target: x86_64-pc-windows-msvc
             bin: blocks_plus_plus.dll
             export_name: blocks-plus-plus.exe
 
-          - build_for: macOS-x86_64
+          - build_for: macos-x86_64
             export: macos
             target: x86_64-apple-darwin
             bin: libblocks_plus_plus.dylib
             export_name: blocks-plus-plus.zip
 
-          # - build_for: macOS-aarch64
+          # - build_for: macos-aarch64
           #   export: Mac OSX???
           #   target: aarch64-apple-darwin
           #   bin: libblocks_plus_plus.dylib
@@ -145,7 +145,7 @@ jobs:
       - name: Download rust linux bin  # We always need the bin for the platform we're running on, in the debug dir
         uses: actions/download-artifact@v4
         with:
-          name: Linux-x86_64_libblocks_plus_plus.so
+          name: linux-x86_64_libblocks_plus_plus.so
           path: rust/target/x86_64-unknown-linux-gnu/debug/
       - name: Setup
         run: |
@@ -161,3 +161,28 @@ jobs:
         with:
           name: ${{ matrix.platform.build_for }}
           path: build/${{ matrix.platform.build_for }}
+  
+  publish-web:
+    runs-on: ubuntu-20.04
+    name: Publish Web
+    needs: [build-godot]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download Web build
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm32
+          path: wasm32
+      - name: Add Cloudflare Pages files
+        run: |
+          cp deploy/cloudflare-pages/* wasm32/
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 6432b4c79e4c3f1ca4faa14da0b6ae79
+          projectName: blocks-plus-plus
+          directory: wasm32
+          wranglerVersion: '3'
+          branch: ${{ github.head_ref || github.ref_name }}
