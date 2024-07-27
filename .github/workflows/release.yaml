@@ -1,4 +1,4 @@
-name: deploy
+name: release
 
 on:
   workflow_run:
@@ -10,9 +10,9 @@ permissions:
   contents: write
 
 jobs:
-  deploy-web:
+  release-web:
     runs-on: ubuntu-20.04
-    name: Deploy Web
+    name: Release Web
     steps:
       - name: Download Web build
         uses: dawidd6/action-download-artifact@v6
@@ -20,9 +20,6 @@ jobs:
           workflow: build.yaml
           name: wasm32
           path: wasm32
-      - name: Install rsync
-        run: |
-          apt-get update && apt-get install -y rsync
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
