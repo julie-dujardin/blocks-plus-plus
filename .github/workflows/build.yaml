@@ -6,7 +6,6 @@ env:
   CARGO_TERM_COLOR: always
   EMSCRIPTEN_VERSION: 3.1.39
   GODOT_VERSION: 4.2.2
-  GODOT_EXPORT_NAME: blocks-plus-plus
   GODOT_PROJECT_PATH: godot
 
 jobs:
@@ -103,25 +102,25 @@ jobs:
             export: linux_x11
             target: x86_64-unknown-linux-gnu
             bin: libblocks_plus_plus.so
-            export_extension: x86_64
+            export_name: blocks-plus-plus.x86_64
 
           - build_for: wasm32
             export: web
             target: wasm32-unknown-emscripten
             bin: blocks_plus_plus.wasm
-            export_extension: html
+            export_name: index.html
 
           - build_for: Windows-x86_64
             export: windows
             target: x86_64-pc-windows-msvc
             bin: blocks_plus_plus.dll
-            export_extension: exe
+            export_name: blocks-plus-plus.exe
 
           - build_for: macOS-x86_64
             export: macos
             target: x86_64-apple-darwin
             bin: libblocks_plus_plus.dylib
-            export_extension: zip
+            export_name: blocks-plus-plus.zip
 
           # - build_for: macOS-aarch64
           #   export: Mac OSX???
@@ -156,7 +155,7 @@ jobs:
         run: |
           mkdir -v -p build/${{ matrix.platform.build_for }}
           cd $GODOT_PROJECT_PATH
-          godot --headless --verbose --export-release ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${GODOT_EXPORT_NAME}.${{ matrix.platform.export_extension }}
+          godot --headless --verbose --export-release ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${{ matrix.platform.export_name }}
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
