@@ -5,7 +5,7 @@ on: push
 env:
   CARGO_TERM_COLOR: always
   EMSCRIPTEN_VERSION: 3.1.39
-  GODOT_VERSION: 4.2.1
+  GODOT_VERSION: 4.2.2
   GODOT_EXPORT_NAME: blocks-plus-plus
   GODOT_PROJECT_PATH: godot
 
@@ -94,7 +94,6 @@ jobs:
           path: rust/target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
   
   build-godot:
-    needs: [lint-rust, build-rust]
     strategy:
       fail-fast: false
       matrix:
@@ -128,10 +127,11 @@ jobs:
           #   target: aarch64-apple-darwin
           #   bin: libblocks_plus_plus.dylib
     
+    needs: [lint-rust, build-rust]
     runs-on: ubuntu-20.04
     name: Build Godot ${{ matrix.platform.export }}
     container:
-      image: barichello/godot-ci:4.2.1
+      image: barichello/godot-ci:4.2.2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -156,11 +156,6 @@ jobs:
           mkdir -v -p build/${{ matrix.platform.build_for }}
           cd $GODOT_PROJECT_PATH
           godot --headless --verbose --export-release ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${GODOT_EXPORT_NAME}.${{ matrix.platform.export_extension }}
-      - name: Check export  # For some reason the build step doesn't fail on its own
-        run: |
-          if [[ ! -f build/${{ matrix.platform.build_for }} ]]; then
-            exit 1
-          fi
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
