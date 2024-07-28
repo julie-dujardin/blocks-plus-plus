@@ -10,6 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rand = "0.9.0-alpha.1"
+once_cell = "1.19.0"
 
 [dependencies.godot]
 git = "https://github.com/godot-rust/gdext"
