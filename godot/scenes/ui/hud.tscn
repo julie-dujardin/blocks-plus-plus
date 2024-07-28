@@ -3,7 +3,7 @@
 [ext_resource type="FontFile" uid="uid://tvarju4030k4" path="res://assets/font/Pixel.ttf" id="1_fy6m2"]
 [ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="2_66ttw"]
 [ext_resource type="Texture2D" uid="uid://cx4hhvadxa6al" path="res://assets/github.svg" id="3_ub05c"]
-[ext_resource type="PackedScene" uid="uid://dh6w4yvotbvxj" path="res://scenes/ui/keymap_display.tscn" id="4_cxcbj"]
+[ext_resource type="PackedScene" uid="uid://dyk8nwtv67thv" path="res://scenes/ui/controls_display.tscn" id="4_6twyc"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_jk1ty"]
 font = ExtResource("1_fy6m2")
@@ -53,13 +53,11 @@ grow_vertical = 2
 texture = ExtResource("3_ub05c")
 expand_mode = 4
 
-[node name="KeymapBox" type="CenterContainer" parent="."]
-offset_top = 384.0
-offset_right = 1152.0
-offset_bottom = 648.0
-
-[node name="KeymapDisplay" parent="KeymapBox" instance=ExtResource("4_cxcbj")]
-layout_mode = 2
+[node name="ControlsDisplay" parent="." instance=ExtResource("4_6twyc")]
+offset_left = 360.0
+offset_top = 464.0
+offset_right = 936.0
+offset_bottom = 616.0
 
 [connection signal="button_down" from="ButtonPlay" to="." method="on_start_button_pressed"]
 [connection signal="button_down" from="ButtonQuit" to="." method="on_quit_button_pressed"]
