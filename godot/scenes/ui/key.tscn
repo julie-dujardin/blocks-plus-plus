@@ -12,10 +12,12 @@ gradient = SubResource("Gradient_kxo7r")
 [node name="Key" type="MarginContainer"]
 offset_right = 18.0
 offset_bottom = 18.0
+pivot_offset = Vector2(9, 9)
 theme_override_constants/margin_left = 1
 theme_override_constants/margin_top = 1
 theme_override_constants/margin_right = 1
 theme_override_constants/margin_bottom = 1
+metadata/_edit_group_ = true
 
 [node name="Border" type="NinePatchRect" parent="."]
 layout_mode = 2
