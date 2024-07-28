@@ -95,12 +95,13 @@ impl TetrisBoard {
         }
     }
 
-    fn score_up(&mut self) {
+    fn score_up(&mut self, count: usize) {
         self.base_mut()
             .get_node_as::<ColorRect>("BorderBoard")
             .set_modulate(COLOR_SUCCESS);
         self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
-        self.base_mut().emit_signal("scored".into(), &[]);
+        self.base_mut()
+            .emit_signal("scored".into(), &[(count as i64).to_variant()]);
 
         let mut breakout_board = self
             .base()
@@ -109,7 +110,7 @@ impl TetrisBoard {
             .get_node_as::<BreakoutBoard>("BreakoutBoard");
         breakout_board.show();
         let mut breakout_board_bind = breakout_board.bind_mut();
-        breakout_board_bind.push_new_line();
+        breakout_board_bind.push_new_line(count);
         breakout_board_bind.on_game_started();
     }
 
@@ -143,7 +144,6 @@ impl TetrisBoard {
         let mut check_heights = HashSet::new();
         let mut lowest_removed_height = 21;
         let mut too_high = false;
-        let mut scored_up = false;
         if let Some(piece) = &mut self.active_piece {
             let piece_bind = piece.bind_mut();
             for block in piece_bind.blocks.iter_shared() {
@@ -168,7 +168,6 @@ impl TetrisBoard {
 
             for height in check_heights {
                 if self.lines[height].iter().filter(|c| c.is_some()).count() == 10 {
-                    scored_up = true;
                     removed_lines += 1;
                     lowest_removed_height = if height < lowest_removed_height {
                         height
@@ -178,14 +177,12 @@ impl TetrisBoard {
                 }
             }
         };
-        if scored_up {
-            self.score_up();
-        }
         if too_high {
             self.handle_game_over(false);
         }
 
         if removed_lines > 0 {
+            self.score_up(removed_lines);
             for _ in lowest_removed_height..lowest_removed_height + removed_lines {
                 for cell_opt in &mut self.lines[lowest_removed_height] {
                     let cell = cell_opt.as_mut().unwrap();

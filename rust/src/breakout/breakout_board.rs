@@ -6,7 +6,7 @@ use godot::builtin::{Color, Variant, Vector2};
 use godot::classes::{INode2D, Node2D, PackedScene, Timer};
 use godot::engine::StaticBody2D;
 use godot::obj::{Base, Gd, WithBaseField};
-use godot::prelude::{godot_api, load, GodotClass};
+use godot::prelude::*;
 
 const BRICK_PER_LINE: usize = 10;
 
@@ -60,7 +60,8 @@ impl BreakoutBoard {
     fn on_broke_brick(&mut self, brick_var: Variant) {
         self.set_color(COLOR_SUCCESS);
         self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
-        self.base_mut().emit_signal("scored".into(), &[]);
+        self.base_mut()
+            .emit_signal("scored".into(), &[1.to_variant()]);
 
         let brick = brick_var.to::<Gd<Brick>>();
         self.bricks.retain(|x| *x != brick);
@@ -93,24 +94,26 @@ impl BreakoutBoard {
         ball_bind.set_movement(can_move);
     }
 
-    pub fn push_new_line(&mut self) {
-        for brick in &mut self.bricks {
-            brick.move_local_y(self.brick_size.y + 10.);
-        }
+    pub fn push_new_line(&mut self, count: usize) {
+        for _ in 0..count {
+            for brick in &mut self.bricks {
+                brick.move_local_y(self.brick_size.y + 10.);
+            }
 
-        let brick_scene: Gd<PackedScene> = load("res://scenes/breakout/brick.tscn");
+            let brick_scene: Gd<PackedScene> = load("res://scenes/breakout/brick.tscn");
 
-        for i in 0..BRICK_PER_LINE {
-            let mut brick = brick_scene.instantiate_as::<Brick>();
+            for i in 0..BRICK_PER_LINE {
+                let mut brick = brick_scene.instantiate_as::<Brick>();
 
-            self.brick_size = {
-                let brick_bind = brick.bind_mut();
-                brick_bind.get_size()
-            };
-            brick.set_position(Vector2::new((self.brick_size.x + 2.) * i as f32 + 2., 10.));
-            self.base_mut().add_child(brick.clone().upcast());
+                self.brick_size = {
+                    let brick_bind = brick.bind_mut();
+                    brick_bind.get_size()
+                };
+                brick.set_position(Vector2::new((self.brick_size.x + 2.) * i as f32 + 2., 10.));
+                self.base_mut().add_child(brick.clone().upcast());
 
-            self.bricks.push(brick);
+                self.bricks.push(brick);
+            }
         }
     }
 }
