@@ -1,6 +1,6 @@
 use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::ui::hud::Hud;
-use godot::classes::{Button, Control, IControl, InputEvent};
+use godot::classes::{Button, Control, IControl, InputEvent, Label};
 use godot::engine::{BoxContainer, CanvasItem};
 use godot::prelude::*;
 use once_cell::unsync::Lazy;
@@ -147,12 +147,12 @@ const KEY_ROTATION: phf::Map<&'static str, f32> = phf_map! {
     "D" => 0.,
 };
 
-const INPUTS: [(&'static str, [&'static str; 2]); 4] = [
-    ("up", ["UP_ARROW", "W"]),
-    ("left", ["LEFT_ARROW", "A"]),
-    ("down", ["DOWN_ARROW", "S"]),
-    ("right", ["RIGHT_ARROW", "D"]),
-];
+const INPUTS: phf::Map<&str, [&str; 2]> = phf_map! {
+    "up" => ["UP_ARROW", "W"],
+    "left" => ["LEFT_ARROW", "A"],
+    "down" => ["DOWN_ARROW", "S"],
+    "right" => ["RIGHT_ARROW", "D"],
+};
 
 #[derive(GodotClass)]
 #[class(base=Control)]
@@ -164,10 +164,15 @@ pub struct KeymapDisplay {
 
 #[godot_api]
 impl KeymapDisplay {
-    fn set_keys_color(&mut self, keys: [&'static str; 2], color: Color) {
-        for key in keys {
+    fn set_keys_color(&mut self, action: &'static str, color: Color) {
+        for key in INPUTS.get(action).unwrap() {
             self.keys.entry(key).and_modify(|k| k.set_modulate(color));
         }
+        self.base()
+            .get_parent()
+            .unwrap()
+            .get_node_as::<BoxContainer>(format!("ExplainContainer/{action}Container"))
+            .set_modulate(color);
     }
 }
 
@@ -210,11 +215,11 @@ impl IControl for KeymapDisplay {
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
-        for (action, keys) in INPUTS {
+        for &action in INPUTS.keys() {
             if event.is_action_pressed(action.into()) {
-                self.set_keys_color(keys, COLOR_SUCCESS);
+                self.set_keys_color(action, COLOR_SUCCESS);
             } else if event.is_action_released(action.into()) {
-                self.set_keys_color(keys, COLOR_FOREGROUND);
+                self.set_keys_color(action, COLOR_FOREGROUND);
             }
         }
     }

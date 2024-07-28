@@ -39,18 +39,18 @@ offset_right = 590.0
 offset_bottom = 150.0
 alignment = 1
 
-[node name="UpContainer" type="HBoxContainer" parent="ExplainContainer"]
+[node name="upContainer" type="HBoxContainer" parent="ExplainContainer"]
 layout_mode = 2
 
-[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/UpContainer"]
+[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/upContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="Control" type="Control" parent="ExplainContainer/UpContainer/ArrowContainer"]
+[node name="Control" type="Control" parent="ExplainContainer/upContainer/ArrowContainer"]
 custom_minimum_size = Vector2(15, 10)
 layout_mode = 2
 
-[node name="Arrow" type="TextureRect" parent="ExplainContainer/UpContainer/ArrowContainer/Control"]
+[node name="Arrow" type="TextureRect" parent="ExplainContainer/upContainer/ArrowContainer/Control"]
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 offset_top = -2.0
@@ -61,23 +61,23 @@ pivot_offset = Vector2(5, 5)
 texture = ExtResource("3_xpq6e")
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ExplainContainer/UpContainer"]
+[node name="Label" type="Label" parent="ExplainContainer/upContainer"]
 layout_mode = 2
 theme = ExtResource("2_2w3fq")
 text = "Up / Rotate"
 
-[node name="LeftContainer" type="HBoxContainer" parent="ExplainContainer"]
+[node name="leftContainer" type="HBoxContainer" parent="ExplainContainer"]
 layout_mode = 2
 
-[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/LeftContainer"]
+[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/leftContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="Control" type="Control" parent="ExplainContainer/LeftContainer/ArrowContainer"]
+[node name="Control" type="Control" parent="ExplainContainer/leftContainer/ArrowContainer"]
 custom_minimum_size = Vector2(15, 10)
 layout_mode = 2
 
-[node name="Arrow" type="TextureRect" parent="ExplainContainer/LeftContainer/ArrowContainer/Control"]
+[node name="Arrow" type="TextureRect" parent="ExplainContainer/leftContainer/ArrowContainer/Control"]
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 offset_top = -2.0
@@ -88,23 +88,23 @@ pivot_offset = Vector2(5, 5)
 texture = ExtResource("3_xpq6e")
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ExplainContainer/LeftContainer"]
+[node name="Label" type="Label" parent="ExplainContainer/leftContainer"]
 layout_mode = 2
 theme = ExtResource("2_2w3fq")
 text = "Left"
 
-[node name="DownContainer" type="HBoxContainer" parent="ExplainContainer"]
+[node name="downContainer" type="HBoxContainer" parent="ExplainContainer"]
 layout_mode = 2
 
-[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/DownContainer"]
+[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/downContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="Control" type="Control" parent="ExplainContainer/DownContainer/ArrowContainer"]
+[node name="Control" type="Control" parent="ExplainContainer/downContainer/ArrowContainer"]
 custom_minimum_size = Vector2(15, 10)
 layout_mode = 2
 
-[node name="Arrow" type="TextureRect" parent="ExplainContainer/DownContainer/ArrowContainer/Control"]
+[node name="Arrow" type="TextureRect" parent="ExplainContainer/downContainer/ArrowContainer/Control"]
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 offset_top = -2.0
@@ -115,23 +115,23 @@ pivot_offset = Vector2(5, 5)
 texture = ExtResource("3_xpq6e")
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ExplainContainer/DownContainer"]
+[node name="Label" type="Label" parent="ExplainContainer/downContainer"]
 layout_mode = 2
 theme = ExtResource("2_2w3fq")
 text = "Down"
 
-[node name="RightContainer" type="HBoxContainer" parent="ExplainContainer"]
+[node name="rightContainer" type="HBoxContainer" parent="ExplainContainer"]
 layout_mode = 2
 
-[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/RightContainer"]
+[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/rightContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="Control" type="Control" parent="ExplainContainer/RightContainer/ArrowContainer"]
+[node name="Control" type="Control" parent="ExplainContainer/rightContainer/ArrowContainer"]
 custom_minimum_size = Vector2(15, 10)
 layout_mode = 2
 
-[node name="Arrow" type="TextureRect" parent="ExplainContainer/RightContainer/ArrowContainer/Control"]
+[node name="Arrow" type="TextureRect" parent="ExplainContainer/rightContainer/ArrowContainer/Control"]
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 offset_top = -2.0
@@ -141,7 +141,7 @@ pivot_offset = Vector2(5, 5)
 texture = ExtResource("3_xpq6e")
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ExplainContainer/RightContainer"]
+[node name="Label" type="Label" parent="ExplainContainer/rightContainer"]
 layout_mode = 2
 theme = ExtResource("2_2w3fq")
 text = "Right"
