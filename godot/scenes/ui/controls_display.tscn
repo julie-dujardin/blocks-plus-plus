@@ -12,7 +12,7 @@ anchors_preset = 0
 layout_mode = 0
 offset_top = 42.0
 offset_right = 414.0
-offset_bottom = 122.0
+offset_bottom = 150.0
 
 [node name="ColorRect" type="ColorRect" parent="."]
 visible = false
@@ -21,7 +21,16 @@ offset_left = 414.0
 offset_top = 42.0
 offset_right = 645.0
 offset_bottom = 150.0
-color = Color(0.2484, 0.2484, 0.2484, 1)
+color = Color(0.633757, 0.633757, 0.633757, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 566.0
+offset_top = 150.0
+offset_right = 606.0
+offset_bottom = 190.0
+color = Color(0.176419, 0.176419, 0.176419, 1)
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
@@ -35,7 +44,7 @@ text = "Controls"
 layout_mode = 0
 offset_left = 423.0
 offset_top = 42.0
-offset_right = 590.0
+offset_right = 568.0
 offset_bottom = 150.0
 alignment = 1
 
