@@ -1,7 +1,6 @@
 use crate::breakout::brick::Brick;
 use godot::builtin::Vector2;
-use godot::classes::{CharacterBody2D, ICharacterBody2D};
-use godot::engine::StaticBody2D;
+use godot::classes::{CharacterBody2D, ICharacterBody2D, StaticBody2D};
 use godot::obj::{Base, WithBaseField};
 use godot::prelude::{godot_api, GodotClass, ToGodot};
 

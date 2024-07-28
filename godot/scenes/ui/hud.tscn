@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bcre4yukfctml"]
+[gd_scene load_steps=6 format=3 uid="uid://bcre4yukfctml"]
 
 [ext_resource type="FontFile" uid="uid://tvarju4030k4" path="res://assets/font/Pixel.ttf" id="1_fy6m2"]
 [ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="2_66ttw"]
+[ext_resource type="Texture2D" uid="uid://cx4hhvadxa6al" path="res://assets/github.svg" id="3_ub05c"]
+[ext_resource type="PackedScene" uid="uid://dyk8nwtv67thv" path="res://scenes/ui/controls_display.tscn" id="4_6twyc"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_jk1ty"]
 font = ExtResource("1_fy6m2")
@@ -33,6 +35,32 @@ offset_right = 728.0
 offset_bottom = 368.0
 theme = ExtResource("2_66ttw")
 text = "Quit"
+
+[node name="LinkButtonGithub" type="LinkButton" parent="."]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 64.0
+offset_bottom = 64.0
+uri = "https://github.com/julie-42/blocks-plus-plus"
+
+[node name="TextureRect" type="TextureRect" parent="LinkButtonGithub"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_ub05c")
+expand_mode = 4
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+offset_top = 448.0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="ControlsDisplay" parent="CenterContainer" instance=ExtResource("4_6twyc")]
+custom_minimum_size = Vector2(566, 150)
+layout_mode = 2
 
 [connection signal="button_down" from="ButtonPlay" to="." method="on_start_button_pressed"]
 [connection signal="button_down" from="ButtonQuit" to="." method="on_quit_button_pressed"]

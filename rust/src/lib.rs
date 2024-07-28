@@ -6,9 +6,9 @@
  */
 mod breakout;
 mod constants;
-mod hud;
 mod main_board;
 mod tetris;
+mod ui;
 
 use godot::prelude::*;
 

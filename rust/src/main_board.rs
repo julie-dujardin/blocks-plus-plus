@@ -28,7 +28,6 @@ impl MainBoard {
         self.base_mut().get_node_as::<Select>("Select1").show();
         self.base_mut().get_node_as::<Select>("Select2").show();
         self.base_mut().get_node_as::<Select>("Select3").show();
-        self.base_mut().get_node_as::<Label>("LabelGameOver").hide();
         self.base_mut().get_node_as::<Node2D>("Score").show();
     }
 
@@ -48,11 +47,12 @@ impl MainBoard {
     #[func]
     fn on_game_over_timer_timeout(&mut self) {
         self.reset_score_color();
+        self.base_mut().get_node_as::<Label>("LabelGameOver").hide();
     }
 
     #[func]
-    fn on_score_up(&mut self) {
-        self.score += 1;
+    fn on_score_up(&mut self, count: Variant) {
+        self.score += count.to::<i64>();
         let mut score_label = self.base_mut().get_node_as::<Label>("Score/LabelScore");
         score_label.set_text(format!("Score {}", self.score).into());
         score_label.set_modulate(COLOR_SUCCESS);

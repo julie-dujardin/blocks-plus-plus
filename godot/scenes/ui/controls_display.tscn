@@ -1,0 +1,156 @@
+[gd_scene load_steps=4 format=3 uid="uid://dyk8nwtv67thv"]
+
+[ext_resource type="PackedScene" uid="uid://dh6w4yvotbvxj" path="res://scenes/ui/keymap_display.tscn" id="1_ew4g7"]
+[ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="2_2w3fq"]
+[ext_resource type="Texture2D" uid="uid://606cfa0hbeu1" path="res://assets/arrow.png" id="3_xpq6e"]
+
+[node name="ControlsDisplay" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="KeymapDisplay" parent="." instance=ExtResource("1_ew4g7")]
+layout_mode = 0
+offset_top = 42.0
+offset_right = 414.0
+offset_bottom = 150.0
+
+[node name="ColorRect" type="ColorRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 414.0
+offset_top = 42.0
+offset_right = 645.0
+offset_bottom = 150.0
+color = Color(0.633757, 0.633757, 0.633757, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 566.0
+offset_top = 150.0
+offset_right = 606.0
+offset_bottom = 190.0
+color = Color(0.176419, 0.176419, 0.176419, 1)
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme = ExtResource("2_2w3fq")
+theme_override_font_sizes/font_size = 25
+text = "Controls"
+
+[node name="ExplainContainer" type="VFlowContainer" parent="."]
+layout_mode = 0
+offset_left = 423.0
+offset_top = 42.0
+offset_right = 568.0
+offset_bottom = 150.0
+alignment = 1
+
+[node name="upContainer" type="HBoxContainer" parent="ExplainContainer"]
+layout_mode = 2
+
+[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/upContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Control" type="Control" parent="ExplainContainer/upContainer/ArrowContainer"]
+custom_minimum_size = Vector2(15, 10)
+layout_mode = 2
+
+[node name="Arrow" type="TextureRect" parent="ExplainContainer/upContainer/ArrowContainer/Control"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+offset_top = -2.0
+offset_right = 10.0
+offset_bottom = 8.0
+rotation = -1.5708
+pivot_offset = Vector2(5, 5)
+texture = ExtResource("3_xpq6e")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="ExplainContainer/upContainer"]
+layout_mode = 2
+theme = ExtResource("2_2w3fq")
+text = "Up / Rotate"
+
+[node name="leftContainer" type="HBoxContainer" parent="ExplainContainer"]
+layout_mode = 2
+
+[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/leftContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Control" type="Control" parent="ExplainContainer/leftContainer/ArrowContainer"]
+custom_minimum_size = Vector2(15, 10)
+layout_mode = 2
+
+[node name="Arrow" type="TextureRect" parent="ExplainContainer/leftContainer/ArrowContainer/Control"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+offset_top = -2.0
+offset_right = 10.0
+offset_bottom = 8.0
+rotation = 3.14159
+pivot_offset = Vector2(5, 5)
+texture = ExtResource("3_xpq6e")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="ExplainContainer/leftContainer"]
+layout_mode = 2
+theme = ExtResource("2_2w3fq")
+text = "Left"
+
+[node name="downContainer" type="HBoxContainer" parent="ExplainContainer"]
+layout_mode = 2
+
+[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/downContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Control" type="Control" parent="ExplainContainer/downContainer/ArrowContainer"]
+custom_minimum_size = Vector2(15, 10)
+layout_mode = 2
+
+[node name="Arrow" type="TextureRect" parent="ExplainContainer/downContainer/ArrowContainer/Control"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+offset_top = -2.0
+offset_right = 10.0
+offset_bottom = 8.0
+rotation = 1.5708
+pivot_offset = Vector2(5, 5)
+texture = ExtResource("3_xpq6e")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="ExplainContainer/downContainer"]
+layout_mode = 2
+theme = ExtResource("2_2w3fq")
+text = "Down"
+
+[node name="rightContainer" type="HBoxContainer" parent="ExplainContainer"]
+layout_mode = 2
+
+[node name="ArrowContainer" type="VBoxContainer" parent="ExplainContainer/rightContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Control" type="Control" parent="ExplainContainer/rightContainer/ArrowContainer"]
+custom_minimum_size = Vector2(15, 10)
+layout_mode = 2
+
+[node name="Arrow" type="TextureRect" parent="ExplainContainer/rightContainer/ArrowContainer/Control"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+offset_top = -2.0
+offset_right = 10.0
+offset_bottom = 8.0
+pivot_offset = Vector2(5, 5)
+texture = ExtResource("3_xpq6e")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="ExplainContainer/rightContainer"]
+layout_mode = 2
+theme = ExtResource("2_2w3fq")
+text = "Right"
