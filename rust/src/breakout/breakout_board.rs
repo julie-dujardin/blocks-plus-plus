@@ -3,8 +3,7 @@ use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use godot::builtin::{Color, Variant, Vector2};
-use godot::classes::{INode2D, Node2D, PackedScene, Timer};
-use godot::engine::StaticBody2D;
+use godot::classes::{INode2D, Node2D, PackedScene, StaticBody2D, Timer};
 use godot::obj::{Base, Gd, WithBaseField};
 use godot::prelude::*;
 

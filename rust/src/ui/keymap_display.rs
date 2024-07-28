@@ -1,7 +1,5 @@
 use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
-use crate::ui::hud::Hud;
-use godot::classes::{Button, Control, IControl, InputEvent, Label};
-use godot::engine::{BoxContainer, CanvasItem};
+use godot::classes::{BoxContainer, Control, IControl, InputEvent};
 use godot::prelude::*;
 use once_cell::unsync::Lazy;
 use phf::phf_map;

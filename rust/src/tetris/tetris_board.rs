@@ -2,9 +2,7 @@ use crate::breakout::breakout_board::BreakoutBoard;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
-use godot::classes::InputEvent;
-use godot::classes::Timer;
-use godot::engine::ColorRect;
+use godot::classes::{ColorRect, InputEvent, Timer};
 use godot::prelude::*;
 use std::collections::HashSet;
 
