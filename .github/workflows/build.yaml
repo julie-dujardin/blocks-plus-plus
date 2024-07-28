@@ -167,6 +167,7 @@ jobs:
     environment: main
     name: Publish Web
     needs: [build-godot]
+    if: github.ref_name == 'main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -175,15 +176,16 @@ jobs:
         with:
           name: wasm32
           path: wasm32
-      - name: Add Cloudflare Pages files
-        run: |
-          cp deploy/cloudflare-pages/* wasm32/
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+      - name: Publish to Netlify
+        uses: nwtgck/actions-netlify@v3.0
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 6432b4c79e4c3f1ca4faa14da0b6ae79
-          projectName: blocks-plus-plus
-          directory: wasm32
-          wranglerVersion: '3'
-          branch: ${{ github.head_ref || github.ref_name }}
+          publish-dir: 'wasm32'
+          netlify-config-path: deploy/netlify/netlify.toml
+          production-branch: main
+          production-deploy: ${{ github.ref_name == 'main' }} 
+          alias: ${{ github.head_ref || github.ref_name }} 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 1
