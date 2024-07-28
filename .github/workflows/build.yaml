@@ -164,6 +164,7 @@ jobs:
   
   publish-web:
     runs-on: ubuntu-20.04
+    environment: main
     name: Publish Web
     needs: [build-godot]
     steps:
