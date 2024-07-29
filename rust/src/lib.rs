@@ -9,6 +9,7 @@ mod constants;
 mod main_board;
 mod tetris;
 mod ui;
+mod snek;
 
 use godot::prelude::*;
 
