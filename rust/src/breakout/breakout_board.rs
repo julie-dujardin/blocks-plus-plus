@@ -63,6 +63,10 @@ impl BreakoutBoard {
             .emit_signal("scored".into(), &[1.to_variant()]);
 
         let brick = brick_var.to::<Gd<Brick>>();
+        {
+            let brick_bind = brick.bind();
+            brick_bind.explode();
+        }
         self.bricks.retain(|x| *x != brick);
     }
 

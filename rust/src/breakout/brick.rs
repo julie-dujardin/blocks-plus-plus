@@ -1,5 +1,8 @@
 use godot::builtin::Vector2;
-use godot::classes::{CollisionShape2D, IStaticBody2D, StaticBody2D};
+use godot::classes::{
+    CollisionShape2D, ColorRect, GpuParticles2D, IStaticBody2D, LightOccluder2D, StaticBody2D,
+    Timer,
+};
 use godot::obj::{Base, WithBaseField};
 use godot::prelude::{godot_api, GodotClass};
 
@@ -11,6 +14,11 @@ pub struct Brick {
 
 #[godot_api]
 impl Brick {
+    #[func]
+    fn explosion_finished(&mut self) {
+        self.base_mut().queue_free();
+    }
+
     pub fn get_size(&self) -> Vector2 {
         self.base()
             .get_node_as::<CollisionShape2D>("CollisionShape2D")
@@ -18,6 +26,20 @@ impl Brick {
             .unwrap()
             .get_rect()
             .size
+    }
+
+    pub fn explode(&self) {
+        self.base()
+            .get_node_as::<GpuParticles2D>("ExplosionParticles")
+            .set_emitting(true);
+        self.base()
+            .get_node_as::<CollisionShape2D>("CollisionShape2D")
+            .free();
+        self.base()
+            .get_node_as::<LightOccluder2D>("LightOccluder2D")
+            .free();
+        self.base().get_node_as::<ColorRect>("ColorRect").free();
+        self.base().get_node_as::<Timer>("TimerFree").start();
     }
 }
 

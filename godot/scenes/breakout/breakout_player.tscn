@@ -1,13 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://grehn0f7rrgi"]
+[gd_scene load_steps=3 format=3 uid="uid://grehn0f7rrgi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3t48p"]
 size = Vector2(40, 8)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_v34dr"]
+polygon = PackedVector2Array(0, 0, 40, 0, 40, 8, 0, 8)
 
 [node name="BreakoutPlayer" type="BreakoutPlayer"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(20, 4)
 shape = SubResource("RectangleShape2D_3t48p")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+occluder = SubResource("OccluderPolygon2D_v34dr")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_right = 40.0

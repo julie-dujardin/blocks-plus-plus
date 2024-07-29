@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://b5iydxdsydel7"]
+[gd_scene load_steps=8 format=3 uid="uid://b5iydxdsydel7"]
 
 [ext_resource type="PackedScene" uid="uid://lbhsqlii2lu7" path="res://scenes/breakout/ball.tscn" id="1_01ybq"]
 [ext_resource type="PackedScene" uid="uid://grehn0f7rrgi" path="res://scenes/breakout/breakout_player.tscn" id="2_vgool"]
@@ -12,11 +12,20 @@ b = Vector2(422, 0)
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_ow7o5"]
 b = Vector2(0, 288)
 
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_uh2vu"]
+closed = false
+polygon = PackedVector2Array(424, 288, 424, 0, 0, 0, 0, 288, 432, 288)
+
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_j0y4m"]
 a = Vector2(424, 0)
 b = Vector2(0, 0)
 
 [node name="BreakoutBoard" type="BreakoutBoard"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 424.0
+offset_bottom = 288.0
+color = Color(0, 0, 0, 1)
 
 [node name="Walls" type="StaticBody2D" parent="."]
 
@@ -29,6 +38,9 @@ shape = SubResource("SegmentShape2D_q84af")
 [node name="CollisionShape2DRight" type="CollisionShape2D" parent="Walls"]
 position = Vector2(424, 0)
 shape = SubResource("SegmentShape2D_ow7o5")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Walls"]
+occluder = SubResource("OccluderPolygon2D_uh2vu")
 
 [node name="Line2D" type="Line2D" parent="Walls"]
 points = PackedVector2Array(0, 288, 0, 0, 424, 0, 424, 288)

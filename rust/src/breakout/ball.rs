@@ -73,7 +73,6 @@ impl ICharacterBody2D for Ball {
                         if let Ok(brick) = collider.clone().try_cast::<Brick>() {
                             self.base_mut()
                                 .emit_signal("broke_brick".into(), &[brick.to_variant()]);
-                            brick.free();
                         } else if let Ok(area) = collider.try_cast::<StaticBody2D>() {
                             if area.get_name() == "Bottom".into() {
                                 self.handle_game_over();

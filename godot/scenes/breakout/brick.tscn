@@ -1,7 +1,34 @@
-[gd_scene load_steps=2 format=3 uid="uid://c74rtt41n5omn"]
+[gd_scene load_steps=6 format=3 uid="uid://c74rtt41n5omn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3dnn7"]
 size = Vector2(40, 8)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_bmn6i"]
+polygon = PackedVector2Array(0, 0, 40, 0, 40, 8, 0, 8)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_g0nlu"]
+lifetime_randomness = 1.0
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(20, 4, 1)
+angle_max = 360.0
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 40.0
+initial_velocity_max = 100.0
+gravity = Vector3(0, 98, 0)
+collision_mode = 1
+collision_friction = 0.5
+collision_bounce = 0.7
+
+[sub_resource type="Gradient" id="Gradient_glgh5"]
+interpolation_mode = 1
+colors = PackedColorArray(0.32549, 0.32549, 0.32549, 1, 0.325441, 0.325441, 0.325441, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_wmcs0"]
+gradient = SubResource("Gradient_glgh5")
+width = 4
+height = 4
 
 [node name="Brick" type="Brick"]
 
@@ -9,6 +36,25 @@ size = Vector2(40, 8)
 position = Vector2(20, 4)
 shape = SubResource("RectangleShape2D_3dnn7")
 
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+occluder = SubResource("OccluderPolygon2D_bmn6i")
+
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_right = 40.0
 offset_bottom = 8.0
+
+[node name="ExplosionParticles" type="GPUParticles2D" parent="."]
+position = Vector2(20, 4)
+emitting = false
+amount = 50
+process_material = SubResource("ParticleProcessMaterial_g0nlu")
+texture = SubResource("GradientTexture2D_wmcs0")
+lifetime = 3.0
+one_shot = true
+explosiveness = 1.0
+
+[node name="TimerFree" type="Timer" parent="."]
+wait_time = 6.0
+one_shot = true
+
+[connection signal="timeout" from="TimerFree" to="." method="explosion_finished"]
