@@ -1,5 +1,6 @@
 use crate::tetris::block::Block;
 use godot::prelude::*;
+use phf::phf_map;
 use rand::prelude::IndexedRandom;
 use std::f32::consts::PI;
 
@@ -15,6 +16,91 @@ pub enum Shape {
     Z,
 }
 
+static SHAPES: [Shape; 7] = [
+    Shape::I,
+    Shape::O,
+    Shape::J,
+    Shape::L,
+    Shape::S,
+    Shape::Z,
+    Shape::T,
+];
+
+const SHAPE_BLOCKS: phf::Map<&str, [Vector2; 4]> = phf_map! {
+    "I" => [
+        Vector2::new(-1.0, 0.0),
+        Vector2::new(0.0, 0.0),
+        Vector2::new(1.0, 0.0),
+        Vector2::new(2.0, 0.0)
+    ],
+    "O" => [
+        Vector2::new(0.0, 0.0),
+        Vector2::new(1.0, 0.0),
+        Vector2::new(0.0, 1.0),
+        Vector2::new(1.0, 1.0)
+    ],
+    "T" => [
+        Vector2::new(-1.0, 0.0),
+        Vector2::new(0.0, 0.0),
+        Vector2::new(1.0, 0.0),
+        Vector2::new(0.0, -1.0)
+    ],
+    "J" => [
+        Vector2::new(0.0, -1.0),
+        Vector2::new(0.0, 0.0),
+        Vector2::new(0.0, 1.0),
+        Vector2::new(-1.0, 1.0)
+    ],
+    "L" => [
+        Vector2::new(0.0, -1.0),
+        Vector2::new(0.0, 0.0),
+        Vector2::new(0.0, 1.0),
+        Vector2::new(1.0, 1.0)
+    ],
+    "S" => [
+        Vector2::new(1.0, 0.0),
+        Vector2::new(0.0, 0.0),
+        Vector2::new(0.0, 1.0),
+        Vector2::new(-1.0, 1.0)
+    ],
+    "Z" => [
+        Vector2::new(-1.0, 0.0),
+        Vector2::new(0.0, 0.0),
+        Vector2::new(0.0, 1.0),
+        Vector2::new(1.0, 1.0)
+    ],
+};
+const SHAPE_BOUNDS: phf::Map<&str, [Vector2; 2]> = phf_map! {
+    "I" => [
+        Vector2::new(3.0, 0.0),
+        Vector2::new(-1.0, 0.0)
+    ],
+    "O" => [
+        Vector2::new(1.0, 1.0),
+        Vector2::new(0.0, 0.0)
+    ],
+    "T" => [
+        Vector2::new(2.0, 1.0),
+        Vector2::new(-1.0, -1.0)
+    ],
+    "J" => [
+        Vector2::new(1.0, 2.0),
+        Vector2::new(-1.0, -1.0)
+    ],
+    "L" => [
+        Vector2::new(1.0, 2.0),
+        Vector2::new(0.0, -1.0)
+    ],
+    "S" => [
+        Vector2::new(2.0, 1.0),
+        Vector2::new(-1.0, 0.0)
+    ],
+    "Z" => [
+        Vector2::new(2.0, 1.0),
+        Vector2::new(-1.0, 0.0)
+    ],
+};
+
 #[derive(GodotClass)]
 #[class(base=Node2D)]
 pub struct Piece {
@@ -24,9 +110,6 @@ pub struct Piece {
     block_size: Vector2,
     pub center_block_position: Vector2,
     rotation: real,
-
-    shape_blocks: Dictionary,
-    shape_bounds: Dictionary,
 
     base: Base<Node2D>,
 }
@@ -40,33 +123,18 @@ impl Piece {
         {
             let mut piece_bind = piece.bind_mut();
             let mut rng = rand::thread_rng();
-            piece_bind.set_shape(
-                [
-                    Shape::I,
-                    Shape::O,
-                    Shape::J,
-                    Shape::L,
-                    Shape::S,
-                    Shape::Z,
-                    Shape::T,
-                ]
-                .choose(&mut rng)
-                .unwrap()
-                .to_godot(),
-            );
+            piece_bind.set_shape(SHAPES.choose(&mut rng).unwrap().to_godot());
         }
 
         piece
     }
 
     fn get_bounds(&self, position: Vector2, rotation: real) -> (Vector2, Vector2) {
-        let bounds = self
-            .shape_bounds
-            .get(self.shape.to_godot())
-            .unwrap()
-            .to::<VariantArray>();
-        let bounding_rectangle = bounds.at(0).to::<Vector2>();
-        let center_offset = bounds.at(1).to::<Vector2>();
+        let bounds = SHAPE_BOUNDS
+            .get(self.shape.to_godot().to_string().as_str())
+            .unwrap();
+        let bounding_rectangle = bounds[0];
+        let center_offset = bounds[1];
 
         let bottom_right_rotated =
             (center_offset + bounding_rectangle).rotated(rotation) + position;
@@ -204,26 +272,6 @@ impl INode2D for Piece {
             center_block_position: Vector2::new(0., 0.),
             rotation: 0.,
             block_size: Vector2::ZERO, // Gets set in self.ready()
-            shape_blocks: dict![
-                // Shapes rotate around their (0, 0) block
-                "I": varray![Vector2::new(-1., 0.), Vector2::new(0., 0.), Vector2::new(1., 0.), Vector2::new(2., 0.)],
-                "O": varray![Vector2::new(0., 0.), Vector2::new(1., 0.), Vector2::new(0., 1.), Vector2::new(1., 1.)],
-                "T": varray![Vector2::new(-1., 0.), Vector2::new(0., 0.), Vector2::new(1., 0.), Vector2::new(0., -1.)],
-                "J": varray![Vector2::new(0., -1.), Vector2::new(0., 0.), Vector2::new(0., 1.), Vector2::new(-1., 1.)],
-                "L": varray![Vector2::new(0., -1.), Vector2::new(0., 0.), Vector2::new(0., 1.), Vector2::new(1., 1.)],
-                "S": varray![Vector2::new(1., 0.), Vector2::new(0., 0.), Vector2::new(0., 1.), Vector2::new(-1., 1.)],
-                "Z": varray![Vector2::new(-1., 0.), Vector2::new(0., 0.), Vector2::new(0., 1.), Vector2::new(1., 1.)],
-            ],
-            shape_bounds: dict![
-                // for each shape, its (width, height), (x/y offset of upper left bounding rectangle relative to center)
-                "I": varray![Vector2::new(3., 0.), Vector2::new(-1., 0.)],
-                "O": varray![Vector2::new(1., 1.), Vector2::new(0., 0.)],
-                "T": varray![Vector2::new(2., 1.), Vector2::new(-1., -1.)],  // The (-1., -1.) point is not a block, but it is part of the bounding rectangle
-                "J": varray![Vector2::new(1., 2.), Vector2::new(-1., -1.)],
-                "L": varray![Vector2::new(1., 2.), Vector2::new(0., -1.)],
-                "S": varray![Vector2::new(2., 1.), Vector2::new(-1., 0.)],
-                "Z": varray![Vector2::new(2., 1.), Vector2::new(-1., 0.)],
-            ],
             base,
         }
     }
@@ -231,19 +279,16 @@ impl INode2D for Piece {
     fn ready(&mut self) {
         let block_scene: Gd<PackedScene> = load("res://scenes/tetris/block.tscn");
 
-        for block_offset in self
-            .shape_blocks
-            .get(self.shape.to_godot())
+        for block_offset in SHAPE_BLOCKS
+            .get(self.shape.to_godot().to_string().as_str())
             .unwrap()
-            .to::<VariantArray>()
-            .iter_shared()
         {
             let mut block = block_scene.instantiate_as::<Block>();
 
             {
                 let mut block_bind = block.bind_mut();
                 self.block_size = block_bind.get_size();
-                block_bind.board_offset = block_offset.to::<Vector2>();
+                block_bind.board_offset = *block_offset;
             }
 
             self.blocks.push(block.to_variant());
