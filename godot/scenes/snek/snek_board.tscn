@@ -5,4 +5,9 @@
 [node name="TimerMove" type="Timer" parent="."]
 wait_time = 0.4
 
+[node name="TimerGoal" type="Timer" parent="."]
+wait_time = 4.0
+autostart = true
+
 [connection signal="timeout" from="TimerMove" to="." method="moved"]
+[connection signal="timeout" from="TimerGoal" to="." method="add_goal"]

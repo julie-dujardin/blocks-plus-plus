@@ -2,6 +2,8 @@ use crate::snek::segment::Segment;
 use godot::classes::{InputEvent, Timer};
 use godot::prelude::*;
 use phf::phf_map;
+use rand::Rng;
+use crate::constants::COLOR_SUCCESS;
 
 const DIRECTIONS: phf::Map<&str, Vector2> = phf_map! {
     "up" => Vector2::UP,
@@ -18,6 +20,7 @@ pub struct SnekBoard {
     direction: Vector2,
     segments: Vec<Gd<Segment>>,
     head_position: Vector2,
+    size: Vector2,
 
     base: Base<Node2D>,
 }
@@ -28,6 +31,7 @@ impl SnekBoard {
     fn start_game(&mut self) {
         self.head_position = Vector2::new(5., 5.);
         self.base().get_node_as::<Timer>("TimerMove").start();
+        self.base_mut().show();
     }
 
     #[func]
@@ -49,6 +53,21 @@ impl SnekBoard {
         self.segments.pop().unwrap().free();
     }
 
+    #[func]
+    fn add_goal(&mut self) {
+        let mut rng = rand::thread_rng();
+        let spawn_location = Vector2::new(
+            rng.gen_range(0..self.size.x as u64) as f32,
+            rng.gen_range(0..self.size.y as u64) as f32,
+        );
+
+        let segment_scene: Gd<PackedScene> = load("res://scenes/snek/segment.tscn");
+        let mut goal = segment_scene.instantiate_as::<Segment>();
+        goal.set_modulate(COLOR_SUCCESS);
+        goal.set_position(spawn_location * SEGMENT_SIZE);
+        self.base_mut().add_child(goal.upcast());
+    }
+
     fn add_segment(&mut self) {
         let segment_scene: Gd<PackedScene> = load("res://scenes/snek/segment.tscn");
         let mut segment = segment_scene.instantiate_as::<Segment>();
@@ -65,6 +84,7 @@ impl INode2D for SnekBoard {
             direction: Vector2::RIGHT,
             segments: Vec::new(),
             head_position: Vector2::new(5., 5.),
+            size: Vector2::new(20., 20.),
             base,
         }
     }
@@ -75,6 +95,7 @@ impl INode2D for SnekBoard {
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
             self.start_game();
+            self.base().get_node_as::<Timer>("TimerGoal").start();
         }
     }
 
