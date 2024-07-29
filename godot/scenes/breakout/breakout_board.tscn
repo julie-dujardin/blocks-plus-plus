@@ -57,6 +57,10 @@ position = Vector2(192, 256)
 wait_time = 0.4
 one_shot = true
 
+[node name="TimerNewLine" type="Timer" parent="."]
+wait_time = 10.0
+
 [connection signal="broke_brick" from="Ball" to="." method="on_broke_brick"]
 [connection signal="game_over" from="Ball" to="." method="on_game_over"]
 [connection signal="timeout" from="TimerSuccess" to="." method="reset_color"]
+[connection signal="timeout" from="TimerNewLine" to="." method="push_new_line" binds= [1]]

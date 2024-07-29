@@ -93,7 +93,8 @@ impl BreakoutBoard {
         ball_bind.set_movement(can_move);
     }
 
-    pub fn push_new_line(&mut self, count: usize) {
+    #[func]
+    pub fn push_new_line(&mut self, count: u64) {
         for _ in 0..count {
             for brick in &mut self.bricks {
                 brick.move_local_y(self.brick_size.y + 10.);
@@ -128,6 +129,14 @@ impl INode2D for BreakoutBoard {
     }
 
     fn ready(&mut self) {
-        self.set_movement(false);
+        if self.base().get_parent().unwrap().is_class("Window".into()) {
+            // If this class is the root node, make it playable for testing
+            self.base_mut().show();
+            self.set_movement(true);
+            self.push_new_line(3);
+            self.base_mut().get_node_as::<Timer>("TimerNewLine").start();
+        } else {
+            self.set_movement(false);
+        }
     }
 }

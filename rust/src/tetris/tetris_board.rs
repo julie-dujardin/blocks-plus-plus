@@ -108,7 +108,7 @@ impl TetrisBoard {
             .get_node_as::<BreakoutBoard>("BreakoutBoard");
         breakout_board.show();
         let mut breakout_board_bind = breakout_board.bind_mut();
-        breakout_board_bind.push_new_line(count);
+        breakout_board_bind.push_new_line(count as u64);
         breakout_board_bind.on_game_started();
     }
 
@@ -266,6 +266,11 @@ impl TetrisBoard {
 
                     self.base_mut().add_child(piece.clone().upcast());
                     self.active_piece = Some(piece);
+
+                    if self.base().get_parent().unwrap().is_class("Window".into()) {
+                        // If this class is the root node, keep spawning new pieces
+                        self.add_next_piece(Piece::spawn_random());
+                    }
                 }
             }
         }
@@ -368,6 +373,14 @@ impl INode2D for TetrisBoard {
                     self.right_piece();
                 }
             }
+        }
+    }
+
+    fn ready(&mut self) {
+        if self.base().get_parent().unwrap().is_class("Window".into()) {
+            // If this class is the root node, make it playable for testing
+            self.base_mut().show();
+            self.add_next_piece(Piece::spawn_random());
         }
     }
 }
