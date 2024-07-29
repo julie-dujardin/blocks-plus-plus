@@ -1,3 +1,8 @@
 [gd_scene format=3 uid="uid://cxvksyqghera3"]
 
-[node name="SnekBoard" type="Node"]
+[node name="SnekBoard" type="SnekBoard"]
+
+[node name="TimerMove" type="Timer" parent="."]
+wait_time = 0.4
+
+[connection signal="timeout" from="TimerMove" to="." method="moved"]
