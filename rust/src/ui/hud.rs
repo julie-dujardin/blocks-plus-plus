@@ -29,6 +29,7 @@ impl Hud {
             .get_node_as::<Button>("ButtonPlay")
             .set_text("Replay".into());
         self.base_mut().show();
+        self.base().get_node_as::<Button>("ButtonPlay").grab_focus();
     }
 }
 
@@ -42,5 +43,6 @@ impl INode2D for Hud {
         if Os::singleton().get_name() == "Web".into() {
             self.base().get_node_as::<Button>("ButtonQuit").hide();
         }
+        self.base().get_node_as::<Button>("ButtonPlay").grab_focus();
     }
 }

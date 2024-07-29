@@ -25,6 +25,7 @@ offset_left = 432.0
 offset_top = 240.0
 offset_right = 728.0
 offset_bottom = 288.0
+focus_neighbor_bottom = NodePath("../ButtonQuit")
 theme = ExtResource("2_66ttw")
 text = "Play"
 
@@ -33,6 +34,7 @@ offset_left = 432.0
 offset_top = 320.0
 offset_right = 728.0
 offset_bottom = 368.0
+focus_neighbor_top = NodePath("../ButtonPlay")
 theme = ExtResource("2_66ttw")
 text = "Quit"
 
