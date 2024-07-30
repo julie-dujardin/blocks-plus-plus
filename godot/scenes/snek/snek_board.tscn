@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxvksyqghera3"]
+
+[sub_resource type="Gradient" id="Gradient_pmyag"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1fljw"]
+gradient = SubResource("Gradient_pmyag")
+width = 1
+
+[node name="SnekBoard" type="SnekBoard"]
+
+[node name="TimerMove" type="Timer" parent="."]
+wait_time = 0.4
+
+[node name="TimerGoal" type="Timer" parent="."]
+wait_time = 4.0
+
+[node name="Background" type="ColorRect" parent="."]
+visible = false
+offset_right = 240.0
+offset_bottom = 288.0
+color = Color(0, 0, 0, 1)
+
+[node name="Border" type="NinePatchRect" parent="."]
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 241.0
+offset_bottom = 289.0
+texture = SubResource("GradientTexture1D_1fljw")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
+
+[node name="TimerGoalTimeout" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[connection signal="timeout" from="TimerMove" to="." method="moved"]
+[connection signal="timeout" from="TimerGoal" to="." method="add_goal"]
+[connection signal="timeout" from="TimerGoalTimeout" to="." method="reset_color"]

@@ -9,6 +9,8 @@ use godot::prelude::{godot_api, GodotClass};
 #[derive(GodotClass)]
 #[class(base=StaticBody2D)]
 pub struct Brick {
+    pub is_exploding: bool,
+
     base: Base<StaticBody2D>,
 }
 
@@ -28,7 +30,8 @@ impl Brick {
             .size
     }
 
-    pub fn explode(&self) {
+    pub fn explode(&mut self) {
+        self.is_exploding = true;
         self.base()
             .get_node_as::<GpuParticles2D>("ExplosionParticles")
             .set_emitting(true);
@@ -46,6 +49,9 @@ impl Brick {
 #[godot_api]
 impl IStaticBody2D for Brick {
     fn init(base: Base<StaticBody2D>) -> Self {
-        Brick { base }
+        Brick {
+            is_exploding: false,
+            base,
+        }
     }
 }

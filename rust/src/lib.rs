@@ -7,6 +7,7 @@
 mod breakout;
 mod constants;
 mod main_board;
+mod snek;
 mod tetris;
 mod ui;
 

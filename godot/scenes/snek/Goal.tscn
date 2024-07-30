@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://cl6fijif0gba1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7k8k2"]
+size = Vector2(1, 1)
+
+[node name="Goal" type="Goal"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_7k8k2")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[connection signal="area_entered" from="." to="." method="on_area_entered"]
