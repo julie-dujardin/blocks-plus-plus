@@ -61,10 +61,9 @@ impl BreakoutBoard {
         let mut brick = brick_var.to::<Gd<Brick>>();
         {
             let mut brick_bind = brick.bind_mut();
-            if brick_bind.is_exploding{
+            if brick_bind.is_exploding {
                 brick_has_exploded = true;
-            }
-            else {
+            } else {
                 brick_bind.explode();
             }
         }

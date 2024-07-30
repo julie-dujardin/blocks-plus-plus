@@ -1,7 +1,8 @@
-use crate::constants::COLOR_SUCCESS;
+use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::snek::goal::Goal;
 use crate::snek::segment::Segment;
-use godot::classes::{InputEvent, Timer};
+use godot::classes::{InputEvent, NinePatchRect, Timer};
+use godot::engine::ColorRect;
 use godot::prelude::*;
 use phf::phf_map;
 use rand::Rng;
@@ -41,8 +42,7 @@ impl SnekBoard {
     fn on_previous_scored_up(&mut self, _count: Variant) {
         if self.can_move {
             self.add_goal();
-        }
-        else {
+        } else {
             self.start_game();
         }
     }
@@ -65,6 +65,7 @@ impl SnekBoard {
 
     #[func]
     fn on_game_over(&mut self) {
+        self.set_color(COLOR_FAILURE);
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
             self.on_parent_game_over();
@@ -80,11 +81,12 @@ impl SnekBoard {
         }
         while let Some(goal) = self.goals.pop() {
             // TODO remove goal from goals on hit
-            if goal.is_instance_valid(){
+            if goal.is_instance_valid() {
                 goal.free();
             }
         }
         self.base_mut().hide();
+        self.set_color(COLOR_FOREGROUND);
     }
 
     #[func]
@@ -132,6 +134,10 @@ impl SnekBoard {
         self.base_mut()
             .emit_signal("scored".into(), &[10.0.to_variant()]);
         self.just_scored = true;
+        self.set_color(COLOR_SUCCESS);
+        self.base_mut()
+            .get_node_as::<Timer>("TimerGoalTimeout")
+            .start();
     }
 
     fn add_segment(&mut self) {
@@ -142,6 +148,17 @@ impl SnekBoard {
         segment.connect("game_over".into(), self.base().callable("on_game_over"));
         self.base_mut().add_child(segment.clone().upcast());
         self.segments.insert(0, segment);
+    }
+
+    #[func]
+    fn reset_color(&mut self) {
+        self.set_color(COLOR_FOREGROUND);
+    }
+
+    fn set_color(&mut self, color: Color) {
+        self.base_mut()
+            .get_node_as::<NinePatchRect>("Border")
+            .set_modulate(color);
     }
 }
 
@@ -172,6 +189,7 @@ impl INode2D for SnekBoard {
 
             self.start_game();
             self.base().get_node_as::<Timer>("TimerGoal").start();
+            self.base().get_node_as::<ColorRect>("Background").show();
         }
     }
 

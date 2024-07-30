@@ -99,7 +99,7 @@ impl TetrisBoard {
             .set_modulate(COLOR_SUCCESS);
         self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
         self.base_mut()
-            .emit_signal("scored".into(), &[(count as i64).to_variant()]);
+            .emit_signal("scored".into(), &[(count as i64 * 3).to_variant()]);
 
         let mut breakout_board = self
             .base()
