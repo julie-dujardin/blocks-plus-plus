@@ -1,4 +1,5 @@
 use crate::constants::COLOR_SUCCESS;
+use crate::snek::goal::Goal;
 use crate::snek::segment::Segment;
 use godot::classes::{InputEvent, Timer};
 use godot::prelude::*;
@@ -21,23 +22,34 @@ pub struct SnekBoard {
     segments: Vec<Gd<Segment>>,
     head_position: Vector2,
     size: Vector2,
+    just_scored: bool,
+    can_move: bool,
 
     base: Base<Node2D>,
 }
 
 #[godot_api]
 impl SnekBoard {
+    #[signal]
+    fn game_over();
+
+    #[signal]
+    fn scored();
+
     #[func]
     fn start_game(&mut self) {
         self.head_position = Vector2::new(5., 5.);
         self.add_segment();
         self.base().get_node_as::<Timer>("TimerMove").start();
         self.base_mut().show();
+        self.can_move = true;
     }
 
     #[func]
-    fn on_game_over(&self) {
+    fn on_game_over(&mut self) {
         self.base().get_node_as::<Timer>("TimerMove").stop();
+        self.base().get_node_as::<Timer>("TimerGoal").stop();
+        self.can_move = false;
     }
 
     #[func]
@@ -64,7 +76,12 @@ impl SnekBoard {
             },
         );
         self.add_segment();
-        self.segments.pop().unwrap().free();
+        if self.just_scored {
+            self.just_scored = false;
+        }
+        else {
+            self.segments.pop().unwrap().free();
+        }
     }
 
     #[func]
@@ -75,23 +92,30 @@ impl SnekBoard {
             rng.gen_range(0..self.size.y as u64) as f32,
         );
 
-        let segment_scene: Gd<PackedScene> = load("res://scenes/snek/segment.tscn");
-        let mut goal = segment_scene.instantiate_as::<Segment>();
+        let goal_scene: Gd<PackedScene> = load("res://scenes/snek/Goal.tscn");
+        let mut goal = goal_scene.instantiate_as::<Goal>();
         goal.set_modulate(COLOR_SUCCESS);
         goal.set_position(spawn_location * SEGMENT_SIZE);
         self.base_mut().add_child(goal.upcast());
+    }
+
+    #[func]
+    fn score_up(&mut self) {
+        self.base_mut()
+            .emit_signal("scored".into(), &[1.0.to_variant()]);
+        self.just_scored = true;
     }
 
     fn add_segment(&mut self) {
         let segment_scene: Gd<PackedScene> = load("res://scenes/snek/segment.tscn");
         let mut segment = segment_scene.instantiate_as::<Segment>();
         segment.set_position(self.head_position * SEGMENT_SIZE);
+        segment.connect("score_up".into(), self.base().callable("score_up"));
+        segment.connect("game_over".into(), self.base().callable("on_game_over"));
         self.base_mut().add_child(segment.clone().upcast());
         self.segments.insert(0, segment);
     }
 }
-
-// TODO: handle collisions, remove goal & score up
 
 #[godot_api]
 impl INode2D for SnekBoard {
@@ -101,6 +125,8 @@ impl INode2D for SnekBoard {
             segments: Vec::new(),
             head_position: Vector2::new(5., 5.),
             size: Vector2::new(20., 20.),
+            just_scored: false,
+            can_move: false,
             base,
         }
     }
@@ -108,6 +134,8 @@ impl INode2D for SnekBoard {
     fn ready(&mut self) {
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
+            self.head_position = Vector2::new(2., 5.);
+            self.add_segment();
             self.head_position = Vector2::new(3., 5.);
             self.add_segment();
             self.head_position = Vector2::new(4., 5.);
@@ -119,11 +147,13 @@ impl INode2D for SnekBoard {
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
-        for (&key, direction) in DIRECTIONS.entries() {
-            if event.is_action_pressed(key.into()) && self.direction + *direction != Vector2::ZERO {
-                self.direction = *direction;
-                self.moved();
-                self.base().get_node_as::<Timer>("TimerMove").start();
+        if self.can_move {
+            for (&key, direction) in DIRECTIONS.entries() {
+                if event.is_action_pressed(key.into()) && self.direction + *direction != Vector2::ZERO {
+                    self.direction = *direction;
+                    self.moved();
+                    self.base().get_node_as::<Timer>("TimerMove").start();
+                }
             }
         }
     }
