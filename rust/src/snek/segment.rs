@@ -18,17 +18,10 @@ impl Segment {
     #[func]
     fn on_area_entered(&mut self, area: Gd<Area2D>) {
         if area.is_class("Goal".into()) {
-            self.base_mut().emit_signal(
-                "score_up".into(),
-                &[],
-            );
+            self.base_mut().emit_signal("score_up".into(), &[]);
             area.free();
-        }
-        else {
-            self.base_mut().emit_signal(
-                "game_over".into(),
-                &[],
-            );
+        } else {
+            self.base_mut().emit_signal("game_over".into(), &[]);
         }
     }
 }

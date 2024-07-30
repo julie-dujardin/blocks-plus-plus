@@ -20,6 +20,7 @@ const SEGMENT_SIZE: Vector2 = Vector2::new(8., 8.);
 pub struct SnekBoard {
     direction: Vector2,
     segments: Vec<Gd<Segment>>,
+    goals: Vec<Gd<Goal>>,
     head_position: Vector2,
     size: Vector2,
     just_scored: bool,
@@ -37,6 +38,16 @@ impl SnekBoard {
     fn scored();
 
     #[func]
+    fn on_previous_scored_up(&mut self, _count: Variant) {
+        if self.can_move {
+            self.add_goal();
+        }
+        else {
+            self.start_game();
+        }
+    }
+
+    #[func]
     fn start_game(&mut self) {
         self.head_position = Vector2::new(5., 5.);
         self.add_segment();
@@ -46,10 +57,20 @@ impl SnekBoard {
     }
 
     #[func]
-    fn on_game_over(&mut self) {
+    fn on_parent_game_over(&mut self) {
         self.base().get_node_as::<Timer>("TimerMove").stop();
         self.base().get_node_as::<Timer>("TimerGoal").stop();
         self.can_move = false;
+    }
+
+    #[func]
+    fn on_game_over(&mut self) {
+        if self.base().get_parent().unwrap().is_class("Window".into()) {
+            // If this class is the root node, make it playable for testing
+            self.on_parent_game_over();
+        } else {
+            self.base_mut().emit_signal("game_over".into(), &[]);
+        }
     }
 
     #[func]
@@ -57,6 +78,13 @@ impl SnekBoard {
         while let Some(segment) = self.segments.pop() {
             segment.free();
         }
+        while let Some(goal) = self.goals.pop() {
+            // TODO remove goal from goals on hit
+            if goal.is_instance_valid(){
+                goal.free();
+            }
+        }
+        self.base_mut().hide();
     }
 
     #[func]
@@ -78,8 +106,7 @@ impl SnekBoard {
         self.add_segment();
         if self.just_scored {
             self.just_scored = false;
-        }
-        else {
+        } else {
             self.segments.pop().unwrap().free();
         }
     }
@@ -96,13 +123,14 @@ impl SnekBoard {
         let mut goal = goal_scene.instantiate_as::<Goal>();
         goal.set_modulate(COLOR_SUCCESS);
         goal.set_position(spawn_location * SEGMENT_SIZE);
-        self.base_mut().add_child(goal.upcast());
+        self.base_mut().add_child(goal.clone().upcast());
+        self.goals.push(goal);
     }
 
     #[func]
     fn score_up(&mut self) {
         self.base_mut()
-            .emit_signal("scored".into(), &[1.0.to_variant()]);
+            .emit_signal("scored".into(), &[10.0.to_variant()]);
         self.just_scored = true;
     }
 
@@ -123,8 +151,9 @@ impl INode2D for SnekBoard {
         SnekBoard {
             direction: Vector2::RIGHT,
             segments: Vec::new(),
+            goals: Vec::new(),
             head_position: Vector2::new(5., 5.),
-            size: Vector2::new(20., 20.),
+            size: Vector2::new(30., 36.),
             just_scored: false,
             can_move: false,
             base,
@@ -149,7 +178,9 @@ impl INode2D for SnekBoard {
     fn input(&mut self, event: Gd<InputEvent>) {
         if self.can_move {
             for (&key, direction) in DIRECTIONS.entries() {
-                if event.is_action_pressed(key.into()) && self.direction + *direction != Vector2::ZERO {
+                if event.is_action_pressed(key.into())
+                    && self.direction + *direction != Vector2::ZERO
+                {
                     self.direction = *direction;
                     self.moved();
                     self.base().get_node_as::<Timer>("TimerMove").start();

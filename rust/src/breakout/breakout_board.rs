@@ -57,17 +57,24 @@ impl BreakoutBoard {
 
     #[func]
     fn on_broke_brick(&mut self, brick_var: Variant) {
-        self.set_color(COLOR_SUCCESS);
-        self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
-        self.base_mut()
-            .emit_signal("scored".into(), &[1.to_variant()]);
-
-        let brick = brick_var.to::<Gd<Brick>>();
+        let mut brick_has_exploded = false;
+        let mut brick = brick_var.to::<Gd<Brick>>();
         {
-            let brick_bind = brick.bind();
-            brick_bind.explode();
+            let mut brick_bind = brick.bind_mut();
+            if brick_bind.is_exploding{
+                brick_has_exploded = true;
+            }
+            else {
+                brick_bind.explode();
+            }
         }
-        self.bricks.retain(|x| *x != brick);
+        if !brick_has_exploded {
+            self.set_color(COLOR_SUCCESS);
+            self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+            self.base_mut()
+                .emit_signal("scored".into(), &[1.to_variant()]);
+            self.bricks.retain(|x| *x != brick);
+        }
     }
 
     #[func]

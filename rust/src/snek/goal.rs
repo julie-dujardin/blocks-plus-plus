@@ -14,6 +14,7 @@ impl Goal {
 
     #[func]
     fn on_area_entered(&mut self, area: Gd<Area2D>) {
+        // If this goal spawns on top of something else, delete it.
         if area.is_class("Goal".into()) {
             self.base_mut().queue_free();
         }
