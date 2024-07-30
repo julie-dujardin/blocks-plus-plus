@@ -1,9 +1,9 @@
+use crate::constants::COLOR_SUCCESS;
 use crate::snek::segment::Segment;
 use godot::classes::{InputEvent, Timer};
 use godot::prelude::*;
 use phf::phf_map;
 use rand::Rng;
-use crate::constants::COLOR_SUCCESS;
 
 const DIRECTIONS: phf::Map<&str, Vector2> = phf_map! {
     "up" => Vector2::UP,
@@ -30,6 +30,7 @@ impl SnekBoard {
     #[func]
     fn start_game(&mut self) {
         self.head_position = Vector2::new(5., 5.);
+        self.add_segment();
         self.base().get_node_as::<Timer>("TimerMove").start();
         self.base_mut().show();
     }
@@ -49,6 +50,19 @@ impl SnekBoard {
     #[func]
     fn moved(&mut self) {
         self.head_position += self.direction;
+        // Keep the snek in bounds w/ tp
+        self.head_position = Vector2::new(
+            if self.head_position.x < 0. {
+                self.size.x - 1.
+            } else {
+                self.head_position.x % self.size.x
+            },
+            if self.head_position.y < 0. {
+                self.size.y - 1.
+            } else {
+                self.head_position.y % self.size.y
+            },
+        );
         self.add_segment();
         self.segments.pop().unwrap().free();
     }
@@ -77,6 +91,8 @@ impl SnekBoard {
     }
 }
 
+// TODO: handle collisions, remove goal & score up
+
 #[godot_api]
 impl INode2D for SnekBoard {
     fn init(base: Base<Node2D>) -> Self {
@@ -90,10 +106,13 @@ impl INode2D for SnekBoard {
     }
 
     fn ready(&mut self) {
-        self.add_segment();
-
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
+            self.head_position = Vector2::new(3., 5.);
+            self.add_segment();
+            self.head_position = Vector2::new(4., 5.);
+            self.add_segment();
+
             self.start_game();
             self.base().get_node_as::<Timer>("TimerGoal").start();
         }
