@@ -115,10 +115,10 @@ jobs:
 
           mkdir export_windows
 
-          mv bin/godot.windows.template_release.exe export_windows/windows_release_x86_64.exe
-          mv bin/godot.windows.template_release.console.exe export_windows/windows_release_x86_64_console.exe
-          mv bin/godot.windows.template_debug.exe export_windows/windows_debug_x86_64.exe
-          mv bin/godot.windows.template_debug.console.exe export_windows/windows_debug_x86_64_console.exe
+          mv bin/godot.windows.template_release.x86_64.exe export_windows/windows_release_x86_64.exe
+          mv bin/godot.windows.template_release.x86_64.console.exe export_windows/windows_release_x86_64_console.exe
+          mv bin/godot.windows.template_debug.x86_64.exe export_windows/windows_debug_x86_64.exe
+          mv bin/godot.windows.template_debug.x86_64.console.exe export_windows/windows_debug_x86_64_console.exe
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
@@ -141,6 +141,7 @@ jobs:
       - name: Install macos dependencies
         run: |
           brew install scons
+          python -m pip install pyston_lite_autoload
 
           wget "https://sdk.lunarg.com/sdk/download/${VULKAN_SDK_VERSION}/mac/vulkansdk-macos-${VULKAN_SDK_VERSION}.dmg?Human=true" -O vulkansdk.dmg
           hdiutil attach vulkansdk.dmg
