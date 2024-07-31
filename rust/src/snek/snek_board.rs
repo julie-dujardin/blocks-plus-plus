@@ -132,7 +132,7 @@ impl SnekBoard {
     #[func]
     fn score_up(&mut self) {
         self.base_mut()
-            .emit_signal("scored".into(), &[10.0.to_variant()]);
+            .emit_signal("scored".into(), &[10.to_variant()]);
         self.just_scored = true;
         self.set_color(COLOR_SUCCESS);
         self.base_mut()
