@@ -132,8 +132,6 @@ jobs:
     needs: [lint-rust, build-rust]
     runs-on: ubuntu-22.04
     name: Build Godot ${{ matrix.platform.export }}
-    container:
-      image: barichello/godot-ci:4.2.2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -149,10 +147,14 @@ jobs:
         with:
           name: linux-x86_64_libblocks_plus_plus.so
           path: rust/target/x86_64-unknown-linux-gnu/debug/
-      - name: Setup  # TODO install godot at correct version, and pull export templates from artifacts
-        run: |
-          mkdir -v -p ~/.local/share/godot/export_templates/
-          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+      - name: Download custom templates
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: compile_godot.yaml
+          workflow_search: true
+          workflow_conclusion: success
+          name: templates-${{env.GODOT_VERSION}}
+          path: ~/.local/share/godot/export_templates/${{env.GODOT_VERSION}}.stable
       - name: Build
         run: |
           mkdir -v -p build/${{ matrix.platform.build_for }}
@@ -178,16 +180,15 @@ jobs:
         with:
           name: wasm32
           path: wasm32
-      - name: Publish to Netlify
-        uses: nwtgck/actions-netlify@v3.0
+      - name: Add Cloudflare Pages files
+        run: |
+          cp deploy/cloudflare-pages/* wasm32/
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
         with:
-          publish-dir: 'wasm32'
-          netlify-config-path: deploy/netlify/netlify.toml
-          production-branch: main
-          production-deploy: ${{ github.ref_name == 'main' }} 
-          alias: ${{ github.head_ref || github.ref_name }} 
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        timeout-minutes: 1
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: blocks-plus-plus
+          directory: wasm32
+          wranglerVersion: '3'
+          branch: ${{ github.head_ref || github.ref_name }}

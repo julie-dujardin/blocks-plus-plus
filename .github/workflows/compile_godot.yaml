@@ -11,8 +11,13 @@ name: compile_godot
 # - linuxbsd: 25 minutes
 # - windows: 35 minutes
 # - macos: 25 minutes
-# The github action minute cost is around (35+25) + 35*2 + 25*10 = 380 minutes per run
+# That will cost (35+25) + 35*2 + 25*10 = 380 minutes per run
 # See https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions
+# With cache (best case, 100% cache hits):
+# - web: 6 minutes
+# - linuxbsd: 5 minutes
+# - windows: 2 minutes
+# - macos: 2 minutes
 
 on:
   push:
@@ -74,7 +79,7 @@ jobs:
       - name: Upload templates
         uses: actions/upload-artifact@v4
         with:
-          name: export_web
+          name: templates-web-${{env.GODOT_VERSION}}
           path: |
             godot_sources/bin/web_dlink_release.zip
             godot_sources/bin/web_dlink_debug.zip
@@ -116,7 +121,7 @@ jobs:
       - name: Upload templates
         uses: actions/upload-artifact@v4
         with:
-          name: export_linuxbsd
+          name: templates-linuxbsd-${{env.GODOT_VERSION}}
           path: |
             godot_sources/bin/linux_release.x86_64
             godot_sources/bin/linux_debug.x86_64
@@ -159,7 +164,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: export_windows
+          name: templates-windows-${{env.GODOT_VERSION}}
           path: |
             godot_sources/bin/windows_release_x86_64.exe
             godot_sources/bin/windows_release_x86_64_console.exe
@@ -223,7 +228,7 @@ jobs:
       - name: Upload template
         uses: actions/upload-artifact@v4
         with:
-          name: export_macos
+          name: templates-macos-${{env.GODOT_VERSION}}
           path: godot_sources/macos_template.app
 
   build-export-archive:
@@ -239,5 +244,5 @@ jobs:
       - name: Upload export templates
         uses: actions/upload-artifact@v4
         with:
-          name: templates_${{env.GODOT_VERSION}}
+          name: templates-${{env.GODOT_VERSION}}
           path: templates
