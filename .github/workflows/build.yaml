@@ -4,8 +4,13 @@ on: push
 
 env:
   CARGO_TERM_COLOR: always
+  EMSCRIPTEN_VERSION: 3.1.39
   GODOT_VERSION: 4.2.2
   GODOT_PROJECT_PATH: godot
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint-rust:
@@ -67,7 +72,7 @@ jobs:
         if: contains(matrix.platform.target, 'wasm')
         uses: mymindstorm/setup-emsdk@v14
         with:
-          version: 3.1.39
+          version: ${{env.EMSCRIPTEN_VERSION}}
           actions-cache-folder: 'emsdk-cache'
       - name: Cache
         uses: Swatinem/rust-cache@v2
