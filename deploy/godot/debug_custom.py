@@ -1,7 +1,6 @@
 # Generated using https://godot-build-options-generator.github.io
 
 dlink_enabled = "yes"
-production = "yes"
 disable_3d = "yes"
 optimize = "size"
 disable_advanced_gui = "yes"
@@ -46,3 +45,6 @@ module_webrtc_enabled = "no"
 module_websocket_enabled = "no"
 module_webxr_enabled = "no"
 module_zip_enabled = "no"
+
+production = "no"
+debug_symbols = "yes"
