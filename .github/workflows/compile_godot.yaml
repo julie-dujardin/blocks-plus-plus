@@ -42,15 +42,15 @@ jobs:
           scons platform=web target=template_release
           scons platform=web target=template_debug
 
-          mkdir export_web
-
-          mv bin/godot.web.template_release.wasm32.dlink.zip export_web/web_dlink_release.zip
-          mv bin/godot.web.template_debug.wasm32.dlink.zip export_web/web_dlink_debug.zip
+          mv bin/godot.web.template_release.wasm32.dlink.zip bin/web_dlink_release.zip
+          mv bin/godot.web.template_debug.wasm32.dlink.zip bin/web_dlink_debug.zip
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: export_web
-          path: export_web
+          path: |
+            godot_sources/bin/web_dlink_release.zip
+            godot_sources/bin/web_dlink_debug.zip
   
   compile-linux:
     name: Compile linuxbsd
@@ -78,15 +78,15 @@ jobs:
           scons platform=linuxbsd target=template_release arch=x86_64
           scons platform=linuxbsd target=template_debug arch=x86_64
 
-          mkdir export_linuxbsd
-
-          mv bin/godot.linuxbsd.template_release.x86_64 export_linuxbsd/linux_release.x86_64
-          mv bin/godot.linuxbsd.template_debug.x86_64 export_linuxbsd/linux_debug.x86_64
+          mv bin/godot.linuxbsd.template_release.x86_64 bin/linux_release.x86_64
+          mv bin/godot.linuxbsd.template_debug.x86_64 bin/linux_debug.x86_64
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: export_linuxbsd
-          path: export_linuxbsd
+          path: |
+            godot_sources/bin/linux_release.x86_64
+            godot_sources/bin/linux_debug.x86_64
     
   compile-windows:
     name: Compile windows
@@ -113,17 +113,19 @@ jobs:
           scons platform=windows target=template_release arch=x86_64
           scons platform=windows target=template_debug arch=x86_64
 
-          mkdir export_windows
-
-          mv bin/godot.windows.template_release.x86_64.exe export_windows/windows_release_x86_64.exe
-          mv bin/godot.windows.template_release.x86_64.console.exe export_windows/windows_release_x86_64_console.exe
-          mv bin/godot.windows.template_debug.x86_64.exe export_windows/windows_debug_x86_64.exe
-          mv bin/godot.windows.template_debug.x86_64.console.exe export_windows/windows_debug_x86_64_console.exe
+          mv bin/godot.windows.template_release.x86_64.exe bin/windows_release_x86_64.exe
+          mv bin/godot.windows.template_release.x86_64.console.exe bin/windows_release_x86_64_console.exe
+          mv bin/godot.windows.template_debug.x86_64.exe bin/windows_debug_x86_64.exe
+          mv bin/godot.windows.template_debug.x86_64.console.exe bin/windows_debug_x86_64_console.exe
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: export_windows
-          path: export_windows
+          path: |
+            godot_sources/bin/windows_release_x86_64.exe
+            godot_sources/bin/windows_release_x86_64_console.exe
+            godot_sources/bin/windows_debug_x86_64.exe
+            godot_sources/bin/windows_debug_x86_64_console.exe
     
   compile-macos:
     name: Compile macos
@@ -141,8 +143,8 @@ jobs:
       - name: Install macos dependencies
         run: |
           brew install scons
-          python -m pip install pyston_lite_autoload
-
+          
+          # shamelessly copied from https://github.com/bruvzg/gdsdecomp/blob/master/.github/actions/install-swiftshader/action.yml
           wget "https://sdk.lunarg.com/sdk/download/${VULKAN_SDK_VERSION}/mac/vulkansdk-macos-${VULKAN_SDK_VERSION}.dmg?Human=true" -O vulkansdk.dmg
           hdiutil attach vulkansdk.dmg
           sudo /Volumes/vulkansdk-macos-${VULKAN_SDK_VERSION}/InstallVulkan.app/Contents/MacOS/InstallVulkan --root $GITHUB_WORKSPACE/vulkansdk-macos-${VULKAN_SDK_VERSION} --accept-licenses --default-answer --confirm-command install
@@ -178,3 +180,19 @@ jobs:
         with:
           name: export_macos
           path: macos_template.app
+
+  build-export-archive:
+    name: Build export archive
+    runs-on: ubuntu-22.04
+    needs: [compile-linux, compile-web, compile-macos, compile-windows]
+    steps:
+      - name: Download all builds
+        uses: actions/download-artifact@v4
+        with:
+          path: templates
+          merge-multiple: true
+      - name: Upload export templates
+        uses: actions/upload-artifact@v4
+        with:
+          name: templates_4.2.2
+          path: templates
