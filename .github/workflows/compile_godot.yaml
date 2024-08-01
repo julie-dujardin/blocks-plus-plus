@@ -184,7 +184,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: export_macos
-          path: macos_template.app
+          path: godot_sources/macos_template.app
 
   build-export-archive:
     name: Build export archive
