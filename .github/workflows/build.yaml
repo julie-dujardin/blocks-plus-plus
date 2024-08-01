@@ -137,6 +137,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v1
+        with:
+          version: ${{ env.GODOT_VERSION }}-stable
+          use-dotnet: false
+          path: godot-bin
+
       - name: Download rust bin
         uses: actions/download-artifact@v4
         with:
@@ -153,10 +161,12 @@ jobs:
           workflow: compile_godot.yaml
           workflow_search: true
           workflow_conclusion: success
-          name: templates-${{env.GODOT_VERSION}}
-          path: ~/.local/share/godot/export_templates/${{env.GODOT_VERSION}}.stable
+          name: templates-${{ env.GODOT_VERSION }}
+          path: /home/runner/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/
+
       - name: Build
         run: |
+          tree /home/runner/.local/share/godot
           mkdir -v -p build/${{ matrix.platform.build_for }}
           cd $GODOT_PROJECT_PATH
           godot --headless --verbose --export-release ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${{ matrix.platform.export_name }}
