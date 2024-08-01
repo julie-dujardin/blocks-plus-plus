@@ -229,7 +229,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: templates-macos-${{env.GODOT_VERSION}}
-          path: godot_sources/macos_template.app
+          path: godot_sources/macos.zip
 
   build-export-archive:
     name: Build export archive
