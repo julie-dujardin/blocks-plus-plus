@@ -1,8 +1,12 @@
 use crate::breakout::brick::Brick;
+use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 use godot::builtin::Vector2;
 use godot::classes::{CharacterBody2D, ICharacterBody2D, StaticBody2D};
 use godot::obj::{Base, WithBaseField};
 use godot::prelude::{godot_api, GodotClass, ToGodot};
+use rand::Rng;
+
+const BONUS_CHANCE: f64 = 0.1;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -10,6 +14,7 @@ pub struct Ball {
     #[export]
     start_speed: f32,
     current_velocity: Vector2,
+    pub bonus_active: bool,
 
     base: Base<CharacterBody2D>,
 }
@@ -40,6 +45,15 @@ impl Ball {
             self.base_mut().set_velocity(Vector2::ZERO);
         }
     }
+
+    fn set_bonus(&mut self, active: bool) {
+        self.bonus_active = active;
+        self.base_mut().set_modulate(if active {
+            COLOR_SUCCESS
+        } else {
+            COLOR_FOREGROUND
+        });
+    }
 }
 
 #[godot_api]
@@ -48,6 +62,7 @@ impl ICharacterBody2D for Ball {
         Ball {
             start_speed: 200.,
             current_velocity: Vector2::ZERO,
+            bonus_active: false,
             base,
         }
     }
@@ -65,20 +80,29 @@ impl ICharacterBody2D for Ball {
                 self.current_velocity.x = -current_velocity.x;
             }
 
+            let mut rng = rand::thread_rng();
             for slide in 0..self.base().get_slide_collision_count() {
                 let collision_opt = self.base_mut().get_slide_collision(slide);
                 if let Some(collision) = collision_opt {
                     let collider_opt = collision.get_collider();
                     if let Some(collider) = collider_opt {
                         if let Ok(brick) = collider.clone().try_cast::<Brick>() {
-                            self.base_mut()
-                                .emit_signal("broke_brick".into(), &[brick.to_variant()]);
+                            let bonus_active = self.bonus_active;
+                            self.base_mut().emit_signal(
+                                "broke_brick".into(),
+                                &[brick.to_variant(), bonus_active.to_variant()],
+                            );
+                            self.set_bonus(false);
                         } else if let Ok(area) = collider.try_cast::<StaticBody2D>() {
                             if area.get_name() == "Bottom".into() {
                                 self.handle_game_over();
                             }
                         }
                     }
+                }
+
+                if !self.bonus_active && rng.gen::<f64>() < BONUS_CHANCE {
+                    self.set_bonus(true);
                 }
             }
         }

@@ -26,6 +26,9 @@ impl BreakoutBoard {
     #[signal]
     fn scored();
 
+    #[signal]
+    fn next_game_activate();
+
     #[func]
     fn reset(&mut self) {
         let mut player = self.base().get_node_as::<BreakoutPlayer>("BreakoutPlayer");
@@ -56,7 +59,7 @@ impl BreakoutBoard {
     }
 
     #[func]
-    fn on_broke_brick(&mut self, brick_var: Variant) {
+    fn on_broke_brick(&mut self, brick_var: Variant, super_ball: Variant) {
         let mut brick_has_exploded = false;
         let mut brick = brick_var.to::<Gd<Brick>>();
         {
@@ -73,6 +76,11 @@ impl BreakoutBoard {
             self.base_mut()
                 .emit_signal("scored".into(), &[1.to_variant()]);
             self.bricks.retain(|x| *x != brick);
+
+            if super_ball.to::<bool>() {
+                self.base_mut()
+                    .emit_signal("next_game_activate".into(), &[]);
+            }
         }
     }
 

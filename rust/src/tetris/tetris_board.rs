@@ -365,7 +365,6 @@ impl TetrisBoard {
         if let Some(piece) = &mut self.active_piece {
             let piece_bind = piece.bind();
             let (top_left, bottom_right) = piece_bind.get_bounds();
-            godot_print!("{} {}", top_left, bottom_right);
             let block_width = piece_bind.block_size.x;
             line_left.set_position(Vector2::new(top_left.x * block_width, 0.));
             line_right.set_position(Vector2::new((bottom_right.x + 1.) * block_width, 0.));
