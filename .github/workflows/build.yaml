@@ -170,6 +170,8 @@ jobs:
           mkdir -v -p build/${{ matrix.platform.build_for }}
           cd $GODOT_PROJECT_PATH
           godot --headless --verbose --export-release ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${{ matrix.platform.export_name }}
+        env:
+          GODOT_URL: https://godot-engine.static.ilus.pw/index.side.wasm
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
@@ -192,12 +194,25 @@ jobs:
       - name: Add Cloudflare Pages files
         run: |
           cp deploy/cloudflare-pages/* wasm32/
+          mkdir wasm32engine
+          mv wasm32/index.side.wasm ./wasm32engine  # exclude the engine file from cloudflare pages because it's too big
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.PAGES_API_TOKEN }}
+          accountId: ${{ secrets.PAGES_ACCOUNT_ID }}
           projectName: blocks-plus-plus
           directory: wasm32
           wranglerVersion: '3'
           branch: ${{ github.head_ref || github.ref_name }}
+      - name: Upload engine to cloudflare R2
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --delete
+        env:
+          AWS_S3_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_REGION: auto
+          SOURCE_DIR: wasm32engine
