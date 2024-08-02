@@ -1,4 +1,4 @@
-use godot::classes::{Button, Os};
+use godot::classes::{Button, InputEvent, Os};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
@@ -24,12 +24,11 @@ impl Hud {
     }
 
     #[func]
-    fn on_game_over_timer_timeout(&mut self) {
+    fn reset(&mut self) {
         self.base()
             .get_node_as::<Button>("ButtonPlay")
             .set_text("Replay".into());
         self.base_mut().show();
-        self.base().get_node_as::<Button>("ButtonPlay").grab_focus();
     }
 }
 
@@ -44,5 +43,18 @@ impl INode2D for Hud {
             self.base().get_node_as::<Button>("ButtonQuit").hide();
         }
         self.base().get_node_as::<Button>("ButtonPlay").grab_focus();
+    }
+
+    fn input(&mut self, event: Gd<InputEvent>) {
+        if !self.base().get_node_as::<Button>("ButtonPlay").has_focus()
+            && !self.base().get_node_as::<Button>("ButtonQuit").has_focus()
+        {
+            for action in ["ui_up", "ui_left", "ui_down", "ui_right"] {
+                if event.is_action_pressed(action.into()) {
+                    self.base().get_node_as::<Button>("ButtonPlay").grab_focus();
+                    return;
+                }
+            }
+        }
     }
 }

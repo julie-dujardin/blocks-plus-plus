@@ -56,7 +56,7 @@ impl Select {
     fn handle_game_over(&mut self) {
         self.game_over = true;
 
-        self.base_mut().get_node_as::<Timer>("TimerSuccess").stop();
+        self.base().get_node_as::<Timer>("TimerSuccess").stop();
     }
 
     fn check_input(&mut self, input: InputOptions) {
@@ -89,7 +89,7 @@ impl Select {
             let mut tetris_board = tetris_board.bind_mut();
             tetris_board.add_next_piece(self.piece.clone());
 
-            self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+            self.base().get_node_as::<Timer>("TimerSuccess").start();
         }
     }
 

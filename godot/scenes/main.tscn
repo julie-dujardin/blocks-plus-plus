@@ -53,10 +53,6 @@ position = Vector2(864, 120)
 
 [node name="Hud" parent="." instance=ExtResource("3_rms5c")]
 
-[node name="TimerGameOver" type="Timer" parent="."]
-wait_time = 3.0
-one_shot = true
-
 [node name="LabelGameOver" type="Label" parent="."]
 visible = false
 offset_top = 512.0
@@ -92,6 +88,10 @@ horizontal_alignment = 2
 wait_time = 0.4
 one_shot = true
 
+[node name="TimerGameOver" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
 [connection signal="global_game_over" from="." to="Tetris" method="on_parent_game_over"]
 [connection signal="global_game_over" from="." to="Select0" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="Select1" method="handle_game_over"]
@@ -99,6 +99,14 @@ one_shot = true
 [connection signal="global_game_over" from="." to="Select3" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="BreakoutBoard" method="on_parent_game_over"]
 [connection signal="global_game_over" from="." to="SnekBoard" method="on_parent_game_over"]
+[connection signal="global_game_over_timeout" from="." to="Tetris" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="Select0" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="Select1" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="Select2" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="Select3" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="BreakoutBoard" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="SnekBoard" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="Hud" method="reset"]
 [connection signal="game_over" from="Tetris" to="." method="on_game_over"]
 [connection signal="scored" from="Tetris" to="." method="on_score_up"]
 [connection signal="game_over" from="BreakoutBoard" to="." method="on_game_over"]
@@ -107,13 +115,5 @@ one_shot = true
 [connection signal="game_over" from="SnekBoard" to="." method="on_game_over"]
 [connection signal="scored" from="SnekBoard" to="." method="on_score_up"]
 [connection signal="start_game" from="Hud" to="." method="start_game"]
-[connection signal="timeout" from="TimerGameOver" to="." method="on_game_over_timer_timeout"]
-[connection signal="timeout" from="TimerGameOver" to="Tetris" method="reset_board"]
-[connection signal="timeout" from="TimerGameOver" to="Select0" method="reset"]
-[connection signal="timeout" from="TimerGameOver" to="Select1" method="reset"]
-[connection signal="timeout" from="TimerGameOver" to="Select2" method="reset"]
-[connection signal="timeout" from="TimerGameOver" to="Select3" method="reset"]
-[connection signal="timeout" from="TimerGameOver" to="BreakoutBoard" method="reset"]
-[connection signal="timeout" from="TimerGameOver" to="SnekBoard" method="reset"]
-[connection signal="timeout" from="TimerGameOver" to="Hud" method="on_game_over_timer_timeout"]
 [connection signal="timeout" from="TimerScoreUpTimeout" to="." method="reset_score_color"]
+[connection signal="timeout" from="TimerGameOver" to="." method="on_game_over_timer_timeout"]

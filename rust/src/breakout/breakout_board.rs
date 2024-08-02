@@ -69,7 +69,7 @@ impl BreakoutBoard {
         }
         if !brick_has_exploded {
             self.set_color(COLOR_SUCCESS);
-            self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+            self.base().get_node_as::<Timer>("TimerSuccess").start();
             self.base_mut()
                 .emit_signal("scored".into(), &[1.to_variant()]);
             self.bricks.retain(|x| *x != brick);
@@ -84,7 +84,7 @@ impl BreakoutBoard {
     #[func]
     fn on_parent_game_over(&mut self) {
         self.set_movement(false);
-        self.base_mut().get_node_as::<Timer>("TimerSuccess").stop();
+        self.base().get_node_as::<Timer>("TimerSuccess").stop();
     }
 
     #[func]
@@ -144,7 +144,7 @@ impl INode2D for BreakoutBoard {
             self.base_mut().show();
             self.set_movement(true);
             self.push_new_line(3);
-            self.base_mut().get_node_as::<Timer>("TimerNewLine").start();
+            self.base().get_node_as::<Timer>("TimerNewLine").start();
         } else {
             self.set_movement(false);
         }

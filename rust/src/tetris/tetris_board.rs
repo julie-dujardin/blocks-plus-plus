@@ -26,7 +26,7 @@ impl TetrisBoard {
     fn scored();
 
     #[func]
-    fn reset_board(&mut self) {
+    fn reset(&mut self) {
         let mut piece_down_timer = self.base().get_node_as::<Timer>("TimerPieceDown");
         piece_down_timer.stop();
 
@@ -73,7 +73,7 @@ impl TetrisBoard {
     #[func]
     fn on_parent_game_over(&mut self) {
         self.game_over = true;
-        self.base_mut().get_node_as::<Timer>("TimerSuccess").stop();
+        self.base().get_node_as::<Timer>("TimerSuccess").stop();
     }
 
     fn handle_game_over(&mut self, no_piece_left: bool) {
@@ -97,7 +97,7 @@ impl TetrisBoard {
         self.base_mut()
             .get_node_as::<ColorRect>("BorderBoard")
             .set_modulate(COLOR_SUCCESS);
-        self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+        self.base().get_node_as::<Timer>("TimerSuccess").start();
         self.base_mut()
             .emit_signal("scored".into(), &[(count as i64 * 3).to_variant()]);
 
