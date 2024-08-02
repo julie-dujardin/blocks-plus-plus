@@ -2,7 +2,7 @@ use crate::breakout::breakout_board::BreakoutBoard;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
-use godot::classes::{InputEvent, NinePatchRect, Timer};
+use godot::classes::{ColorRect, InputEvent, NinePatchRect, Timer};
 use godot::engine::Line2D;
 use godot::prelude::*;
 use std::collections::HashSet;
@@ -52,6 +52,7 @@ impl TetrisBoard {
             piece.clone().free();
         }
         self.active_piece = None;
+        self.base().get_node_as::<ColorRect>("NextFail").hide();
 
         self.base_mut().hide();
         self.reset_color();
@@ -270,6 +271,7 @@ impl TetrisBoard {
             match piece_opt {
                 None => {
                     if self.active_piece.is_none() {
+                        self.base().get_node_as::<ColorRect>("NextFail").show();
                         self.handle_game_over(true);
                     }
                 }
