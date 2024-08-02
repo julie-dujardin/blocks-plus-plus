@@ -191,11 +191,15 @@ jobs:
         with:
           name: wasm32
           path: wasm32
-      - name: Add Cloudflare Pages files
+      - name: Prepare cloudflare publish
         run: |
           cp deploy/cloudflare-pages/* wasm32/
+          # exclude the engine file from cloudflare pages because it's too big
           mkdir wasm32engine
-          mv wasm32/index.side.wasm ./wasm32engine  # exclude the engine file from cloudflare pages because it's too big
+          mv wasm32/index.side.wasm ./wasm32engine
+          # ugly hack to force godot to pull the engine from another domain
+          sed -e '/readAsync = (url, onload, onerror) => {/{r deploy/templates/readAsyncNew' -e 'd;}' wasm32/index.js > _index.js
+          mv _index.js wasm32/index.js
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
