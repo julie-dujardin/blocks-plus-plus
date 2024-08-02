@@ -48,3 +48,4 @@ module_zip_enabled = "no"
 
 production = "yes"
 debug_symbols = "no"
+lto = "full"
