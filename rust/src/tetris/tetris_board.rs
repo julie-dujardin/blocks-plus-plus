@@ -2,7 +2,8 @@ use crate::breakout::breakout_board::BreakoutBoard;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
-use godot::classes::{ColorRect, InputEvent, Timer};
+use godot::classes::{ColorRect, InputEvent, NinePatchRect, Timer};
+use godot::engine::Line2D;
 use godot::prelude::*;
 use std::collections::HashSet;
 
@@ -26,7 +27,7 @@ impl TetrisBoard {
     fn scored();
 
     #[func]
-    fn reset_board(&mut self) {
+    fn reset(&mut self) {
         let mut piece_down_timer = self.base().get_node_as::<Timer>("TimerPieceDown");
         piece_down_timer.stop();
 
@@ -51,6 +52,7 @@ impl TetrisBoard {
             piece.clone().free();
         }
         self.active_piece = None;
+        self.base().get_node_as::<ColorRect>("NextFail").hide();
 
         self.base_mut().hide();
         self.reset_color();
@@ -63,17 +65,17 @@ impl TetrisBoard {
 
     fn set_color(&mut self, color: Color) {
         self.base_mut()
-            .get_node_as::<ColorRect>("BorderBoard")
+            .get_node_as::<NinePatchRect>("BorderBoard")
             .set_modulate(color);
         self.base_mut()
-            .get_node_as::<ColorRect>("BorderNext")
+            .get_node_as::<NinePatchRect>("BorderNext")
             .set_modulate(color);
     }
 
     #[func]
     fn on_parent_game_over(&mut self) {
         self.game_over = true;
-        self.base_mut().get_node_as::<Timer>("TimerSuccess").stop();
+        self.base().get_node_as::<Timer>("TimerSuccess").stop();
     }
 
     fn handle_game_over(&mut self, no_piece_left: bool) {
@@ -83,11 +85,11 @@ impl TetrisBoard {
 
             if no_piece_left {
                 self.base_mut()
-                    .get_node_as::<ColorRect>("BorderNext")
+                    .get_node_as::<NinePatchRect>("BorderNext")
                     .set_modulate(COLOR_FAILURE);
             } else {
                 self.base_mut()
-                    .get_node_as::<ColorRect>("BorderBoard")
+                    .get_node_as::<NinePatchRect>("BorderBoard")
                     .set_modulate(COLOR_FAILURE);
             }
         }
@@ -95,9 +97,9 @@ impl TetrisBoard {
 
     fn score_up(&mut self, count: usize) {
         self.base_mut()
-            .get_node_as::<ColorRect>("BorderBoard")
+            .get_node_as::<NinePatchRect>("BorderBoard")
             .set_modulate(COLOR_SUCCESS);
-        self.base_mut().get_node_as::<Timer>("TimerSuccess").start();
+        self.base().get_node_as::<Timer>("TimerSuccess").start();
         self.base_mut()
             .emit_signal("scored".into(), &[(count as i64 * 3).to_variant()]);
 
@@ -243,7 +245,7 @@ impl TetrisBoard {
         piece.clone().reparent(self.base_mut().to_godot().upcast());
         let background_position = self
             .base()
-            .get_node_as::<ColorRect>("BorderNext")
+            .get_node_as::<NinePatchRect>("BorderNext")
             .get_position()
             + Vector2::new(1., 25.);
         piece.set_position(background_position);
@@ -269,6 +271,7 @@ impl TetrisBoard {
             match piece_opt {
                 None => {
                     if self.active_piece.is_none() {
+                        self.base().get_node_as::<ColorRect>("NextFail").show();
                         self.handle_game_over(true);
                     }
                 }
@@ -354,6 +357,24 @@ impl TetrisBoard {
             self.left_piece();
         }
     }
+
+    fn update_piece_side_lines(&mut self) {
+        let mut line_left = self.base().get_node_as::<Line2D>("LineLeft");
+        let mut line_right = self.base().get_node_as::<Line2D>("LineRight");
+
+        if let Some(piece) = &mut self.active_piece {
+            let piece_bind = piece.bind();
+            let (top_left, bottom_right) = piece_bind.get_bounds();
+            let block_width = piece_bind.block_size.x;
+            line_left.set_position(Vector2::new(top_left.x * block_width, 0.));
+            line_right.set_position(Vector2::new((bottom_right.x + 1.) * block_width, 0.));
+            line_left.set_visible(true);
+            line_right.set_visible(true);
+        } else {
+            line_left.set_visible(false);
+            line_right.set_visible(false);
+        }
+    }
 }
 
 #[godot_api]
@@ -376,17 +397,16 @@ impl INode2D for TetrisBoard {
 
     fn input(&mut self, event: Gd<InputEvent>) {
         if self.active_piece.is_some() && !self.game_over {
-            {
-                if event.is_action_pressed("down".into()) {
-                    self.drop_piece();
-                } else if event.is_action_pressed("up".into()) {
-                    self.rotate_piece(true);
-                } else if event.is_action_pressed("left".into()) {
-                    self.left_piece();
-                } else if event.is_action_pressed("right".into()) {
-                    self.right_piece();
-                }
+            if event.is_action_pressed("down".into()) {
+                self.drop_piece();
+            } else if event.is_action_pressed("up".into()) {
+                self.rotate_piece(true);
+            } else if event.is_action_pressed("left".into()) {
+                self.left_piece();
+            } else if event.is_action_pressed("right".into()) {
+                self.right_piece();
             }
+            self.update_piece_side_lines()
         }
     }
 

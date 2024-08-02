@@ -1,13 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://c0db36lq71vga"]
+[gd_scene load_steps=3 format=3 uid="uid://c0db36lq71vga"]
 
+[ext_resource type="Texture2D" uid="uid://bhyikh5pbxpug" path="res://assets/solid_white.tres" id="1_2j5tb"]
 [ext_resource type="Texture2D" uid="uid://606cfa0hbeu1" path="res://assets/arrow.png" id="1_twxun"]
-
-[sub_resource type="Gradient" id="Gradient_kxo7r"]
-interpolation_mode = 1
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_a7ad7"]
-gradient = SubResource("Gradient_kxo7r")
 
 [node name="Key" type="MarginContainer"]
 offset_right = 18.0
@@ -21,7 +15,7 @@ metadata/_edit_group_ = true
 
 [node name="Border" type="NinePatchRect" parent="."]
 layout_mode = 2
-texture = SubResource("GradientTexture1D_a7ad7")
+texture = ExtResource("1_2j5tb")
 draw_center = false
 patch_margin_left = 1
 patch_margin_top = 1

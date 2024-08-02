@@ -1,11 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://cxvksyqghera3"]
+[gd_scene load_steps=2 format=3 uid="uid://cxvksyqghera3"]
 
-[sub_resource type="Gradient" id="Gradient_pmyag"]
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_1fljw"]
-gradient = SubResource("Gradient_pmyag")
-width = 1
+[ext_resource type="Texture2D" uid="uid://bhyikh5pbxpug" path="res://assets/solid_white.tres" id="1_xgn7w"]
 
 [node name="SnekBoard" type="SnekBoard"]
 
@@ -26,7 +21,7 @@ offset_left = -1.0
 offset_top = -1.0
 offset_right = 241.0
 offset_bottom = 289.0
-texture = SubResource("GradientTexture1D_1fljw")
+texture = ExtResource("1_xgn7w")
 draw_center = false
 patch_margin_left = 1
 patch_margin_top = 1

@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1g51jjhyvob0"]
+[gd_scene load_steps=4 format=3 uid="uid://d1g51jjhyvob0"]
 
 [ext_resource type="FontFile" uid="uid://tvarju4030k4" path="res://assets/font/Pixel.ttf" id="1_ai8ig"]
+[ext_resource type="Texture2D" uid="uid://bhyikh5pbxpug" path="res://assets/solid_white.tres" id="1_mpu4e"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_wqpwt"]
 font = ExtResource("1_ai8ig")
@@ -8,11 +9,16 @@ font_size = 18
 
 [node name="Tetris" type="TetrisBoard"]
 
-[node name="BorderBoard" type="ColorRect" parent="."]
-offset_left = -1.0
-offset_top = -1.0
-offset_right = 201.0
-offset_bottom = 401.0
+[node name="BorderBoard" type="NinePatchRect" parent="."]
+z_index = 9
+offset_right = 202.0
+offset_bottom = 402.0
+texture = ExtResource("1_mpu4e")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
 
 [node name="BackgroundBoard" type="ColorRect" parent="."]
 offset_right = 200.0
@@ -20,16 +26,23 @@ offset_bottom = 400.0
 color = Color(0, 0, 0, 1)
 
 [node name="Line2D" type="Line2D" parent="BackgroundBoard"]
+z_index = 2
 position = Vector2(0, 80)
 points = PackedVector2Array(0, 0, 200, 0)
 width = 1.0
 default_color = Color(0.863436, 4.33177e-07, 1.05888e-06, 1)
 
-[node name="BorderNext" type="ColorRect" parent="."]
+[node name="BorderNext" type="NinePatchRect" parent="."]
 offset_left = 223.0
 offset_top = -1.0
 offset_right = 349.0
 offset_bottom = 90.0
+texture = ExtResource("1_mpu4e")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
 
 [node name="BackgroundNext" type="ColorRect" parent="BorderNext"]
 layout_mode = 0
@@ -49,11 +62,31 @@ text = "Next"
 label_settings = SubResource("LabelSettings_wqpwt")
 horizontal_alignment = 1
 
+[node name="NextFail" type="ColorRect" parent="."]
+visible = false
+offset_left = 230.0
+offset_top = 28.0
+offset_right = 342.0
+offset_bottom = 83.0
+color = Color(0.862745, 0, 0, 1)
+
 [node name="TimerPieceDown" type="Timer" parent="."]
 autostart = true
 
 [node name="TimerSuccess" type="Timer" parent="."]
 wait_time = 0.4
+
+[node name="LineLeft" type="Line2D" parent="."]
+position = Vector2(-8, 0)
+points = PackedVector2Array(0, 0, 0, 400)
+width = 1.0
+default_color = Color(0.32549, 0.32549, 0.32549, 1)
+
+[node name="LineRight" type="Line2D" parent="."]
+position = Vector2(-8, 0)
+points = PackedVector2Array(0, 0, 0, 400)
+width = 1.0
+default_color = Color(0.32549, 0.32549, 0.32549, 1)
 
 [connection signal="timeout" from="TimerPieceDown" to="." method="down_piece"]
 [connection signal="timeout" from="TimerSuccess" to="." method="reset_color"]

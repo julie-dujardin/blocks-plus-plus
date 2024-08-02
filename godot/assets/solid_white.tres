@@ -1,0 +1,12 @@
+[gd_resource type="GradientTexture1D" load_steps=2 format=3 uid="uid://bhyikh5pbxpug"]
+
+[sub_resource type="Gradient" id="Gradient_doqu0"]
+resource_local_to_scene = true
+resource_name = "white_gradient"
+interpolation_mode = 1
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[resource]
+resource_local_to_scene = true
+resource_name = "solid_white"
+gradient = SubResource("Gradient_doqu0")

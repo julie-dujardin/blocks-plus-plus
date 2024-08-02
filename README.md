@@ -4,6 +4,8 @@ Do you feel like tetris is too easy? Think you're good at multitasking?
 
 Play Blocks++ now at [blocks.ilus.pw](https://blocks.ilus.pw/) (chromium-based browsers only), or [download for desktop](https://github.com/julie-42/blocks-plus-plus/releases)!
 
+![4k gameplay screenshot](docs/screenshot_4k.png)
+
 Built with [Godot-Rust](https://github.com/godot-rust/gdext).
 
 ## Development

@@ -1,6 +1,6 @@
 use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::select::Select;
-use godot::classes::{Label, Timer};
+use godot::classes::{InputEvent, Label, Timer};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
@@ -8,6 +8,7 @@ use godot::prelude::*;
 pub struct MainBoard {
     score: i64,
     high_score: i64,
+    is_in_game_over: bool,
 
     base: Base<Node2D>,
 }
@@ -17,6 +18,9 @@ impl MainBoard {
     #[signal]
     fn global_game_over();
 
+    #[signal]
+    fn global_game_over_timeout();
+
     #[func]
     fn start_game(&mut self) {
         self.score = 0;
@@ -24,16 +28,16 @@ impl MainBoard {
             .get_node_as::<Label>("Score/LabelScore")
             .set_text("Score 0".into());
 
-        self.base_mut().get_node_as::<Select>("Select0").show();
-        self.base_mut().get_node_as::<Select>("Select1").show();
-        self.base_mut().get_node_as::<Select>("Select2").show();
-        self.base_mut().get_node_as::<Select>("Select3").show();
-        self.base_mut().get_node_as::<Node2D>("Score").show();
+        self.base().get_node_as::<Select>("Select0").show();
+        self.base().get_node_as::<Select>("Select1").show();
+        self.base().get_node_as::<Select>("Select2").show();
+        self.base().get_node_as::<Select>("Select3").show();
+        self.base().get_node_as::<Node2D>("Score").show();
     }
 
     #[func]
     fn on_game_over(&mut self) {
-        self.base_mut().get_node_as::<Label>("LabelGameOver").show();
+        self.base().get_node_as::<Label>("LabelGameOver").show();
         self.base_mut()
             .get_node_as::<Timer>("TimerGameOver")
             .start();
@@ -42,24 +46,30 @@ impl MainBoard {
             .stop();
 
         self.base_mut().emit_signal("global_game_over".into(), &[]);
+        self.is_in_game_over = true;
     }
 
     #[func]
     fn on_game_over_timer_timeout(&mut self) {
-        self.reset_score_color();
-        self.base_mut().get_node_as::<Label>("LabelGameOver").hide();
+        if self.is_in_game_over {
+            self.is_in_game_over = false;
+            self.reset_score_color();
+            self.base().get_node_as::<Label>("LabelGameOver").hide();
+            self.base_mut()
+                .emit_signal("global_game_over_timeout".into(), &[]);
+        }
     }
 
     #[func]
     fn on_score_up(&mut self, count: Variant) {
         self.score += count.to::<i64>();
-        let mut score_label = self.base_mut().get_node_as::<Label>("Score/LabelScore");
+        let mut score_label = self.base().get_node_as::<Label>("Score/LabelScore");
         score_label.set_text(format!("Score {}", self.score).into());
         score_label.set_modulate(COLOR_SUCCESS);
 
         if self.score > self.high_score {
             self.high_score = self.score;
-            let mut high_score_label = self.base_mut().get_node_as::<Label>("Score/LabelHigh");
+            let mut high_score_label = self.base().get_node_as::<Label>("Score/LabelHigh");
             high_score_label.set_text(format!("High {}", self.score).into());
             high_score_label.set_modulate(COLOR_SUCCESS);
         }
@@ -86,7 +96,14 @@ impl INode2D for MainBoard {
         MainBoard {
             score: 0,
             high_score: 0,
+            is_in_game_over: false,
             base,
+        }
+    }
+
+    fn input(&mut self, event: Gd<InputEvent>) {
+        if self.is_in_game_over && event.is_action_pressed("ui_accept".into()) {
+            self.on_game_over_timer_timeout();
         }
     }
 }

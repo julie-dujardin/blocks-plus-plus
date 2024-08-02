@@ -1,8 +1,7 @@
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::snek::goal::Goal;
 use crate::snek::segment::Segment;
-use godot::classes::{InputEvent, NinePatchRect, Timer};
-use godot::engine::ColorRect;
+use godot::classes::{ColorRect, InputEvent, NinePatchRect, Timer};
 use godot::prelude::*;
 use phf::phf_map;
 use rand::Rng;
@@ -39,7 +38,7 @@ impl SnekBoard {
     fn scored();
 
     #[func]
-    fn on_previous_scored_up(&mut self, _count: Variant) {
+    fn on_previous_scored_up(&mut self) {
         if self.can_move {
             self.add_goal();
         } else {
@@ -132,7 +131,7 @@ impl SnekBoard {
     #[func]
     fn score_up(&mut self) {
         self.base_mut()
-            .emit_signal("scored".into(), &[10.to_variant()]);
+            .emit_signal("scored".into(), &[4.to_variant()]);
         self.just_scored = true;
         self.set_color(COLOR_SUCCESS);
         self.base_mut()
@@ -178,15 +177,15 @@ impl INode2D for SnekBoard {
     }
 
     fn ready(&mut self) {
+        self.head_position = Vector2::new(2., 5.);
+        self.add_segment();
+        self.head_position = Vector2::new(3., 5.);
+        self.add_segment();
+        self.head_position = Vector2::new(4., 5.);
+        self.add_segment();
+
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
-            self.head_position = Vector2::new(2., 5.);
-            self.add_segment();
-            self.head_position = Vector2::new(3., 5.);
-            self.add_segment();
-            self.head_position = Vector2::new(4., 5.);
-            self.add_segment();
-
             self.start_game();
             self.base().get_node_as::<Timer>("TimerGoal").start();
             self.base().get_node_as::<ColorRect>("Background").show();
