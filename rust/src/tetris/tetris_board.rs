@@ -2,7 +2,7 @@ use crate::breakout::breakout_board::BreakoutBoard;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
-use godot::classes::{ColorRect, InputEvent, Timer};
+use godot::classes::{InputEvent, NinePatchRect, Timer};
 use godot::prelude::*;
 use std::collections::HashSet;
 
@@ -63,10 +63,10 @@ impl TetrisBoard {
 
     fn set_color(&mut self, color: Color) {
         self.base_mut()
-            .get_node_as::<ColorRect>("BorderBoard")
+            .get_node_as::<NinePatchRect>("BorderBoard")
             .set_modulate(color);
         self.base_mut()
-            .get_node_as::<ColorRect>("BorderNext")
+            .get_node_as::<NinePatchRect>("BorderNext")
             .set_modulate(color);
     }
 
@@ -83,11 +83,11 @@ impl TetrisBoard {
 
             if no_piece_left {
                 self.base_mut()
-                    .get_node_as::<ColorRect>("BorderNext")
+                    .get_node_as::<NinePatchRect>("BorderNext")
                     .set_modulate(COLOR_FAILURE);
             } else {
                 self.base_mut()
-                    .get_node_as::<ColorRect>("BorderBoard")
+                    .get_node_as::<NinePatchRect>("BorderBoard")
                     .set_modulate(COLOR_FAILURE);
             }
         }
@@ -95,7 +95,7 @@ impl TetrisBoard {
 
     fn score_up(&mut self, count: usize) {
         self.base_mut()
-            .get_node_as::<ColorRect>("BorderBoard")
+            .get_node_as::<NinePatchRect>("BorderBoard")
             .set_modulate(COLOR_SUCCESS);
         self.base().get_node_as::<Timer>("TimerSuccess").start();
         self.base_mut()
@@ -243,7 +243,7 @@ impl TetrisBoard {
         piece.clone().reparent(self.base_mut().to_godot().upcast());
         let background_position = self
             .base()
-            .get_node_as::<ColorRect>("BorderNext")
+            .get_node_as::<NinePatchRect>("BorderNext")
             .get_position()
             + Vector2::new(1., 25.);
         piece.set_position(background_position);
