@@ -10,10 +10,9 @@ font_size = 18
 [node name="Tetris" type="TetrisBoard"]
 
 [node name="BorderBoard" type="NinePatchRect" parent="."]
-offset_left = -1.0
-offset_top = -1.0
-offset_right = 201.0
-offset_bottom = 401.0
+z_index = 9
+offset_right = 202.0
+offset_bottom = 402.0
 texture = ExtResource("1_mpu4e")
 draw_center = false
 patch_margin_left = 1
@@ -27,6 +26,7 @@ offset_bottom = 400.0
 color = Color(0, 0, 0, 1)
 
 [node name="Line2D" type="Line2D" parent="BackgroundBoard"]
+z_index = 2
 position = Vector2(0, 80)
 points = PackedVector2Array(0, 0, 200, 0)
 width = 1.0
@@ -67,6 +67,18 @@ autostart = true
 
 [node name="TimerSuccess" type="Timer" parent="."]
 wait_time = 0.4
+
+[node name="LineLeft" type="Line2D" parent="."]
+position = Vector2(-8, 0)
+points = PackedVector2Array(0, 0, 0, 400)
+width = 1.0
+default_color = Color(0.32549, 0.32549, 0.32549, 1)
+
+[node name="LineRight" type="Line2D" parent="."]
+position = Vector2(-8, 0)
+points = PackedVector2Array(0, 0, 0, 400)
+width = 1.0
+default_color = Color(0.32549, 0.32549, 0.32549, 1)
 
 [connection signal="timeout" from="TimerPieceDown" to="." method="down_piece"]
 [connection signal="timeout" from="TimerSuccess" to="." method="reset_color"]

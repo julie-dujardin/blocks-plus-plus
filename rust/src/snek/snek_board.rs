@@ -1,7 +1,7 @@
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::snek::goal::Goal;
 use crate::snek::segment::Segment;
-use godot::classes::{InputEvent, NinePatchRect, Timer, ColorRect};
+use godot::classes::{ColorRect, InputEvent, NinePatchRect, Timer};
 use godot::prelude::*;
 use phf::phf_map;
 use rand::Rng;

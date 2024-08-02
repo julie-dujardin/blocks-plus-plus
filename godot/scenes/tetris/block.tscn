@@ -3,6 +3,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3cha7"]
 
 [node name="Block" type="Block"]
+z_index = 3
 metadata/_edit_group_ = true
 
 [node name="ColorRect" type="ColorRect" parent="."]

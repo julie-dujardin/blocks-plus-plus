@@ -107,7 +107,7 @@ pub struct Piece {
     #[export]
     pub shape: Shape,
     pub blocks: VariantArray,
-    block_size: Vector2,
+    pub block_size: Vector2,
     pub center_block_position: Vector2,
     rotation: real,
 
@@ -129,7 +129,11 @@ impl Piece {
         piece
     }
 
-    fn get_bounds(&self, position: Vector2, rotation: real) -> (Vector2, Vector2) {
+    pub fn get_bounds(&self) -> (Vector2, Vector2) {
+        self.get_bounds_at(self.center_block_position, self.rotation)
+    }
+
+    fn get_bounds_at(&self, position: Vector2, rotation: real) -> (Vector2, Vector2) {
         let bounds = SHAPE_BOUNDS
             .get(self.shape.to_godot().to_string().as_str())
             .unwrap();
@@ -160,7 +164,7 @@ impl Piece {
     pub fn mov(&mut self, direction: Vector2) {
         let new_position = self.center_block_position + direction;
 
-        let (top_left, bottom_right) = self.get_bounds(new_position, self.rotation);
+        let (top_left, bottom_right) = self.get_bounds_at(new_position, self.rotation);
         if top_left.x >= 0. && bottom_right.x < 10. {
             self.change_position(new_position)
         }
@@ -169,7 +173,7 @@ impl Piece {
     pub fn down(&mut self) -> bool {
         let new_position = self.center_block_position + Vector2::DOWN;
 
-        let (_, bottom_right) = self.get_bounds(new_position, self.rotation);
+        let (_, bottom_right) = self.get_bounds_at(new_position, self.rotation);
         if bottom_right.y < 20. {
             self.change_position(new_position);
             return true;
@@ -208,7 +212,7 @@ impl Piece {
         let new_rotation =
             (self.rotation + additional_rotation) % (PI * 2.) * if clockwise { 1. } else { -1. };
 
-        let (top_left, bottom_right) = self.get_bounds(self.center_block_position, new_rotation);
+        let (top_left, bottom_right) = self.get_bounds_at(self.center_block_position, new_rotation);
         if top_left.x >= 0. && bottom_right.x < 10. && bottom_right.y < 20. {
             self.rotation = new_rotation;
             for block in self.blocks.iter_shared() {

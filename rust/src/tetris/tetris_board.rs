@@ -3,6 +3,7 @@ use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
 use godot::classes::{InputEvent, NinePatchRect, Timer};
+use godot::engine::Line2D;
 use godot::prelude::*;
 use std::collections::HashSet;
 
@@ -354,6 +355,25 @@ impl TetrisBoard {
             self.left_piece();
         }
     }
+
+    fn update_piece_side_lines(&mut self) {
+        let mut line_left = self.base().get_node_as::<Line2D>("LineLeft");
+        let mut line_right = self.base().get_node_as::<Line2D>("LineRight");
+
+        if let Some(piece) = &mut self.active_piece {
+            let piece_bind = piece.bind();
+            let (top_left, bottom_right) = piece_bind.get_bounds();
+            godot_print!("{} {}", top_left, bottom_right);
+            let block_width = piece_bind.block_size.x;
+            line_left.set_position(Vector2::new(top_left.x * block_width, 0.));
+            line_right.set_position(Vector2::new((bottom_right.x + 1.) * block_width, 0.));
+            line_left.set_visible(true);
+            line_right.set_visible(true);
+        } else {
+            line_left.set_visible(false);
+            line_right.set_visible(false);
+        }
+    }
 }
 
 #[godot_api]
@@ -376,17 +396,16 @@ impl INode2D for TetrisBoard {
 
     fn input(&mut self, event: Gd<InputEvent>) {
         if self.active_piece.is_some() && !self.game_over {
-            {
-                if event.is_action_pressed("down".into()) {
-                    self.drop_piece();
-                } else if event.is_action_pressed("up".into()) {
-                    self.rotate_piece(true);
-                } else if event.is_action_pressed("left".into()) {
-                    self.left_piece();
-                } else if event.is_action_pressed("right".into()) {
-                    self.right_piece();
-                }
+            if event.is_action_pressed("down".into()) {
+                self.drop_piece();
+            } else if event.is_action_pressed("up".into()) {
+                self.rotate_piece(true);
+            } else if event.is_action_pressed("left".into()) {
+                self.left_piece();
+            } else if event.is_action_pressed("right".into()) {
+                self.right_piece();
             }
+            self.update_piece_side_lines()
         }
     }
 
