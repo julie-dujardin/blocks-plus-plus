@@ -64,7 +64,7 @@ jobs:
             target: aarch64-apple-darwin
             bin: libblocks_plus_plus.dylib
 
-    name: Build Rust ${{ matrix.platform.build_for }}
+    name: Build Rust ${{ matrix.platform.build_for }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.platform.os }}
     steps:
       - name: Checkout
@@ -129,7 +129,7 @@ jobs:
     
     needs: [lint-rust, build-rust]
     runs-on: ubuntu-22.04
-    name: Build Godot ${{ matrix.platform.export }}
+    name: Build Godot ${{ matrix.platform.export }}  ${{ matrix.build_type }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -147,7 +147,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rust-${{ matrix.platform.build_for }}-${{ matrix.build_type }}
-          path: rust/target/${{ matrix.platform.target }}/release/
+          path: rust/target/${{ matrix.platform.target }}/${{ matrix.build_type }}/
       - name: Download rust linux bin  # We always need the bin for the platform we're running on, in the debug dir
         uses: actions/download-artifact@v4
         with:
@@ -184,7 +184,7 @@ jobs:
     
     runs-on: ubuntu-22.04
     environment: main
-    name: Publish Web
+    name: Publish Web ${{ matrix.build_type }}
     needs: [build-godot]
     steps:
       - name: Checkout
