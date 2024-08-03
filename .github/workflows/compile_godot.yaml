@@ -248,9 +248,9 @@ jobs:
           path: templates
   
   publish-web:
-    name: Build web engine to cloudflare
+    name: Publish web engine to cloudflare
     runs-on: ubuntu-22.04
-    needs: [compile-linux]
+    needs: [compile-web]
     steps:
       - name: Download web templates
         uses: actions/download-artifact@v4

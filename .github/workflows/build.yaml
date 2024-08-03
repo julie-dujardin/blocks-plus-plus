@@ -92,7 +92,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.build_for }}_${{ matrix.platform.bin }}
+          name: rust-${{ matrix.platform.build_for }}-${{ matrix.build_type }}
           path: rust/target/${{ matrix.platform.target }}/${{ matrix.build_type }}/${{ matrix.platform.bin }}
   
   build-godot:
@@ -100,29 +100,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        build_type: [release, debug]
         platform:
           - build_for: linux-x86_64
             export: linux_x11
             target: x86_64-unknown-linux-gnu
-            bin: libblocks_plus_plus.so
             export_name: blocks-plus-plus.x86_64
 
           - build_for: wasm32
             export: web
             target: wasm32-unknown-emscripten
-            bin: blocks_plus_plus.wasm
             export_name: index.html
 
           - build_for: windows-x86_64
             export: windows
             target: x86_64-pc-windows-msvc
-            bin: blocks_plus_plus.dll
             export_name: blocks-plus-plus.exe
 
           - build_for: macos-x86_64
             export: macos
             target: x86_64-apple-darwin
-            bin: libblocks_plus_plus.dylib
             export_name: blocks-plus-plus.zip
 
           # - build_for: macos-aarch64
@@ -149,12 +146,12 @@ jobs:
       - name: Download rust bin
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.platform.build_for }}_${{ matrix.platform.bin }}
+          name: rust-${{ matrix.platform.build_for }}-${{ matrix.build_type }}
           path: rust/target/${{ matrix.platform.target }}/release/
       - name: Download rust linux bin  # We always need the bin for the platform we're running on, in the debug dir
         uses: actions/download-artifact@v4
         with:
-          name: linux-x86_64_libblocks_plus_plus.so
+          name: rust-linux-x86_64-debug
           path: rust/target/x86_64-unknown-linux-gnu/debug/
       - name: Download custom templates
         uses: dawidd6/action-download-artifact@v6
@@ -170,16 +167,21 @@ jobs:
           tree /home/runner/.local/share/godot
           mkdir -v -p build/${{ matrix.platform.build_for }}
           cd $GODOT_PROJECT_PATH
-          godot --headless --verbose --export-release ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${{ matrix.platform.export_name }}
+          godot --headless --verbose ${{ matrix.build_type == 'release' && '--export-release' || '--export-debug'}} ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${{ matrix.platform.export_name }}
         env:
           GODOT_URL: https://godot-engine.static.ilus.pw/index.side.wasm
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.build_for }}
+          name: ${{ matrix.platform.build_for }}-${{ matrix.build_type }}
           path: build/${{ matrix.platform.build_for }}
   
   publish-web:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [release, debug]
+    
     runs-on: ubuntu-22.04
     environment: main
     name: Publish Web
@@ -190,7 +192,7 @@ jobs:
       - name: Download Web build
         uses: actions/download-artifact@v4
         with:
-          name: wasm32
+          name: wasm32-${{ matrix.build_type }}
           path: wasm32
       - name: Prepare cloudflare publish
         run: |
@@ -199,7 +201,8 @@ jobs:
           engine_hash=($(sha256sum wasm32/index.side.wasm))
           rm wasm32/index.side.wasm
           # ugly hack to force godot to pull the engine from another domain
-          sed -i "s/{{{DIR}}}/release_${GODOT_VERSION}_${engine_hash[1]}/" deploy/templates/readAsyncNew
+          build_type=${{ matrix.build_type }}
+          sed -i "s/{{{DIR}}}/${build_type}_${GODOT_VERSION}_${engine_hash[1]}/" deploy/templates/readAsyncNew
           sed -e '/readAsync = (url, onload, onerror) => {/{r readAsyncNew' -e 'd;}' wasm32/index.js > _index.js
           mv _index.js wasm32/index.js
       - name: Publish to Cloudflare Pages
@@ -210,4 +213,4 @@ jobs:
           projectName: blocks-plus-plus
           directory: wasm32
           wranglerVersion: '3'
-          branch: ${{ github.head_ref || github.ref_name }}
+          branch: ${{ matrix.build_type == 'release' && ' ' || 'debug_'}}${{ github.head_ref || github.ref_name }}
