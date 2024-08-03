@@ -37,6 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        build_type: [release, debug]
         platform:
           - build_for: linux-x86_64
             os: ubuntu-22.04
@@ -84,7 +85,7 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           command: build
-          args: "--locked --release ${{ contains(matrix.platform.target, 'wasm') && '-Zbuild-std' || ' '}}"
+          args: "--locked ${{ matrix.build_type == 'release' && '--release' || ' '}} ${{ contains(matrix.platform.target, 'wasm') && '-Zbuild-std' || ' '}}"
           strip: true
           working-directory: rust
           toolchain: ${{ contains(matrix.platform.target, 'wasm') && 'nightly' || 'stable' }}
@@ -92,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform.build_for }}_${{ matrix.platform.bin }}
-          path: rust/target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
+          path: rust/target/${{ matrix.platform.target }}/${{ matrix.build_type }}/${{ matrix.platform.bin }}
   
   build-godot:
     # Inspired by https://github.com/abarichello/godot-ci
@@ -195,7 +196,7 @@ jobs:
         run: |
           cp deploy/cloudflare-pages/* wasm32/
           # exclude the engine file from cloudflare pages because it's too big
-          engine_hash=($(sha256sum index.side.wasm))
+          engine_hash=($(sha256sum wasm32/index.side.wasm))
           rm wasm32/index.side.wasm
           # ugly hack to force godot to pull the engine from another domain
           sed -i "s/{{{DIR}}}/release_${GODOT_VERSION}_${engine_hash[1]}/" deploy/templates/readAsyncNew
