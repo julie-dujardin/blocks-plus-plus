@@ -49,7 +49,7 @@ impl INode2D for Hud {
         if !self.base().get_node_as::<Button>("ButtonPlay").has_focus()
             && !self.base().get_node_as::<Button>("ButtonQuit").has_focus()
         {
-            for action in ["ui_up", "ui_left", "ui_down", "ui_right"] {
+            for action in ["up", "left", "down", "right"] {
                 if event.is_action_pressed(action.into()) {
                     self.base().get_node_as::<Button>("ButtonPlay").grab_focus();
                     return;
