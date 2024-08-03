@@ -48,8 +48,13 @@ impl SnekBoard {
 
     #[func]
     fn start_game(&mut self) {
-        self.head_position = Vector2::new(5., 5.);
+        self.head_position = Vector2::new(2., 5.);
         self.add_segment();
+        self.head_position = Vector2::new(3., 5.);
+        self.add_segment();
+        self.head_position = Vector2::new(4., 5.);
+        self.add_segment();
+
         self.base().get_node_as::<Timer>("TimerMove").start();
         self.base_mut().show();
         self.can_move = true;

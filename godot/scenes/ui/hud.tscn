@@ -55,14 +55,12 @@ grow_vertical = 2
 texture = ExtResource("3_ub05c")
 expand_mode = 4
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
-offset_top = 448.0
-offset_right = 1152.0
-offset_bottom = 648.0
-
-[node name="ControlsDisplay" parent="CenterContainer" instance=ExtResource("4_6twyc")]
+[node name="ControlsDisplay" parent="." instance=ExtResource("4_6twyc")]
 custom_minimum_size = Vector2(566, 150)
-layout_mode = 2
+offset_left = 384.0
+offset_top = 432.0
+offset_right = 968.0
+offset_bottom = 582.0
 
 [connection signal="button_down" from="ButtonPlay" to="." method="on_start_button_pressed"]
 [connection signal="button_down" from="ButtonQuit" to="." method="on_quit_button_pressed"]

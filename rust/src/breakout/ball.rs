@@ -6,7 +6,7 @@ use godot::obj::{Base, WithBaseField};
 use godot::prelude::{godot_api, GodotClass, ToGodot};
 use rand::Rng;
 
-const BONUS_CHANCE: f64 = 0.1;
+const BONUS_CHANCE: f64 = 0.05;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]

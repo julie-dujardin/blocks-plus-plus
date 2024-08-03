@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://dyk8nwtv67thv"]
+[gd_scene load_steps=5 format=3 uid="uid://dyk8nwtv67thv"]
 
 [ext_resource type="PackedScene" uid="uid://dh6w4yvotbvxj" path="res://scenes/ui/keymap_display.tscn" id="1_ew4g7"]
 [ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="2_2w3fq"]
 [ext_resource type="Texture2D" uid="uid://606cfa0hbeu1" path="res://assets/arrow.png" id="3_xpq6e"]
+[ext_resource type="PackedScene" uid="uid://cgk80fdenk1hu" path="res://scenes/ui/controller.tscn" id="4_u7uue"]
 
 [node name="ControlsDisplay" type="Control"]
 layout_mode = 3
@@ -34,8 +35,8 @@ color = Color(0.176419, 0.176419, 0.176419, 1)
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_right = 145.0
+offset_bottom = 32.0
 theme = ExtResource("2_2w3fq")
 theme_override_font_sizes/font_size = 25
 text = "Controls"
@@ -154,3 +155,9 @@ stretch_mode = 5
 layout_mode = 2
 theme = ExtResource("2_2w3fq")
 text = "Right"
+
+[node name="Controller" parent="." instance=ExtResource("4_u7uue")]
+offset_left = -190.0
+offset_top = 70.0
+offset_right = -190.0
+offset_bottom = 70.0

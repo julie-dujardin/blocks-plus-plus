@@ -698,6 +698,11 @@ impl KeymapDisplay {
             .unwrap()
             .get_node_as::<BoxContainer>(format!("ExplainContainer/{action}Container"))
             .set_modulate(color);
+        self.base()
+            .get_parent()
+            .unwrap()
+            .get_node_as::<Control>(format!("Controller/{action}"))
+            .set_modulate(color);
     }
 }
 

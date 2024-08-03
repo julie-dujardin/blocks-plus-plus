@@ -1,0 +1,229 @@
+[gd_scene load_steps=3 format=3 uid="uid://cgk80fdenk1hu"]
+
+[ext_resource type="Texture2D" uid="uid://bhyikh5pbxpug" path="res://assets/solid_white.tres" id="1_cb70n"]
+[ext_resource type="Texture2D" uid="uid://606cfa0hbeu1" path="res://assets/arrow.png" id="2_vpxjp"]
+
+[node name="Controller" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="up" type="Control" parent="."]
+anchors_preset = 0
+
+[node name="Border" type="NinePatchRect" parent="up"]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_cb70n")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+
+[node name="Container" type="VBoxContainer" parent="up"]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+rotation = -1.5708
+pivot_offset = Vector2(8, 8)
+alignment = 1
+metadata/_edit_group_ = true
+
+[node name="Arrow" type="TextureRect" parent="up/Container"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+texture = ExtResource("2_vpxjp")
+stretch_mode = 5
+
+[node name="ColorRect" type="ColorRect" parent="up"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 16.0
+offset_right = 16.0
+offset_bottom = 17.0
+
+[node name="left" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 16.0
+
+[node name="Border" type="NinePatchRect" parent="left"]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_cb70n")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_bottom = 1
+
+[node name="Container" type="VBoxContainer" parent="left"]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+rotation = -3.14159
+pivot_offset = Vector2(8, 8)
+alignment = 1
+metadata/_edit_group_ = true
+
+[node name="Arrow" type="TextureRect" parent="left/Container"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+texture = ExtResource("2_vpxjp")
+stretch_mode = 5
+
+[node name="ColorRect" type="ColorRect" parent="left"]
+offset_left = 16.0
+offset_right = 17.0
+offset_bottom = 1.0
+
+[node name="down" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_top = 32.0
+offset_bottom = 32.0
+
+[node name="Border" type="NinePatchRect" parent="down"]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_cb70n")
+draw_center = false
+patch_margin_left = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
+
+[node name="Container" type="VBoxContainer" parent="down"]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+rotation = 1.5708
+pivot_offset = Vector2(8, 8)
+alignment = 1
+metadata/_edit_group_ = true
+
+[node name="Arrow" type="TextureRect" parent="down/Container"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+texture = ExtResource("2_vpxjp")
+stretch_mode = 5
+
+[node name="ColorRect" type="ColorRect" parent="down"]
+offset_top = -1.0
+offset_right = 1.0
+
+[node name="right" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 16.0
+offset_bottom = 16.0
+metadata/_edit_group_ = true
+
+[node name="Border" type="NinePatchRect" parent="right"]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_cb70n")
+draw_center = false
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
+
+[node name="Container" type="VBoxContainer" parent="right"]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+pivot_offset = Vector2(8, 8)
+alignment = 1
+metadata/_edit_group_ = true
+
+[node name="Arrow" type="TextureRect" parent="right/Container"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+texture = ExtResource("2_vpxjp")
+stretch_mode = 5
+
+[node name="ColorRect" type="ColorRect" parent="right"]
+offset_left = -1.0
+offset_top = 15.0
+offset_bottom = 16.0
+
+[node name="a" type="Control" parent="."]
+anchors_preset = 0
+offset_left = 104.0
+offset_top = 16.0
+offset_right = 104.0
+offset_bottom = 16.0
+metadata/_edit_group_ = true
+
+[node name="Border" type="NinePatchRect" parent="a"]
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_cb70n")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
+
+[node name="b" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 86.0
+offset_top = 34.0
+offset_right = 86.0
+offset_bottom = 34.0
+metadata/_edit_group_ = true
+
+[node name="Border" type="NinePatchRect" parent="b"]
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_cb70n")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
+
+[node name="x" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 86.0
+offset_top = -2.0
+offset_right = 86.0
+offset_bottom = -2.0
+metadata/_edit_group_ = true
+
+[node name="Border" type="NinePatchRect" parent="x"]
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_cb70n")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
+
+[node name="y" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 68.0
+offset_top = 16.0
+offset_right = 68.0
+offset_bottom = 16.0
+metadata/_edit_group_ = true
+
+[node name="Border" type="NinePatchRect" parent="y"]
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_cb70n")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
