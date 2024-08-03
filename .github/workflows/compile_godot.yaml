@@ -248,8 +248,14 @@ jobs:
           path: templates
   
   publish-web:
-    name: Publish web engine to cloudflare
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [release]  # debug build is big, maybe i'll do it later
+
+    name: Publish ${{ matrix.build_type }} web engine to cloudflare
     runs-on: ubuntu-22.04
+    environment: main
     needs: [compile-web]
     steps:
       - name: Download web templates
@@ -258,29 +264,21 @@ jobs:
           name: templates-web-${{ env.GODOT_VERSION }}
       - name: Prepare Upload
         run: |
-          unzip templates-web-${{ env.GODOT_VERSION }}
+          unzip web_dlink_${{ matrix.build_type }}.zip -d template_files
+          mkdir engine
+          mv template_files/godot.side.wasm engine/index.side.wasm
+          export engine_hash=($(sha256sum engine/index.side.wasm))
+          echo "RELEASE_HASH=${engine_hash[0]}" >> $GITHUB_ENV
 
-          unzip web_dlink_release.zip -d release_files
-          mkdir release_engine
-          mv release_files/godot.side.wasm release_engine/index.side.wasm
-          release_hash=($(sha256sum release_engine/index.side.wasm))
-          echo "RELEASE_HASH=${release_hash[1]}" >> $GITHUB_ENV
-
-          unzip web_dlink_debug.zip -d debug_files
-          mkdir debug_engine
-          mv debug_files/godot.side.wasm debug_engine/index.side.wasm
-          debug_hash=($(sha256sum debug_engine/index.side.wasm))
-          echo "DEBUG_HASH=${debug_hash[1]}" >> $GITHUB_ENV
-          
           # Only Upload the engine if it doesn't exist already
-          curl --head --fail https://godot-engine.static.ilus.pw/index.side.wasm
-          if [ $? -ne 0 ]; then
+          curl --head --fail https://godot-engine.static.ilus.pw/${{ matrix.build_type }}_${{ env.GODOT_VERSION }}_${engine_hash[0]}/index.side.wasm || EXIT_CODE=$?
+          if [ -n "$EXIT_CODE" ]; then
             echo "UPLOAD_ENGINE=true" >> $GITHUB_ENV
           else
             echo "UPLOAD_ENGINE=false" >> $GITHUB_ENV
           fi
           
-      - name: Upload release engine to R2
+      - name: Upload ${{ matrix.build_type }} engine to R2
         if: env.UPLOAD_ENGINE == 'true'
         uses: jakejarvis/s3-sync-action@master
         with:
@@ -291,19 +289,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           AWS_REGION: auto
-          SOURCE_DIR: release_engine
-          DEST_DIR: release_${{ env.GODOT_VERSION }}_${{ env.RELEASE_HASH }}
-          
-      - name: Upload debug engine to R2
-        if: env.UPLOAD_ENGINE == 'true'
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --delete
-        env:
-          AWS_S3_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
-          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_REGION: auto
-          SOURCE_DIR: debug_engine
-          DEST_DIR: debug_${{ env.GODOT_VERSION }}_${{ env.DEBUG_HASH }}
+          SOURCE_DIR: engine
+          DEST_DIR: ${{ matrix.build_type }}_${{ env.GODOT_VERSION }}_${{ env.RELEASE_HASH }}
