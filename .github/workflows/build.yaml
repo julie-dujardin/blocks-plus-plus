@@ -37,6 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        build_type: [release, debug]
         platform:
           - build_for: linux-x86_64
             os: ubuntu-22.04
@@ -63,7 +64,7 @@ jobs:
             target: aarch64-apple-darwin
             bin: libblocks_plus_plus.dylib
 
-    name: Build Rust ${{ matrix.platform.build_for }}
+    name: Build Rust ${{ matrix.platform.build_for }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.platform.os }}
     steps:
       - name: Checkout
@@ -84,44 +85,41 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           command: build
-          args: "--locked --release ${{ contains(matrix.platform.target, 'wasm') && '-Zbuild-std' || ' '}}"
+          args: "--locked ${{ matrix.build_type == 'release' && '--release' || ' '}} ${{ contains(matrix.platform.target, 'wasm') && '-Zbuild-std' || ' '}}"
           strip: true
           working-directory: rust
           toolchain: ${{ contains(matrix.platform.target, 'wasm') && 'nightly' || 'stable' }}
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.build_for }}_${{ matrix.platform.bin }}
-          path: rust/target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
+          name: rust-${{ matrix.platform.build_for }}-${{ matrix.build_type }}
+          path: rust/target/${{ matrix.platform.target }}/${{ matrix.build_type }}/${{ matrix.platform.bin }}
   
   build-godot:
     # Inspired by https://github.com/abarichello/godot-ci
     strategy:
       fail-fast: false
       matrix:
+        build_type: [release, debug]
         platform:
           - build_for: linux-x86_64
             export: linux_x11
             target: x86_64-unknown-linux-gnu
-            bin: libblocks_plus_plus.so
             export_name: blocks-plus-plus.x86_64
 
           - build_for: wasm32
             export: web
             target: wasm32-unknown-emscripten
-            bin: blocks_plus_plus.wasm
             export_name: index.html
 
           - build_for: windows-x86_64
             export: windows
             target: x86_64-pc-windows-msvc
-            bin: blocks_plus_plus.dll
             export_name: blocks-plus-plus.exe
 
           - build_for: macos-x86_64
             export: macos
             target: x86_64-apple-darwin
-            bin: libblocks_plus_plus.dylib
             export_name: blocks-plus-plus.zip
 
           # - build_for: macos-aarch64
@@ -131,7 +129,7 @@ jobs:
     
     needs: [lint-rust, build-rust]
     runs-on: ubuntu-22.04
-    name: Build Godot ${{ matrix.platform.export }}
+    name: Build Godot ${{ matrix.platform.export }}  ${{ matrix.build_type }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -148,12 +146,12 @@ jobs:
       - name: Download rust bin
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.platform.build_for }}_${{ matrix.platform.bin }}
-          path: rust/target/${{ matrix.platform.target }}/release/
+          name: rust-${{ matrix.platform.build_for }}-${{ matrix.build_type }}
+          path: rust/target/${{ matrix.platform.target }}/${{ matrix.build_type }}/
       - name: Download rust linux bin  # We always need the bin for the platform we're running on, in the debug dir
         uses: actions/download-artifact@v4
         with:
-          name: linux-x86_64_libblocks_plus_plus.so
+          name: rust-linux-x86_64-debug
           path: rust/target/x86_64-unknown-linux-gnu/debug/
       - name: Download custom templates
         uses: dawidd6/action-download-artifact@v6
@@ -169,19 +167,24 @@ jobs:
           tree /home/runner/.local/share/godot
           mkdir -v -p build/${{ matrix.platform.build_for }}
           cd $GODOT_PROJECT_PATH
-          godot --headless --verbose --export-release ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${{ matrix.platform.export_name }}
+          godot --headless --verbose ${{ matrix.build_type == 'release' && '--export-release' || '--export-debug'}} ${{ matrix.platform.export }} ../build/${{ matrix.platform.build_for }}/${{ matrix.platform.export_name }}
         env:
           GODOT_URL: https://godot-engine.static.ilus.pw/index.side.wasm
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.build_for }}
+          name: ${{ matrix.platform.build_for }}-${{ matrix.build_type }}
           path: build/${{ matrix.platform.build_for }}
   
   publish-web:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [release]  # debug blocks_plus_plus.wasm is 62.4 MiB and I'm not uploading more stuff to R2
+    
     runs-on: ubuntu-22.04
     environment: main
-    name: Publish Web
+    name: Publish Web ${{ matrix.build_type }}
     needs: [build-godot]
     steps:
       - name: Checkout
@@ -189,17 +192,18 @@ jobs:
       - name: Download Web build
         uses: actions/download-artifact@v4
         with:
-          name: wasm32
+          name: wasm32-${{ matrix.build_type }}
           path: wasm32
       - name: Prepare cloudflare publish
         run: |
           cp deploy/cloudflare-pages/* wasm32/
           # exclude the engine file from cloudflare pages because it's too big
-          mkdir wasm32engine
-          mv wasm32/index.side.wasm ./wasm32engine
+          export engine_hash=($(sha256sum wasm32/index.side.wasm))
+          rm wasm32/index.side.wasm
           # ugly hack to force godot to pull the engine from another domain
-          sed -e '/readAsync = (url, onload, onerror) => {/{r deploy/templates/readAsyncNew' -e 'd;}' wasm32/index.js > _index.js
-          mv _index.js wasm32/index.js
+          export build_type=${{ matrix.build_type }}
+          sed -i -e "s|{{{DIR}}}|${build_type}_${GODOT_VERSION}_${engine_hash[0]}|g" deploy/templates/readAsyncNew
+          sed -i -e '/readAsync = (url, onload, onerror) => {/{r deploy/templates/readAsyncNew' -e 'd;}' wasm32/index.js
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
@@ -208,15 +212,4 @@ jobs:
           projectName: blocks-plus-plus
           directory: wasm32
           wranglerVersion: '3'
-          branch: ${{ github.head_ref || github.ref_name }}
-      - name: Upload engine to cloudflare R2
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --delete
-        env:
-          AWS_S3_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
-          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_REGION: auto
-          SOURCE_DIR: wasm32engine
+          branch: ${{ matrix.build_type == 'release' && ' ' || 'debug_'}}${{ github.head_ref || github.ref_name }}

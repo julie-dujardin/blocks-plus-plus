@@ -246,3 +246,48 @@ jobs:
         with:
           name: templates-${{env.GODOT_VERSION}}
           path: templates
+  
+  publish-web:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [release]  # debug build is big, maybe i'll do it later
+
+    name: Publish ${{ matrix.build_type }} web engine to cloudflare
+    runs-on: ubuntu-22.04
+    environment: main
+    needs: [compile-web]
+    steps:
+      - name: Download web templates
+        uses: actions/download-artifact@v4
+        with:
+          name: templates-web-${{ env.GODOT_VERSION }}
+      - name: Prepare Upload
+        run: |
+          unzip web_dlink_${{ matrix.build_type }}.zip -d template_files
+          mkdir engine
+          mv template_files/godot.side.wasm engine/index.side.wasm
+          export engine_hash=($(sha256sum engine/index.side.wasm))
+          echo "RELEASE_HASH=${engine_hash[0]}" >> $GITHUB_ENV
+
+          # Only Upload the engine if it doesn't exist already
+          curl --head --fail https://godot-engine.static.ilus.pw/${{ matrix.build_type }}_${{ env.GODOT_VERSION }}_${engine_hash[0]}/index.side.wasm || EXIT_CODE=$?
+          if [ -n "$EXIT_CODE" ]; then
+            echo "UPLOAD_ENGINE=true" >> $GITHUB_ENV
+          else
+            echo "UPLOAD_ENGINE=false" >> $GITHUB_ENV
+          fi
+          
+      - name: Upload ${{ matrix.build_type }} engine to R2
+        if: env.UPLOAD_ENGINE == 'true'
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --delete
+        env:
+          AWS_S3_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_REGION: auto
+          SOURCE_DIR: engine
+          DEST_DIR: ${{ matrix.build_type }}_${{ env.GODOT_VERSION }}_${{ env.RELEASE_HASH }}

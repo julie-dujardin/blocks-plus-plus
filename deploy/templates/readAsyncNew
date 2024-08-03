@@ -1,4 +1,4 @@
 readAsync = (url, onload, onerror) => {
    if (url.endsWith(".side.wasm")) {
-    url = "https://godot-engine.static.ilus.pw/index.side.wasm"
+    url = "https://godot-engine.static.ilus.pw/{{{DIR}}}/index.side.wasm"
    }
