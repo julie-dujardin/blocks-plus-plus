@@ -108,6 +108,7 @@ one_shot = true
 [connection signal="global_game_over_timeout" from="." to="SnekBoard" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="Hud" method="reset"]
 [connection signal="game_over" from="Tetris" to="." method="on_game_over"]
+[connection signal="score_timed_out" from="Tetris" to="." method="on_score_timed_out"]
 [connection signal="scored" from="Tetris" to="." method="on_score_up"]
 [connection signal="game_over" from="BreakoutBoard" to="." method="on_game_over"]
 [connection signal="next_game_activate" from="BreakoutBoard" to="SnekBoard" method="on_previous_scored_up"]

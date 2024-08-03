@@ -21,6 +21,9 @@ impl MainBoard {
     #[signal]
     fn global_game_over_timeout();
 
+    #[signal]
+    fn global_score_timed_out();
+
     #[func]
     fn start_game(&mut self) {
         self.score = 0;
@@ -77,6 +80,11 @@ impl MainBoard {
         self.base_mut()
             .get_node_as::<Timer>("TimerScoreUpTimeout")
             .start();
+    }
+
+    #[func]
+    fn on_score_timed_out(&self) {
+
     }
 
     #[func]
