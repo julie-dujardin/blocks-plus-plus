@@ -195,10 +195,11 @@ jobs:
         run: |
           cp deploy/cloudflare-pages/* wasm32/
           # exclude the engine file from cloudflare pages because it's too big
-          mkdir wasm32engine
-          mv wasm32/index.side.wasm ./wasm32engine
+          engine_hash=($(sha256sum index.side.wasm))
+          rm wasm32/index.side.wasm
           # ugly hack to force godot to pull the engine from another domain
-          sed -e '/readAsync = (url, onload, onerror) => {/{r deploy/templates/readAsyncNew' -e 'd;}' wasm32/index.js > _index.js
+          sed -i "s/{{{DIR}}}/release_${GODOT_VERSION}_${engine_hash[1]}/" deploy/templates/readAsyncNew
+          sed -e '/readAsync = (url, onload, onerror) => {/{r readAsyncNew' -e 'd;}' wasm32/index.js > _index.js
           mv _index.js wasm32/index.js
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
@@ -209,14 +210,3 @@ jobs:
           directory: wasm32
           wranglerVersion: '3'
           branch: ${{ github.head_ref || github.ref_name }}
-      - name: Upload engine to cloudflare R2
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --delete
-        env:
-          AWS_S3_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
-          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_REGION: auto
-          SOURCE_DIR: wasm32engine

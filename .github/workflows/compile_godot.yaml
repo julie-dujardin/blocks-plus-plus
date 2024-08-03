@@ -246,3 +246,64 @@ jobs:
         with:
           name: templates-${{env.GODOT_VERSION}}
           path: templates
+  
+  publish-web:
+    name: Build web engine to cloudflare
+    runs-on: ubuntu-22.04
+    needs: [compile-linux]
+    steps:
+      - name: Download web templates
+        uses: actions/download-artifact@v4
+        with:
+          name: templates-web-${{ env.GODOT_VERSION }}
+      - name: Prepare Upload
+        run: |
+          unzip templates-web-${{ env.GODOT_VERSION }}
+
+          unzip web_dlink_release.zip -d release_files
+          mkdir release_engine
+          mv release_files/godot.side.wasm release_engine/index.side.wasm
+          release_hash=($(sha256sum release_engine/index.side.wasm))
+          echo "RELEASE_HASH=${release_hash[1]}" >> $GITHUB_ENV
+
+          unzip web_dlink_debug.zip -d debug_files
+          mkdir debug_engine
+          mv debug_files/godot.side.wasm debug_engine/index.side.wasm
+          debug_hash=($(sha256sum debug_engine/index.side.wasm))
+          echo "DEBUG_HASH=${debug_hash[1]}" >> $GITHUB_ENV
+          
+          # Only Upload the engine if it doesn't exist already
+          curl --head --fail https://godot-engine.static.ilus.pw/index.side.wasm
+          if [ $? -ne 0 ]; then
+            echo "UPLOAD_ENGINE=true" >> $GITHUB_ENV
+          else
+            echo "UPLOAD_ENGINE=false" >> $GITHUB_ENV
+          fi
+          
+      - name: Upload release engine to R2
+        if: env.UPLOAD_ENGINE == 'true'
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --delete
+        env:
+          AWS_S3_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_REGION: auto
+          SOURCE_DIR: release_engine
+          DEST_DIR: release_${{ env.GODOT_VERSION }}_${{ env.RELEASE_HASH }}
+          
+      - name: Upload debug engine to R2
+        if: env.UPLOAD_ENGINE == 'true'
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --delete
+        env:
+          AWS_S3_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_REGION: auto
+          SOURCE_DIR: debug_engine
+          DEST_DIR: debug_${{ env.GODOT_VERSION }}_${{ env.DEBUG_HASH }}
