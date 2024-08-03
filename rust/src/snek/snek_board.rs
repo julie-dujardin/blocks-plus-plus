@@ -182,15 +182,15 @@ impl INode2D for SnekBoard {
     }
 
     fn ready(&mut self) {
-        self.head_position = Vector2::new(2., 5.);
-        self.add_segment();
-        self.head_position = Vector2::new(3., 5.);
-        self.add_segment();
-        self.head_position = Vector2::new(4., 5.);
-        self.add_segment();
-
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
+            self.head_position = Vector2::new(2., 5.);
+            self.add_segment();
+            self.head_position = Vector2::new(3., 5.);
+            self.add_segment();
+            self.head_position = Vector2::new(4., 5.);
+            self.add_segment();
+
             self.start_game();
             self.base().get_node_as::<Timer>("TimerGoal").start();
             self.base().get_node_as::<ColorRect>("Background").show();
