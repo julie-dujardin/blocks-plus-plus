@@ -27,7 +27,7 @@ impl MainBoard {
     #[func]
     fn start_game(&mut self) {
         self.score = 0;
-        self.base_mut()
+        self.base()
             .get_node_as::<Label>("Score/LabelScore")
             .set_text("Score 0".into());
 
@@ -41,10 +41,10 @@ impl MainBoard {
     #[func]
     fn on_game_over(&mut self) {
         self.base().get_node_as::<Label>("LabelGameOver").show();
-        self.base_mut()
+        self.base()
             .get_node_as::<Timer>("TimerGameOver")
             .start();
-        self.base_mut()
+        self.base()
             .get_node_as::<Timer>("TimerScoreUpTimeout")
             .stop();
 
@@ -77,22 +77,22 @@ impl MainBoard {
             high_score_label.set_modulate(COLOR_SUCCESS);
         }
 
-        self.base_mut()
+        self.base()
             .get_node_as::<Timer>("TimerScoreUpTimeout")
             .start();
     }
 
     #[func]
-    fn on_score_timed_out(&self) {
-
+    fn on_score_timed_out(&mut self) {
+        self.base_mut().emit_signal("global_score_timed_out".into(), &[]);
     }
 
     #[func]
     fn reset_score_color(&mut self) {
-        self.base_mut()
+        self.base()
             .get_node_as::<Label>("Score/LabelScore")
             .set_modulate(COLOR_FOREGROUND);
-        self.base_mut()
+        self.base()
             .get_node_as::<Label>("Score/LabelHigh")
             .set_modulate(COLOR_FOREGROUND);
     }

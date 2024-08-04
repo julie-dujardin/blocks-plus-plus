@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://pnwtwccb3pev"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_esfvt"]
+b = Vector2(1152, 0)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_gstcl"]
+b = Vector2(1152, 0)
+
+[node name="BirbBoard" type="BirbBoard"]
+
+[node name="Ceiling" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
+shape = SubResource("SegmentShape2D_esfvt")
+
+[node name="Line2D" type="Line2D" parent="Ceiling"]
+points = PackedVector2Array(0, 0, 1152, 0)
+width = 1.0
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(0, 208)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("SegmentShape2D_gstcl")
+
+[node name="Line2D" type="Line2D" parent="Floor"]
+points = PackedVector2Array(0, 0, 1152, 0)
+width = 1.0

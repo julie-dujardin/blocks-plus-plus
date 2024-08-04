@@ -14,6 +14,7 @@ const BRICK_PER_LINE: usize = 10;
 pub struct BreakoutBoard {
     bricks: Vec<Gd<Brick>>,
     brick_size: Vector2,
+    score_timed_out: bool,
 
     base: Base<Node2D>,
 }
@@ -28,6 +29,9 @@ impl BreakoutBoard {
 
     #[signal]
     fn next_game_activate();
+
+    #[signal]
+    fn score_timed_out();
 
     #[func]
     fn reset(&mut self) {
@@ -53,7 +57,7 @@ impl BreakoutBoard {
     }
 
     fn set_color(&mut self, color: Color) {
-        self.base_mut()
+        self.base()
             .get_node_as::<StaticBody2D>("Walls")
             .set_modulate(color);
     }
@@ -87,6 +91,7 @@ impl BreakoutBoard {
     #[func]
     pub fn on_game_started(&mut self) {
         self.set_movement(true);
+
     }
 
     #[func]
@@ -142,6 +147,7 @@ impl INode2D for BreakoutBoard {
         BreakoutBoard {
             bricks: vec![],
             brick_size: Vector2::ZERO,
+            score_timed_out: false,
             base,
         }
     }

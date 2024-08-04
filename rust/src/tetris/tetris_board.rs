@@ -68,10 +68,10 @@ impl TetrisBoard {
     }
 
     fn set_color(&mut self, color: Color) {
-        self.base_mut()
+        self.base()
             .get_node_as::<NinePatchRect>("BorderBoard")
             .set_modulate(color);
-        self.base_mut()
+        self.base()
             .get_node_as::<NinePatchRect>("BorderNext")
             .set_modulate(color);
     }
@@ -100,7 +100,7 @@ impl TetrisBoard {
     }
 
     fn score_up(&mut self, count: usize) {
-        self.base_mut()
+        self.base()
             .get_node_as::<NinePatchRect>("BorderBoard")
             .set_modulate(COLOR_SUCCESS);
         self.base().get_node_as::<Timer>("TimerSuccess").start();
@@ -125,7 +125,7 @@ impl TetrisBoard {
     }
 
     #[func]
-    fn on_score_timed_out(&mut self) {
+    fn on_score_timed_out(&mut self, _anim_name: Variant) {
         self.base_mut()
             .emit_signal("score_timed_out".into(), &[]);
         self.score_timed_out = true;

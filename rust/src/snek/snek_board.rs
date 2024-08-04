@@ -139,7 +139,7 @@ impl SnekBoard {
             .emit_signal("scored".into(), &[4.to_variant()]);
         self.just_scored = true;
         self.set_color(COLOR_SUCCESS);
-        self.base_mut()
+        self.base()
             .get_node_as::<Timer>("TimerGoalTimeout")
             .start();
     }
@@ -160,7 +160,7 @@ impl SnekBoard {
     }
 
     fn set_color(&mut self, color: Color) {
-        self.base_mut()
+        self.base()
             .get_node_as::<NinePatchRect>("Border")
             .set_modulate(color);
     }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bfnrfbm4fpg50"]
+[gd_scene load_steps=11 format=3 uid="uid://bfnrfbm4fpg50"]
 
 [ext_resource type="PackedScene" uid="uid://d1g51jjhyvob0" path="res://scenes/tetris/tetris.tscn" id="1_mmer5"]
 [ext_resource type="PackedScene" uid="uid://ec18ywdi03dw" path="res://scenes/tetris/select.tscn" id="2_ucd5e"]
@@ -7,6 +7,7 @@
 [ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="4_bonvd"]
 [ext_resource type="FontFile" uid="uid://tvarju4030k4" path="res://assets/font/Pixel.ttf" id="6_d3kbr"]
 [ext_resource type="PackedScene" uid="uid://cxvksyqghera3" path="res://scenes/snek/snek_board.tscn" id="7_dqth6"]
+[ext_resource type="PackedScene" uid="uid://pnwtwccb3pev" path="res://scenes/birb/birb_board.tscn" id="8_o1qc1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_k3aa1"]
 font = ExtResource("6_d3kbr")
@@ -50,6 +51,10 @@ position = Vector2(416, 120)
 [node name="SnekBoard" parent="." instance=ExtResource("7_dqth6")]
 visible = false
 position = Vector2(864, 120)
+
+[node name="BirbBoard" parent="." instance=ExtResource("8_o1qc1")]
+visible = false
+position = Vector2(0, 424)
 
 [node name="Hud" parent="." instance=ExtResource("3_rms5c")]
 

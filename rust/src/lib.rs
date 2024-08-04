@@ -10,6 +10,7 @@ mod main_board;
 mod snek;
 mod tetris;
 mod ui;
+mod birb;
 
 use godot::prelude::*;
 
