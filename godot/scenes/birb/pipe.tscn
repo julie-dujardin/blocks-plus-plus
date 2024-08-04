@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://vid303q24k2t"]
+
+[ext_resource type="Texture2D" uid="uid://bhyikh5pbxpug" path="res://assets/solid_white.tres" id="1_c6o2h"]
+
+[node name="Pipe" type="AnimatableBody2D"]
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+offset_right = 32.0
+offset_bottom = 128.0
+texture = ExtResource("1_c6o2h")
+draw_center = false
+patch_margin_left = 1
+patch_margin_right = 1
+patch_margin_bottom = 1

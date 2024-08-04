@@ -1,7 +1,5 @@
-use godot::builtin::Vector2;
 use godot::classes::{CharacterBody2D, ICharacterBody2D, Input};
-use godot::obj::{Base, WithBaseField};
-use godot::prelude::{godot_api, GodotClass};
+use godot::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]

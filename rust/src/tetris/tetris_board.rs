@@ -80,7 +80,9 @@ impl TetrisBoard {
     fn on_parent_game_over(&mut self) {
         self.game_playing = false;
         self.base().get_node_as::<Timer>("TimerSuccess").stop();
-        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").pause();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .pause();
     }
 
     fn handle_game_over(&mut self, no_piece_left: bool) {
@@ -108,8 +110,10 @@ impl TetrisBoard {
         self.base_mut()
             .emit_signal("scored".into(), &[(count as i64 * 3).to_variant()]);
 
-        if !self.score_timed_out{
-            self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
+        if !self.score_timed_out {
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
         }
 
         if !self.base().get_parent().unwrap().is_class("Window".into()) {
@@ -127,8 +131,7 @@ impl TetrisBoard {
 
     #[func]
     fn on_score_timed_out(&mut self, _anim_name: Variant) {
-        self.base_mut()
-            .emit_signal("score_timed_out".into(), &[]);
+        self.base_mut().emit_signal("score_timed_out".into(), &[]);
         self.score_timed_out = true;
     }
 
@@ -252,8 +255,14 @@ impl TetrisBoard {
     pub fn add_next_piece(&mut self, mut piece: Gd<Piece>) {
         if !self.game_playing {
             self.game_playing = true;
-            self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").play_ex().name("score_timeout".into()).done();
-            self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .play_ex()
+                .name("score_timeout".into())
+                .done();
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
         }
 
         let mut piece_down_timer = self.base().get_node_as::<Timer>("TimerPieceDown");

@@ -41,9 +41,7 @@ impl MainBoard {
     #[func]
     fn on_game_over(&mut self) {
         self.base().get_node_as::<Label>("LabelGameOver").show();
-        self.base()
-            .get_node_as::<Timer>("TimerGameOver")
-            .start();
+        self.base().get_node_as::<Timer>("TimerGameOver").start();
         self.base()
             .get_node_as::<Timer>("TimerScoreUpTimeout")
             .stop();
@@ -84,7 +82,8 @@ impl MainBoard {
 
     #[func]
     fn on_score_timed_out(&mut self) {
-        self.base_mut().emit_signal("global_score_timed_out".into(), &[]);
+        self.base_mut()
+            .emit_signal("global_score_timed_out".into(), &[]);
     }
 
     #[func]

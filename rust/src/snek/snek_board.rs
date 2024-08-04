@@ -62,8 +62,14 @@ impl SnekBoard {
         self.base().get_node_as::<Timer>("TimerMove").start();
         self.base_mut().show();
         self.can_move = true;
-        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").play_ex().name("score_timeout".into()).done();
-        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .play_ex()
+            .name("score_timeout".into())
+            .done();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .seek(0.);
     }
 
     #[func]
@@ -71,7 +77,9 @@ impl SnekBoard {
         self.base().get_node_as::<Timer>("TimerMove").stop();
         self.base().get_node_as::<Timer>("TimerGoal").stop();
         self.can_move = false;
-        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").pause();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .pause();
     }
 
     #[func]
@@ -146,19 +154,18 @@ impl SnekBoard {
             .emit_signal("scored".into(), &[4.to_variant()]);
         self.just_scored = true;
         self.set_color(COLOR_SUCCESS);
-        self.base()
-            .get_node_as::<Timer>("TimerGoalTimeout")
-            .start();
+        self.base().get_node_as::<Timer>("TimerGoalTimeout").start();
 
-        if !self.score_timed_out{
-            self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
+        if !self.score_timed_out {
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
         }
     }
 
     #[func]
     fn on_score_timed_out(&mut self, _anim_name: Variant) {
-        self.base_mut()
-            .emit_signal("score_timed_out".into(), &[]);
+        self.base_mut().emit_signal("score_timed_out".into(), &[]);
         self.score_timed_out = true;
     }
 

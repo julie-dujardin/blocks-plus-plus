@@ -86,23 +86,33 @@ impl BreakoutBoard {
                     .emit_signal("next_game_activate".into(), &[]);
             }
         }
-        if !self.score_timed_out{
-            self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
+        if !self.score_timed_out {
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
         }
     }
 
     #[func]
     pub fn on_game_started(&mut self) {
         self.set_movement(true);
-        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").play_ex().name("score_timeout".into()).done();
-        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .play_ex()
+            .name("score_timeout".into())
+            .done();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .seek(0.);
     }
 
     #[func]
     fn on_parent_game_over(&mut self) {
         self.set_movement(false);
         self.base().get_node_as::<Timer>("TimerSuccess").stop();
-        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").pause();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .pause();
     }
 
     #[func]
@@ -147,8 +157,7 @@ impl BreakoutBoard {
 
     #[func]
     fn on_score_timed_out(&mut self, _anim_name: Variant) {
-        self.base_mut()
-            .emit_signal("score_timed_out".into(), &[]);
+        self.base_mut().emit_signal("score_timed_out".into(), &[]);
         self.score_timed_out = true;
     }
 }

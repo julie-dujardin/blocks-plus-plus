@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://pnwtwccb3pev"]
+[gd_scene load_steps=4 format=3 uid="uid://pnwtwccb3pev"]
+
+[ext_resource type="PackedScene" uid="uid://bj6okvi1tv1tv" path="res://scenes/birb/birb.tscn" id="1_rmpd8"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_esfvt"]
 b = Vector2(1152, 0)
@@ -26,3 +28,6 @@ shape = SubResource("SegmentShape2D_gstcl")
 [node name="Line2D" type="Line2D" parent="Floor"]
 points = PackedVector2Array(0, 0, 1152, 0)
 width = 1.0
+
+[node name="Birb" parent="." instance=ExtResource("1_rmpd8")]
+position = Vector2(376, 120)
