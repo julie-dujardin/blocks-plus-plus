@@ -84,6 +84,8 @@ position = Vector2(208, 232)
 
 [node name="BreakoutPlayer" parent="." instance=ExtResource("2_vgool")]
 position = Vector2(192, 256)
+collision_layer = 1
+collision_mask = 1
 
 [node name="TimerSuccess" type="Timer" parent="."]
 wait_time = 0.4

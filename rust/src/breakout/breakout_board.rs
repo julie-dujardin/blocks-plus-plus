@@ -3,7 +3,7 @@ use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use godot::builtin::{Color, Variant, Vector2};
-use godot::classes::{AnimationPlayer, INode2D, Node2D, PackedScene, StaticBody2D, Timer};
+use godot::classes::{AnimationPlayer, INode2D, Line2D, Node2D, PackedScene, StaticBody2D, Timer};
 use godot::obj::{Base, Gd, WithBaseField};
 use godot::prelude::*;
 
@@ -153,6 +153,12 @@ impl BreakoutBoard {
                 self.bricks.push(brick);
             }
         }
+    }
+
+    #[func]
+    fn on_parent_score_timed_out(&mut self) {
+        self.base()
+            .get_node_as::<Line2D>("ScoreTimeoutLine").hide();
     }
 
     #[func]

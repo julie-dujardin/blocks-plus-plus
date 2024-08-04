@@ -1,7 +1,7 @@
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::snek::goal::Goal;
 use crate::snek::segment::Segment;
-use godot::classes::{AnimationPlayer, ColorRect, InputEvent, NinePatchRect, Timer};
+use godot::classes::{AnimationPlayer, ColorRect, InputEvent, Line2D, NinePatchRect, Timer};
 use godot::prelude::*;
 use phf::phf_map;
 use rand::Rng;
@@ -161,6 +161,12 @@ impl SnekBoard {
                 .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
                 .seek(0.);
         }
+    }
+
+    #[func]
+    fn on_parent_score_timed_out(&mut self) {
+        self.base()
+            .get_node_as::<Line2D>("ScoreTimeoutLine").hide();
     }
 
     #[func]
