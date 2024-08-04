@@ -16,7 +16,7 @@ impl Pipe {
         let current_position = self.base().get_position();
         let self_clone = self.base_mut().clone().upcast();
 
-        if self.tween == None {
+        if self.tween.is_none() {
             let tween_opt = self.base_mut().create_tween();
             if let Some(mut tween) = tween_opt {
                 tween.set_process_mode(TweenProcessMode::PHYSICS);
@@ -42,9 +42,6 @@ impl Pipe {
 #[godot_api]
 impl IAnimatableBody2D for Pipe {
     fn init(base: Base<AnimatableBody2D>) -> Self {
-        Pipe {
-            tween: None,
-            base,
-        }
+        Pipe { tween: None, base }
     }
 }

@@ -165,8 +165,7 @@ impl SnekBoard {
 
     #[func]
     fn on_parent_score_timed_out(&mut self) {
-        self.base()
-            .get_node_as::<Line2D>("ScoreTimeoutLine").hide();
+        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").hide();
     }
 
     #[func]

@@ -43,7 +43,8 @@ impl ICharacterBody2D for BirbPlayer {
             }
 
             let new_velocity = self.velocity;
-            self.base_mut().set_velocity(Vector2::new(0., new_velocity.y));
+            self.base_mut()
+                .set_velocity(Vector2::new(0., new_velocity.y));
             self.base_mut().set_rotation(new_velocity.angle());
             self.base_mut().move_and_slide();
 

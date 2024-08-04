@@ -131,8 +131,7 @@ impl TetrisBoard {
 
     #[func]
     fn on_parent_score_timed_out(&mut self) {
-        self.base()
-            .get_node_as::<Line2D>("LineScoreTimeout").hide();
+        self.base().get_node_as::<Line2D>("LineScoreTimeout").hide();
     }
 
     #[func]
