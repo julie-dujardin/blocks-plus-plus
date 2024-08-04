@@ -1,11 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://vid303q24k2t"]
+[gd_scene load_steps=3 format=3 uid="uid://vid303q24k2t"]
 
 [ext_resource type="Texture2D" uid="uid://bhyikh5pbxpug" path="res://assets/solid_white.tres" id="1_c6o2h"]
 
-[node name="Pipe" type="AnimatableBody2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fvxfq"]
+size = Vector2(32, 128)
+
+[node name="Pipe" type="Pipe"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 64)
+shape = SubResource("RectangleShape2D_fvxfq")
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
-offset_right = 32.0
+offset_left = -16.0
+offset_right = 16.0
 offset_bottom = 128.0
 texture = ExtResource("1_c6o2h")
 draw_center = false

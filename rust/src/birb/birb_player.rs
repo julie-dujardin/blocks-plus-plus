@@ -2,7 +2,7 @@ use godot::classes::{CharacterBody2D, ICharacterBody2D, InputEvent};
 use godot::prelude::*;
 
 const GRAVITY: f32 = 60.;
-const JUMP_VELOCITY: Vector2 = Vector2::new(30., -30.);
+const JUMP_VELOCITY: Vector2 = Vector2::new(20., -40.);
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -15,7 +15,10 @@ pub struct BirbPlayer {
 }
 
 #[godot_api]
-impl BirbPlayer {}
+impl BirbPlayer {
+    #[signal]
+    fn collided();
+}
 
 #[godot_api]
 impl ICharacterBody2D for BirbPlayer {
@@ -43,6 +46,10 @@ impl ICharacterBody2D for BirbPlayer {
             self.base_mut().set_velocity(new_velocity);
             self.base_mut().set_rotation(new_velocity.angle());
             self.base_mut().move_and_slide();
+
+            if self.base().get_slide_collision_count() > 0 {
+                self.base_mut().emit_signal("collided".into(), &[]);
+            }
         }
     }
 

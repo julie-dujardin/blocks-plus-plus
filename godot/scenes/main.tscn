@@ -125,6 +125,7 @@ one_shot = true
 [connection signal="game_over" from="SnekBoard" to="." method="on_game_over"]
 [connection signal="score_timed_out" from="SnekBoard" to="." method="on_score_timed_out"]
 [connection signal="scored" from="SnekBoard" to="." method="on_score_up"]
+[connection signal="game_over" from="BirbBoard" to="." method="on_game_over"]
 [connection signal="start_game" from="Hud" to="." method="start_game"]
 [connection signal="timeout" from="TimerScoreUpTimeout" to="." method="reset_score_color"]
 [connection signal="timeout" from="TimerGameOver" to="." method="on_game_over_timer_timeout"]
