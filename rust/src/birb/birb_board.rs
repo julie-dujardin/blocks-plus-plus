@@ -77,10 +77,7 @@ impl BirbBoard {
         self.base_mut().add_child(up_pipe.upcast());
 
         let mut down_pipe = pipe_scene.instantiate_as::<Pipe>();
-        down_pipe.set_position(Vector2::new(
-            PIPE_SPAWN_START + x_offset,
-            top_y + 48.,
-        ));
+        down_pipe.set_position(Vector2::new(PIPE_SPAWN_START + x_offset, top_y + 48.));
         down_pipe.set_rotation(PI);
         self.base_mut().connect(
             "set_pipe_movement".into(),
@@ -104,12 +101,12 @@ impl INode2D for BirbBoard {
     }
 
     fn ready(&mut self) {
+        for offset in 0..7 {
+            self.spawn_pipes((offset * 128) as f32);
+        }
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
             self.on_activated();
-        }
-        for offset in 0..7 {
-            self.spawn_pipes((offset * 128) as f32);
         }
     }
 

@@ -14,7 +14,7 @@ offset_right = 8.0
 offset_bottom = 8.0
 
 [node name="ColorRect2" type="ColorRect" parent="."]
-offset_left = 5.0
+offset_left = 4.0
 offset_top = 1.0
 offset_right = 7.0
 offset_bottom = 3.0

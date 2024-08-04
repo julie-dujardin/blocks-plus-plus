@@ -13,6 +13,8 @@ clip_children = 1
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
 z_index = -6
+collision_layer = 2
+collision_mask = 2
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
@@ -25,6 +27,8 @@ width = 1.0
 [node name="Floor" type="StaticBody2D" parent="."]
 z_index = -6
 position = Vector2(0, 208)
+collision_layer = 2
+collision_mask = 2
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
@@ -36,5 +40,7 @@ width = 1.0
 
 [node name="Birb" parent="." instance=ExtResource("1_rmpd8")]
 position = Vector2(376, 120)
+collision_layer = 2
+collision_mask = 2
 
 [connection signal="collided" from="Birb" to="." method="on_birb_collided"]
