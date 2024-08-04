@@ -12,6 +12,16 @@ impl BirbBoard {
     fn on_activated(&mut self) {
         self.base_mut().show();
     }
+
+    #[func]
+    fn on_parent_game_over(&mut self) {
+        // todo lock movement
+    }
+
+    #[func]
+    fn reset(&mut self) {
+        self.base_mut().hide();
+    }
 }
 
 #[godot_api]

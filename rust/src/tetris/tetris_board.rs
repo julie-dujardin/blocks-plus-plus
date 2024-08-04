@@ -80,6 +80,7 @@ impl TetrisBoard {
     fn on_parent_game_over(&mut self) {
         self.game_playing = false;
         self.base().get_node_as::<Timer>("TimerSuccess").stop();
+        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").pause();
     }
 
     fn handle_game_over(&mut self, no_piece_left: bool) {
@@ -252,6 +253,7 @@ impl TetrisBoard {
         if !self.game_playing {
             self.game_playing = true;
             self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").play_ex().name("score_timeout".into()).done();
+            self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
         }
 
         let mut piece_down_timer = self.base().get_node_as::<Timer>("TimerPieceDown");

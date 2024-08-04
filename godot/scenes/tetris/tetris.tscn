@@ -117,7 +117,7 @@ width = 1.0
 libraries = {
 "": SubResource("AnimationLibrary_tmqvl")
 }
-speed_scale = 0.05
+speed_scale = 0.03
 
 [connection signal="timeout" from="TimerPieceDown" to="." method="down_piece"]
 [connection signal="timeout" from="TimerSuccess" to="." method="reset_color"]

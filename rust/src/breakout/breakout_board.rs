@@ -3,7 +3,7 @@ use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use godot::builtin::{Color, Variant, Vector2};
-use godot::classes::{INode2D, Node2D, PackedScene, StaticBody2D, Timer};
+use godot::classes::{AnimationPlayer, INode2D, Node2D, PackedScene, StaticBody2D, Timer};
 use godot::obj::{Base, Gd, WithBaseField};
 use godot::prelude::*;
 
@@ -86,18 +86,23 @@ impl BreakoutBoard {
                     .emit_signal("next_game_activate".into(), &[]);
             }
         }
+        if !self.score_timed_out{
+            self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
+        }
     }
 
     #[func]
     pub fn on_game_started(&mut self) {
         self.set_movement(true);
-
+        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").play_ex().name("score_timeout".into()).done();
+        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").seek(0.);
     }
 
     #[func]
     fn on_parent_game_over(&mut self) {
         self.set_movement(false);
         self.base().get_node_as::<Timer>("TimerSuccess").stop();
+        self.base().get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer").pause();
     }
 
     #[func]
@@ -138,6 +143,13 @@ impl BreakoutBoard {
                 self.bricks.push(brick);
             }
         }
+    }
+
+    #[func]
+    fn on_score_timed_out(&mut self, _anim_name: Variant) {
+        self.base_mut()
+            .emit_signal("score_timed_out".into(), &[]);
+        self.score_timed_out = true;
     }
 }
 
