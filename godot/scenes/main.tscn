@@ -20,6 +20,18 @@ font_size = 20
 [node name="Main" type="MainBoard"]
 
 [node name="BackgroundMain" type="ColorRect" parent="."]
+z_index = -99
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 1)
+
+[node name="BackgroundMain2" type="ColorRect" parent="."]
+offset_right = 1152.0
+offset_bottom = 423.0
+color = Color(0, 0, 0, 1)
+
+[node name="BackgroundMain3" type="ColorRect" parent="."]
+offset_top = 632.0
 offset_right = 1152.0
 offset_bottom = 648.0
 color = Color(0, 0, 0, 1)

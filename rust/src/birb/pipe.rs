@@ -28,8 +28,6 @@ impl IAnimatableBody2D for Pipe {
     }
 
     fn physics_process(&mut self, delta: f64) {
-        if self.moving {
-
-        }
+        if self.moving {}
     }
 }

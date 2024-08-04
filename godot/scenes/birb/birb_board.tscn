@@ -12,6 +12,7 @@ b = Vector2(1152, 0)
 clip_children = 1
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
+z_index = -6
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
@@ -22,6 +23,7 @@ points = PackedVector2Array(0, 0, 1152, 0)
 width = 1.0
 
 [node name="Floor" type="StaticBody2D" parent="."]
+z_index = -6
 position = Vector2(0, 208)
 metadata/_edit_group_ = true
 

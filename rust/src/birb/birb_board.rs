@@ -1,10 +1,10 @@
 use crate::birb::birb_player::BirbPlayer;
 use crate::birb::pipe::Pipe;
-use godot::classes::{InputEvent};
+use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND};
+use godot::classes::InputEvent;
 use godot::prelude::*;
 use rand::Rng;
 use std::f32::consts::PI;
-use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND};
 
 const PIPE_SPAWN_START: f32 = 576.;
 const PIPE_SPAWN_END: f32 = 1152.;
@@ -38,7 +38,6 @@ impl BirbBoard {
     fn on_parent_game_over(&mut self) {
         self.set_movement(false);
         self.can_move = false;
-        self.set_color(COLOR_FAILURE);
         self.base_mut()
             .emit_signal("set_pipe_movement".into(), &[false.to_variant()]);
     }
@@ -46,6 +45,7 @@ impl BirbBoard {
     #[func]
     fn on_birb_collided(&mut self) {
         self.base_mut().emit_signal("game_over".into(), &[]);
+        self.set_color(COLOR_FAILURE);
 
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
@@ -67,27 +67,30 @@ impl BirbBoard {
 
     fn spawn_pipes(&mut self, x_offset: f32) {
         let mut rng = rand::thread_rng();
-        let top_y = rng.gen_range(-118..0) as f32;
+        let top_y = rng.gen_range(10..(208 - (10 + 48))) as f32;
         let pipe_scene: Gd<PackedScene> = load("res://scenes/birb/pipe.tscn");
 
         let mut up_pipe = pipe_scene.instantiate_as::<Pipe>();
         up_pipe.set_position(Vector2::new(PIPE_SPAWN_START + x_offset, top_y));
-        self.base_mut().connect("set_pipe_movement".into(), up_pipe.callable("set_movement"));
+        self.base_mut()
+            .connect("set_pipe_movement".into(), up_pipe.callable("set_movement"));
         self.base_mut().add_child(up_pipe.upcast());
 
         let mut down_pipe = pipe_scene.instantiate_as::<Pipe>();
         down_pipe.set_position(Vector2::new(
             PIPE_SPAWN_START + x_offset,
-            top_y + 128. * 2. + 48.,
+            top_y + 48.,
         ));
         down_pipe.set_rotation(PI);
-        self.base_mut().connect("set_pipe_movement".into(), down_pipe.callable("set_movement"));
+        self.base_mut().connect(
+            "set_pipe_movement".into(),
+            down_pipe.callable("set_movement"),
+        );
         self.base_mut().add_child(down_pipe.upcast());
     }
 
     fn set_color(&mut self, color: Color) {
-        self.base_mut()
-            .set_modulate(color);
+        self.base_mut().set_modulate(color);
     }
 }
 
@@ -106,7 +109,7 @@ impl INode2D for BirbBoard {
             self.on_activated();
         }
         for offset in 0..7 {
-            self.spawn_pipes((offset * 96) as f32);
+            self.spawn_pipes((offset * 128) as f32);
         }
     }
 

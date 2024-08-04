@@ -5,13 +5,13 @@ size = Vector2(8, 8)
 
 [node name="Birb" type="BirbPlayer"]
 
-[node name="ColorRect" type="ColorRect" parent="."]
-offset_right = 8.0
-offset_bottom = 8.0
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_cwh3r")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
 
 [node name="ColorRect2" type="ColorRect" parent="."]
 offset_left = 5.0
