@@ -1,13 +1,12 @@
 use crate::birb::birb_player::BirbPlayer;
 use crate::birb::pipe::Pipe;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND};
-use godot::classes::InputEvent;
+use godot::classes::{InputEvent, Timer};
 use godot::prelude::*;
 use rand::Rng;
 use std::f32::consts::PI;
 
 const PIPE_SPAWN_START: f32 = 576.;
-const PIPE_SPAWN_END: f32 = 1152.;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
@@ -31,7 +30,8 @@ impl BirbBoard {
         self.base()
             .get_node_as::<BirbPlayer>("Birb")
             .set_position(Vector2::new(376., 120.));
-        self.can_move = true
+        self.can_move = true;
+        self.base().get_node_as::<Timer>("TimerNewPipe").start();
     }
 
     #[func]
@@ -63,6 +63,11 @@ impl BirbBoard {
         let mut player = self.base().get_node_as::<BirbPlayer>("Birb");
         let mut player_bind = player.bind_mut();
         player_bind.can_move = can_move;
+    }
+
+    #[func]
+    fn spawn_hidden_pipes(&mut self) {
+        self.spawn_pipes(675.);
     }
 
     fn spawn_pipes(&mut self, x_offset: f32) {
@@ -101,8 +106,8 @@ impl INode2D for BirbBoard {
     }
 
     fn ready(&mut self) {
-        for offset in 0..7 {
-            self.spawn_pipes((offset * 128) as f32);
+        for offset in 0..5 {
+            self.spawn_pipes((offset * 160) as f32);
         }
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing

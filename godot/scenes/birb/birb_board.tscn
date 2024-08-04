@@ -43,4 +43,8 @@ position = Vector2(376, 120)
 collision_layer = 2
 collision_mask = 2
 
+[node name="TimerNewPipe" type="Timer" parent="."]
+wait_time = 8.0
+
 [connection signal="collided" from="Birb" to="." method="on_birb_collided"]
+[connection signal="timeout" from="TimerNewPipe" to="." method="spawn_hidden_pipes"]

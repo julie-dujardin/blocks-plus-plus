@@ -2,8 +2,6 @@ use godot::classes::tween::TweenProcessMode;
 use godot::classes::{AnimatableBody2D, IAnimatableBody2D, Tween};
 use godot::prelude::*;
 
-const FORWARDS_SPEED: f32 = -20.;
-
 #[derive(GodotClass)]
 #[class(base=AnimatableBody2D)]
 pub struct Pipe {
@@ -28,6 +26,7 @@ impl Pipe {
                     Vector2::new(current_position.x - 1300., current_position.y).to_variant(),
                     60.,
                 );
+                tween.tween_callback(self.base_mut().callable("queue_free"));
                 self.tween = Some(tween);
             }
         }
