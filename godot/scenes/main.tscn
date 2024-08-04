@@ -104,6 +104,7 @@ one_shot = true
 [connection signal="global_game_over" from="." to="Select3" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="BreakoutBoard" method="on_parent_game_over"]
 [connection signal="global_game_over" from="." to="SnekBoard" method="on_parent_game_over"]
+[connection signal="global_game_over" from="." to="BirbBoard" method="on_parent_game_over"]
 [connection signal="global_game_over_timeout" from="." to="Tetris" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="Select0" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="Select1" method="reset"]
