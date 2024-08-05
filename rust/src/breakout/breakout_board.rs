@@ -47,6 +47,8 @@ impl BreakoutBoard {
         }
         self.bricks.clear();
 
+        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
+
         self.base_mut().hide();
         self.reset_color();
     }
