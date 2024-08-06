@@ -70,6 +70,9 @@ impl BirbBoard {
         let mut player = self.base().get_node_as::<BirbPlayer>("Birb");
         let mut player_bind = player.bind_mut();
         player_bind.can_move = can_move;
+        if !can_move {
+            player_bind.velocity = Vector2::ZERO;
+        }
     }
 
     fn spawn_start_pipes(&mut self) {

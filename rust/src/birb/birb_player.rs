@@ -7,7 +7,7 @@ const JUMP_VELOCITY: Vector2 = Vector2::new(20., -40.);
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
 pub struct BirbPlayer {
-    velocity: Vector2,
+    pub velocity: Vector2,
     pub can_move: bool,
     jumped: bool,
 

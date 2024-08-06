@@ -49,11 +49,15 @@ impl TetrisBoard {
         }
 
         for piece in &mut self.next_pieces {
-            piece.clone().free();
+            if piece.is_instance_valid() {
+                piece.clone().free();
+            }
         }
         self.next_pieces.clear();
         if let Some(piece) = &mut self.active_piece {
-            piece.clone().free();
+            if piece.is_instance_valid() {
+                piece.clone().free();
+            }
         }
         self.active_piece = None;
         self.base().get_node_as::<ColorRect>("NextFail").hide();
