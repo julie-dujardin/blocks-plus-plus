@@ -1,5 +1,6 @@
 use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::select::Select;
+use crate::ui::state::{get_difficulty, Difficulty};
 use godot::classes::{InputEvent, Label, Timer};
 use godot::prelude::*;
 
@@ -82,8 +83,10 @@ impl MainBoard {
 
     #[func]
     fn on_score_timed_out(&mut self) {
-        self.base_mut()
-            .emit_signal("global_score_timed_out".into(), &[]);
+        if get_difficulty() >= Difficulty::Hard {
+            self.base_mut()
+                .emit_signal("global_score_timed_out".into(), &[]);
+        }
     }
 
     #[func]

@@ -1,6 +1,7 @@
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::snek::goal::Goal;
 use crate::snek::segment::Segment;
+use crate::ui::state::{get_difficulty, Difficulty};
 use godot::classes::{AnimationPlayer, ColorRect, InputEvent, Line2D, NinePatchRect, Timer};
 use godot::prelude::*;
 use phf::phf_map;
@@ -52,6 +53,10 @@ impl SnekBoard {
 
     #[func]
     fn start_game(&mut self) {
+        if get_difficulty() < Difficulty::Balanced {
+            return;
+        }
+
         self.head_position = Vector2::new(2., 5.);
         self.add_segment();
         self.head_position = Vector2::new(3., 5.);
@@ -62,14 +67,20 @@ impl SnekBoard {
         self.base().get_node_as::<Timer>("TimerMove").start();
         self.base_mut().show();
         self.can_move = true;
-        self.base()
-            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
-            .play_ex()
-            .name("score_timeout".into())
-            .done();
-        self.base()
-            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
-            .seek(0.);
+
+        if get_difficulty() >= Difficulty::Hard {
+            self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .play_ex()
+                .name("score_timeout".into())
+                .done();
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
+        } else {
+            self.base().get_node_as::<Line2D>("ScoreTimeoutLine").hide();
+        }
     }
 
     #[func]
@@ -104,8 +115,6 @@ impl SnekBoard {
                 goal.free();
             }
         }
-
-        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
 
         self.base_mut().hide();
         self.set_color(COLOR_FOREGROUND);

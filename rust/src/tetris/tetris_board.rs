@@ -2,6 +2,7 @@ use crate::breakout::breakout_board::BreakoutBoard;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
+use crate::ui::state::{get_difficulty, Difficulty};
 use godot::classes::{ColorRect, InputEvent, NinePatchRect, Timer};
 use godot::engine::{AnimationPlayer, Line2D};
 use godot::prelude::*;
@@ -38,7 +39,11 @@ impl TetrisBoard {
         for line in self.lines.iter() {
             for cell_opt in line {
                 match cell_opt {
-                    Some(cell) => cell.clone().free(),
+                    Some(cell) => {
+                        if cell.is_instance_valid() {
+                            cell.clone().free()
+                        }
+                    }
                     None => {}
                 }
             }
@@ -61,8 +66,6 @@ impl TetrisBoard {
         }
         self.active_piece = None;
         self.base().get_node_as::<ColorRect>("NextFail").hide();
-
-        self.base().get_node_as::<Line2D>("LineScoreTimeout").show();
 
         self.base_mut().hide();
         self.reset_color();
@@ -266,14 +269,19 @@ impl TetrisBoard {
     pub fn add_next_piece(&mut self, mut piece: Gd<Piece>) {
         if !self.game_playing {
             self.game_playing = true;
-            self.base()
-                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
-                .play_ex()
-                .name("score_timeout".into())
-                .done();
-            self.base()
-                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
-                .seek(0.);
+            if get_difficulty() >= Difficulty::Hard {
+                self.base()
+                    .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                    .play_ex()
+                    .name("score_timeout".into())
+                    .done();
+                self.base()
+                    .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                    .seek(0.);
+                self.base().get_node_as::<Line2D>("LineScoreTimeout").show();
+            } else {
+                self.base().get_node_as::<Line2D>("LineScoreTimeout").hide();
+            }
         }
 
         let mut piece_down_timer = self.base().get_node_as::<Timer>("TimerPieceDown");
