@@ -105,7 +105,7 @@ impl SnekBoard {
             }
         }
 
-        self.base().get_node_as::<Line2D>("LineScoreTimeout").show();
+        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
 
         self.base_mut().hide();
         self.set_color(COLOR_FOREGROUND);

@@ -12,6 +12,7 @@ const PIPE_SPAWN_START: f32 = 576.;
 #[class(base=Node2D)]
 pub struct BirbBoard {
     can_move: bool,
+    plumbing: Vec<Gd<Pipe>>,
     base: Base<Node2D>,
 }
 
@@ -25,6 +26,7 @@ impl BirbBoard {
 
     #[func]
     fn on_activated(&mut self) {
+        self.spawn_start_pipes();
         self.base_mut().show();
         self.set_movement(true);
         self.base()
@@ -57,12 +59,23 @@ impl BirbBoard {
     fn reset(&mut self) {
         self.base_mut().hide();
         self.set_color(COLOR_FOREGROUND);
+        for pipe in &mut self.plumbing {
+            if pipe.is_instance_valid() {
+                pipe.clone().free(); // big brain mode
+            }
+        }
     }
 
     fn set_movement(&self, can_move: bool) {
         let mut player = self.base().get_node_as::<BirbPlayer>("Birb");
         let mut player_bind = player.bind_mut();
         player_bind.can_move = can_move;
+    }
+
+    fn spawn_start_pipes(&mut self) {
+        for offset in 0..5 {
+            self.spawn_pipes((offset * 160) as f32);
+        }
     }
 
     #[func]
@@ -73,22 +86,20 @@ impl BirbBoard {
     fn spawn_pipes(&mut self, x_offset: f32) {
         let mut rng = rand::thread_rng();
         let top_y = rng.gen_range(10..(208 - (10 + 48))) as f32;
+
+        self.spawn_pipe(PIPE_SPAWN_START + x_offset, top_y, 0.);
+        self.spawn_pipe(PIPE_SPAWN_START + x_offset, top_y + 48., PI);
+    }
+
+    fn spawn_pipe(&mut self, x: f32, y: f32, rotation: f32) {
         let pipe_scene: Gd<PackedScene> = load("res://scenes/birb/pipe.tscn");
-
-        let mut up_pipe = pipe_scene.instantiate_as::<Pipe>();
-        up_pipe.set_position(Vector2::new(PIPE_SPAWN_START + x_offset, top_y));
+        let mut pipe = pipe_scene.instantiate_as::<Pipe>();
+        pipe.set_position(Vector2::new(x, y));
+        pipe.set_rotation(rotation);
         self.base_mut()
-            .connect("set_pipe_movement".into(), up_pipe.callable("set_movement"));
-        self.base_mut().add_child(up_pipe.upcast());
-
-        let mut down_pipe = pipe_scene.instantiate_as::<Pipe>();
-        down_pipe.set_position(Vector2::new(PIPE_SPAWN_START + x_offset, top_y + 48.));
-        down_pipe.set_rotation(PI);
-        self.base_mut().connect(
-            "set_pipe_movement".into(),
-            down_pipe.callable("set_movement"),
-        );
-        self.base_mut().add_child(down_pipe.upcast());
+            .connect("set_pipe_movement".into(), pipe.callable("set_movement"));
+        self.base_mut().add_child(pipe.clone().upcast());
+        self.plumbing.push(pipe);
     }
 
     fn set_color(&mut self, color: Color) {
@@ -101,14 +112,12 @@ impl INode2D for BirbBoard {
     fn init(base: Base<Node2D>) -> Self {
         BirbBoard {
             can_move: false,
+            plumbing: vec![],
             base,
         }
     }
 
     fn ready(&mut self) {
-        for offset in 0..5 {
-            self.spawn_pipes((offset * 160) as f32);
-        }
         if self.base().get_parent().unwrap().is_class("Window".into()) {
             // If this class is the root node, make it playable for testing
             self.on_activated();

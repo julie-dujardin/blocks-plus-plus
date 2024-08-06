@@ -58,7 +58,7 @@ impl TetrisBoard {
         self.active_piece = None;
         self.base().get_node_as::<ColorRect>("NextFail").hide();
 
-        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
+        self.base().get_node_as::<Line2D>("LineScoreTimeout").show();
 
         self.base_mut().hide();
         self.reset_color();
