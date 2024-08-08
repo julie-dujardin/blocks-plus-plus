@@ -1,11 +1,11 @@
 use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::piece::Piece;
 use crate::tetris::tetris_board::TetrisBoard;
+use crate::ui::state::{int_to_difficulty, Difficulty};
 use godot::classes::{InputEvent, Sprite2D, Timer};
 use godot::prelude::*;
 use rand::prelude::IndexedRandom;
 use std::f32::consts::PI;
-use crate::ui::state::{int_to_difficulty, Difficulty};
 
 const SELECT_COUNT: usize = 3;
 

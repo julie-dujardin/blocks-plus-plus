@@ -14,10 +14,12 @@ impl Hud {
 
     #[func]
     fn on_start_button_pressed(&mut self) {
-        let difficulty = self.base()
-                .get_node_as::<OptionButton>("ButtonDifficulty")
-                .get_selected_id();
-        self.base_mut().emit_signal("start_game".into(), &[difficulty.to_variant()]);
+        let difficulty = self
+            .base()
+            .get_node_as::<OptionButton>("ButtonDifficulty")
+            .get_selected_id();
+        self.base_mut()
+            .emit_signal("start_game".into(), &[difficulty.to_variant()]);
         self.base_mut().hide();
     }
 

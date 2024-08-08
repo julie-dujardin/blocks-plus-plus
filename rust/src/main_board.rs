@@ -1,4 +1,4 @@
-use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
+use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::ui::state::{int_to_difficulty, Difficulty};
 use godot::classes::{InputEvent, Label, Timer};
 use godot::prelude::*;
@@ -31,6 +31,7 @@ impl MainBoard {
     #[func]
     fn start_game(&mut self, difficulty: Variant) {
         self.difficulty = int_to_difficulty(difficulty.to::<i32>());
+        self.reset_score_color();
 
         self.score = 0;
         self.base()
@@ -94,12 +95,18 @@ impl MainBoard {
 
     #[func]
     fn reset_score_color(&mut self) {
+        let color = match self.difficulty {
+            Difficulty::Easy => COLOR_FAILURE,
+            Difficulty::Balanced => COLOR_FOREGROUND,
+            Difficulty::Hard => COLOR_SUCCESS,
+        };
+
         self.base()
             .get_node_as::<Label>("Score/LabelScore")
-            .set_modulate(COLOR_FOREGROUND);
+            .set_modulate(color);
         self.base()
             .get_node_as::<Label>("Score/LabelHigh")
-            .set_modulate(COLOR_FOREGROUND);
+            .set_modulate(color);
     }
 }
 
