@@ -1,4 +1,3 @@
-use crate::ui::state::set_difficulty;
 use godot::classes::{Button, InputEvent, OptionButton, Os};
 use godot::prelude::*;
 
@@ -15,12 +14,10 @@ impl Hud {
 
     #[func]
     fn on_start_button_pressed(&mut self) {
-        set_difficulty(
-            self.base()
+        let difficulty = self.base()
                 .get_node_as::<OptionButton>("ButtonDifficulty")
-                .get_selected_id(),
-        );
-        self.base_mut().emit_signal("start_game".into(), &[]);
+                .get_selected_id();
+        self.base_mut().emit_signal("start_game".into(), &[difficulty.to_variant()]);
         self.base_mut().hide();
     }
 

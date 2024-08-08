@@ -2,7 +2,7 @@ use crate::breakout::breakout_board::BreakoutBoard;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
-use crate::ui::state::{get_difficulty, Difficulty};
+use crate::ui::state::{int_to_difficulty, Difficulty};
 use godot::classes::{ColorRect, InputEvent, NinePatchRect, Timer};
 use godot::engine::{AnimationPlayer, Line2D};
 use godot::prelude::*;
@@ -16,6 +16,7 @@ pub struct TetrisBoard {
     lines: Vec<[Option<Gd<Block>>; 10]>,
     game_playing: bool,
     score_timed_out: bool,
+    difficulty: Difficulty,
 
     base: Base<Node2D>,
 }
@@ -149,6 +150,11 @@ impl TetrisBoard {
         self.score_timed_out = true;
     }
 
+    #[func]
+    fn handle_game_init(&mut self, difficulty: Variant) {
+        self.difficulty = int_to_difficulty(difficulty.to::<i32>());
+    }
+
     fn check_collision_with_lines(&mut self) -> bool {
         if let Some(piece) = &mut self.active_piece {
             let piece_bind = piece.bind_mut();
@@ -269,7 +275,7 @@ impl TetrisBoard {
     pub fn add_next_piece(&mut self, mut piece: Gd<Piece>) {
         if !self.game_playing {
             self.game_playing = true;
-            if get_difficulty() >= Difficulty::Hard {
+            if self.difficulty >= Difficulty::Hard {
                 self.base()
                     .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
                     .play_ex()
@@ -435,6 +441,7 @@ impl INode2D for TetrisBoard {
             lines: vec![],
             game_playing: false,
             score_timed_out: false,
+            difficulty: Difficulty::default(),
             base,
         };
 

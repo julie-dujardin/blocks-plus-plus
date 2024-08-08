@@ -2,7 +2,7 @@ use crate::breakout::ball::Ball;
 use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
-use crate::ui::state::{get_difficulty, Difficulty};
+use crate::ui::state::{int_to_difficulty, Difficulty};
 use godot::builtin::{Color, Variant, Vector2};
 use godot::classes::{AnimationPlayer, INode2D, Line2D, Node2D, PackedScene, StaticBody2D, Timer};
 use godot::obj::{Base, Gd, WithBaseField};
@@ -16,6 +16,7 @@ pub struct BreakoutBoard {
     bricks: Vec<Gd<Brick>>,
     brick_size: Vector2,
     score_timed_out: bool,
+    difficulty: Difficulty,
 
     base: Base<Node2D>,
 }
@@ -96,7 +97,7 @@ impl BreakoutBoard {
 
     #[func]
     pub fn on_game_started(&mut self) {
-        if get_difficulty() >= Difficulty::Hard {
+        if self.difficulty >= Difficulty::Hard {
             self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
             self.base()
                 .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
@@ -126,6 +127,11 @@ impl BreakoutBoard {
     fn on_game_over(&mut self) {
         self.set_color(COLOR_FAILURE);
         self.base_mut().emit_signal("game_over".into(), &[]);
+    }
+
+    #[func]
+    fn handle_game_init(&mut self, difficulty: Variant) {
+        self.difficulty = int_to_difficulty(difficulty.to::<i32>());
     }
 
     fn set_movement(&self, can_move: bool) {
@@ -181,6 +187,7 @@ impl INode2D for BreakoutBoard {
             bricks: vec![],
             brick_size: Vector2::ZERO,
             score_timed_out: false,
+            difficulty: Difficulty::default(),
             base,
         }
     }

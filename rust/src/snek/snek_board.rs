@@ -1,7 +1,7 @@
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::snek::goal::Goal;
 use crate::snek::segment::Segment;
-use crate::ui::state::{get_difficulty, Difficulty};
+use crate::ui::state::{int_to_difficulty, Difficulty};
 use godot::classes::{AnimationPlayer, ColorRect, InputEvent, Line2D, NinePatchRect, Timer};
 use godot::prelude::*;
 use phf::phf_map;
@@ -27,6 +27,7 @@ pub struct SnekBoard {
     just_scored: bool,
     can_move: bool,
     score_timed_out: bool,
+    difficulty: Difficulty,
 
     base: Base<Node2D>,
 }
@@ -53,7 +54,7 @@ impl SnekBoard {
 
     #[func]
     fn start_game(&mut self) {
-        if get_difficulty() < Difficulty::Balanced {
+        if self.difficulty < Difficulty::Balanced {
             return;
         }
 
@@ -68,7 +69,7 @@ impl SnekBoard {
         self.base_mut().show();
         self.can_move = true;
 
-        if get_difficulty() >= Difficulty::Hard {
+        if self.difficulty >= Difficulty::Hard {
             self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
             self.base()
                 .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
@@ -118,6 +119,11 @@ impl SnekBoard {
 
         self.base_mut().hide();
         self.set_color(COLOR_FOREGROUND);
+    }
+
+    #[func]
+    fn handle_game_init(&mut self, difficulty: Variant) {
+        self.difficulty = int_to_difficulty(difficulty.to::<i32>());
     }
 
     #[func]
@@ -220,6 +226,7 @@ impl INode2D for SnekBoard {
             just_scored: false,
             can_move: false,
             score_timed_out: false,
+            difficulty: Difficulty::default(),
             base,
         }
     }
