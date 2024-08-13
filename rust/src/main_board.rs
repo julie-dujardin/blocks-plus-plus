@@ -1,5 +1,5 @@
-use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
-use crate::tetris::select::Select;
+use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
+use crate::ui::state::{int_to_difficulty, Difficulty};
 use godot::classes::{InputEvent, Label, Timer};
 use godot::prelude::*;
 
@@ -9,6 +9,7 @@ pub struct MainBoard {
     score: i64,
     high_score: i64,
     is_in_game_over: bool,
+    difficulty: Difficulty,
 
     base: Base<Node2D>,
 }
@@ -24,18 +25,22 @@ impl MainBoard {
     #[signal]
     fn global_score_timed_out();
 
+    #[signal]
+    fn global_game_init();
+
     #[func]
-    fn start_game(&mut self) {
+    fn start_game(&mut self, difficulty: Variant) {
+        self.difficulty = int_to_difficulty(difficulty.to::<i32>());
+        self.reset_score_color();
+
         self.score = 0;
         self.base()
             .get_node_as::<Label>("Score/LabelScore")
             .set_text("Score 0".into());
-
-        self.base().get_node_as::<Select>("Select0").show();
-        self.base().get_node_as::<Select>("Select1").show();
-        self.base().get_node_as::<Select>("Select2").show();
-        self.base().get_node_as::<Select>("Select3").show();
         self.base().get_node_as::<Node2D>("Score").show();
+
+        self.base_mut()
+            .emit_signal("global_game_init".into(), &[difficulty]);
     }
 
     #[func]
@@ -82,18 +87,26 @@ impl MainBoard {
 
     #[func]
     fn on_score_timed_out(&mut self) {
-        self.base_mut()
-            .emit_signal("global_score_timed_out".into(), &[]);
+        if self.difficulty >= Difficulty::Hard {
+            self.base_mut()
+                .emit_signal("global_score_timed_out".into(), &[]);
+        }
     }
 
     #[func]
     fn reset_score_color(&mut self) {
+        let color = match self.difficulty {
+            Difficulty::Easy => COLOR_FAILURE,
+            Difficulty::Balanced => COLOR_FOREGROUND,
+            Difficulty::Hard => COLOR_SUCCESS,
+        };
+
         self.base()
             .get_node_as::<Label>("Score/LabelScore")
-            .set_modulate(COLOR_FOREGROUND);
+            .set_modulate(color);
         self.base()
             .get_node_as::<Label>("Score/LabelHigh")
-            .set_modulate(COLOR_FOREGROUND);
+            .set_modulate(color);
     }
 }
 
@@ -104,6 +117,7 @@ impl INode2D for MainBoard {
             score: 0,
             high_score: 0,
             is_in_game_over: false,
+            difficulty: Difficulty::default(),
             base,
         }
     }

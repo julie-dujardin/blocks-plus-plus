@@ -1,6 +1,7 @@
 use crate::constants::{COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::piece::Piece;
 use crate::tetris::tetris_board::TetrisBoard;
+use crate::ui::state::{int_to_difficulty, Difficulty};
 use godot::classes::{InputEvent, Sprite2D, Timer};
 use godot::prelude::*;
 use rand::prelude::IndexedRandom;
@@ -26,6 +27,7 @@ pub struct Select {
     prompts: Vec<Gd<Sprite2D>>,
     curr_check_index: usize,
     game_over: bool,
+    difficulty: Difficulty,
 
     base: Base<Node2D>,
 }
@@ -57,6 +59,12 @@ impl Select {
         self.game_over = true;
 
         self.base().get_node_as::<Timer>("TimerSuccess").stop();
+    }
+
+    #[func]
+    fn handle_game_init(&mut self, difficulty: Variant) {
+        self.difficulty = int_to_difficulty(difficulty.to::<i32>());
+        self.base_mut().show();
     }
 
     fn check_input(&mut self, input: InputOptions) {
@@ -111,6 +119,7 @@ impl INode2D for Select {
             prompts: vec![],
             curr_check_index: 0,
             game_over: false,
+            difficulty: Difficulty::default(),
             base,
         }
     }
