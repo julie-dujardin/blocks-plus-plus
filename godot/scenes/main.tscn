@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bfnrfbm4fpg50"]
+[gd_scene load_steps=11 format=3 uid="uid://bfnrfbm4fpg50"]
 
 [ext_resource type="PackedScene" uid="uid://d1g51jjhyvob0" path="res://scenes/tetris/tetris.tscn" id="1_mmer5"]
 [ext_resource type="PackedScene" uid="uid://ec18ywdi03dw" path="res://scenes/tetris/select.tscn" id="2_ucd5e"]
@@ -7,6 +7,7 @@
 [ext_resource type="Theme" uid="uid://dji8v56sq14f7" path="res://assets/theme.tres" id="4_bonvd"]
 [ext_resource type="FontFile" uid="uid://tvarju4030k4" path="res://assets/font/Pixel.ttf" id="6_d3kbr"]
 [ext_resource type="PackedScene" uid="uid://cxvksyqghera3" path="res://scenes/snek/snek_board.tscn" id="7_dqth6"]
+[ext_resource type="PackedScene" uid="uid://pnwtwccb3pev" path="res://scenes/birb/birb_board.tscn" id="8_o1qc1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_k3aa1"]
 font = ExtResource("6_d3kbr")
@@ -19,13 +20,21 @@ font_size = 20
 [node name="Main" type="MainBoard"]
 
 [node name="BackgroundMain" type="ColorRect" parent="."]
+z_index = -99
 offset_right = 1152.0
 offset_bottom = 648.0
 color = Color(0, 0, 0, 1)
 
-[node name="Tetris" parent="." instance=ExtResource("1_mmer5")]
-visible = false
-position = Vector2(192, 8)
+[node name="BackgroundMain2" type="ColorRect" parent="."]
+offset_right = 1152.0
+offset_bottom = 423.0
+color = Color(0, 0, 0, 1)
+
+[node name="BackgroundMain3" type="ColorRect" parent="."]
+offset_top = 632.0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 1)
 
 [node name="Select0" parent="." instance=ExtResource("2_ucd5e")]
 visible = false
@@ -43,6 +52,10 @@ position = Vector2(40, 221)
 visible = false
 position = Vector2(40, 328)
 
+[node name="Tetris" parent="." instance=ExtResource("1_mmer5")]
+visible = false
+position = Vector2(192, 8)
+
 [node name="BreakoutBoard" parent="." instance=ExtResource("3_v20ct")]
 visible = false
 position = Vector2(416, 120)
@@ -50,6 +63,10 @@ position = Vector2(416, 120)
 [node name="SnekBoard" parent="." instance=ExtResource("7_dqth6")]
 visible = false
 position = Vector2(864, 120)
+
+[node name="BirbBoard" parent="." instance=ExtResource("8_o1qc1")]
+visible = false
+position = Vector2(0, 424)
 
 [node name="Hud" parent="." instance=ExtResource("3_rms5c")]
 
@@ -92,28 +109,38 @@ one_shot = true
 wait_time = 3.0
 one_shot = true
 
-[connection signal="global_game_over" from="." to="Tetris" method="on_parent_game_over"]
 [connection signal="global_game_over" from="." to="Select0" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="Select1" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="Select2" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="Select3" method="handle_game_over"]
+[connection signal="global_game_over" from="." to="Tetris" method="on_parent_game_over"]
 [connection signal="global_game_over" from="." to="BreakoutBoard" method="on_parent_game_over"]
 [connection signal="global_game_over" from="." to="SnekBoard" method="on_parent_game_over"]
-[connection signal="global_game_over_timeout" from="." to="Tetris" method="reset"]
+[connection signal="global_game_over" from="." to="BirbBoard" method="on_parent_game_over"]
 [connection signal="global_game_over_timeout" from="." to="Select0" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="Select1" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="Select2" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="Select3" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="Tetris" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="BreakoutBoard" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="SnekBoard" method="reset"]
+[connection signal="global_game_over_timeout" from="." to="BirbBoard" method="reset"]
 [connection signal="global_game_over_timeout" from="." to="Hud" method="reset"]
+[connection signal="global_score_timed_out" from="." to="Tetris" method="on_parent_score_timed_out"]
+[connection signal="global_score_timed_out" from="." to="BreakoutBoard" method="on_parent_score_timed_out"]
+[connection signal="global_score_timed_out" from="." to="SnekBoard" method="on_parent_score_timed_out"]
+[connection signal="global_score_timed_out" from="." to="BirbBoard" method="on_activated"]
 [connection signal="game_over" from="Tetris" to="." method="on_game_over"]
+[connection signal="score_timed_out" from="Tetris" to="." method="on_score_timed_out"]
 [connection signal="scored" from="Tetris" to="." method="on_score_up"]
 [connection signal="game_over" from="BreakoutBoard" to="." method="on_game_over"]
 [connection signal="next_game_activate" from="BreakoutBoard" to="SnekBoard" method="on_previous_scored_up"]
+[connection signal="score_timed_out" from="BreakoutBoard" to="." method="on_score_timed_out"]
 [connection signal="scored" from="BreakoutBoard" to="." method="on_score_up"]
 [connection signal="game_over" from="SnekBoard" to="." method="on_game_over"]
+[connection signal="score_timed_out" from="SnekBoard" to="." method="on_score_timed_out"]
 [connection signal="scored" from="SnekBoard" to="." method="on_score_up"]
+[connection signal="game_over" from="BirbBoard" to="." method="on_game_over"]
 [connection signal="start_game" from="Hud" to="." method="start_game"]
 [connection signal="timeout" from="TimerScoreUpTimeout" to="." method="reset_score_color"]
 [connection signal="timeout" from="TimerGameOver" to="." method="on_game_over_timer_timeout"]

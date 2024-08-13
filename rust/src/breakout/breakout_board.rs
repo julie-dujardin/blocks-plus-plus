@@ -3,7 +3,7 @@ use crate::breakout::breakout_player::BreakoutPlayer;
 use crate::breakout::brick::Brick;
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use godot::builtin::{Color, Variant, Vector2};
-use godot::classes::{INode2D, Node2D, PackedScene, StaticBody2D, Timer};
+use godot::classes::{AnimationPlayer, INode2D, Line2D, Node2D, PackedScene, StaticBody2D, Timer};
 use godot::obj::{Base, Gd, WithBaseField};
 use godot::prelude::*;
 
@@ -14,6 +14,7 @@ const BRICK_PER_LINE: usize = 10;
 pub struct BreakoutBoard {
     bricks: Vec<Gd<Brick>>,
     brick_size: Vector2,
+    score_timed_out: bool,
 
     base: Base<Node2D>,
 }
@@ -29,6 +30,9 @@ impl BreakoutBoard {
     #[signal]
     fn next_game_activate();
 
+    #[signal]
+    fn score_timed_out();
+
     #[func]
     fn reset(&mut self) {
         let mut player = self.base().get_node_as::<BreakoutPlayer>("BreakoutPlayer");
@@ -43,6 +47,8 @@ impl BreakoutBoard {
         }
         self.bricks.clear();
 
+        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
+
         self.base_mut().hide();
         self.reset_color();
     }
@@ -53,7 +59,7 @@ impl BreakoutBoard {
     }
 
     fn set_color(&mut self, color: Color) {
-        self.base_mut()
+        self.base()
             .get_node_as::<StaticBody2D>("Walls")
             .set_modulate(color);
     }
@@ -82,17 +88,33 @@ impl BreakoutBoard {
                     .emit_signal("next_game_activate".into(), &[]);
             }
         }
+        if !self.score_timed_out {
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
+        }
     }
 
     #[func]
     pub fn on_game_started(&mut self) {
         self.set_movement(true);
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .play_ex()
+            .name("score_timeout".into())
+            .done();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .seek(0.);
     }
 
     #[func]
     fn on_parent_game_over(&mut self) {
         self.set_movement(false);
         self.base().get_node_as::<Timer>("TimerSuccess").stop();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .pause();
     }
 
     #[func]
@@ -134,6 +156,17 @@ impl BreakoutBoard {
             }
         }
     }
+
+    #[func]
+    fn on_parent_score_timed_out(&mut self) {
+        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").hide();
+    }
+
+    #[func]
+    fn on_score_timed_out(&mut self, _anim_name: Variant) {
+        self.base_mut().emit_signal("score_timed_out".into(), &[]);
+        self.score_timed_out = true;
+    }
 }
 
 #[godot_api]
@@ -142,6 +175,7 @@ impl INode2D for BreakoutBoard {
         BreakoutBoard {
             bricks: vec![],
             brick_size: Vector2::ZERO,
+            score_timed_out: false,
             base,
         }
     }

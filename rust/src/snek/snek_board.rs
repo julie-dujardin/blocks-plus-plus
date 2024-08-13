@@ -1,7 +1,7 @@
 use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::snek::goal::Goal;
 use crate::snek::segment::Segment;
-use godot::classes::{ColorRect, InputEvent, NinePatchRect, Timer};
+use godot::classes::{AnimationPlayer, ColorRect, InputEvent, Line2D, NinePatchRect, Timer};
 use godot::prelude::*;
 use phf::phf_map;
 use rand::Rng;
@@ -25,6 +25,7 @@ pub struct SnekBoard {
     size: Vector2,
     just_scored: bool,
     can_move: bool,
+    score_timed_out: bool,
 
     base: Base<Node2D>,
 }
@@ -36,6 +37,9 @@ impl SnekBoard {
 
     #[signal]
     fn scored();
+
+    #[signal]
+    fn score_timed_out();
 
     #[func]
     fn on_previous_scored_up(&mut self) {
@@ -58,6 +62,14 @@ impl SnekBoard {
         self.base().get_node_as::<Timer>("TimerMove").start();
         self.base_mut().show();
         self.can_move = true;
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .play_ex()
+            .name("score_timeout".into())
+            .done();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .seek(0.);
     }
 
     #[func]
@@ -65,6 +77,9 @@ impl SnekBoard {
         self.base().get_node_as::<Timer>("TimerMove").stop();
         self.base().get_node_as::<Timer>("TimerGoal").stop();
         self.can_move = false;
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .pause();
     }
 
     #[func]
@@ -89,6 +104,9 @@ impl SnekBoard {
                 goal.free();
             }
         }
+
+        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").show();
+
         self.base_mut().hide();
         self.set_color(COLOR_FOREGROUND);
     }
@@ -139,9 +157,24 @@ impl SnekBoard {
             .emit_signal("scored".into(), &[4.to_variant()]);
         self.just_scored = true;
         self.set_color(COLOR_SUCCESS);
-        self.base_mut()
-            .get_node_as::<Timer>("TimerGoalTimeout")
-            .start();
+        self.base().get_node_as::<Timer>("TimerGoalTimeout").start();
+
+        if !self.score_timed_out {
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
+        }
+    }
+
+    #[func]
+    fn on_parent_score_timed_out(&mut self) {
+        self.base().get_node_as::<Line2D>("ScoreTimeoutLine").hide();
+    }
+
+    #[func]
+    fn on_score_timed_out(&mut self, _anim_name: Variant) {
+        self.base_mut().emit_signal("score_timed_out".into(), &[]);
+        self.score_timed_out = true;
     }
 
     fn add_segment(&mut self) {
@@ -160,7 +193,7 @@ impl SnekBoard {
     }
 
     fn set_color(&mut self, color: Color) {
-        self.base_mut()
+        self.base()
             .get_node_as::<NinePatchRect>("Border")
             .set_modulate(color);
     }
@@ -177,6 +210,7 @@ impl INode2D for SnekBoard {
             size: Vector2::new(30., 36.),
             just_scored: false,
             can_move: false,
+            score_timed_out: false,
             base,
         }
     }

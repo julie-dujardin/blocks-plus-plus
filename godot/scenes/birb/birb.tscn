@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://bj6okvi1tv1tv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cwh3r"]
+size = Vector2(8, 8)
+
+[node name="Birb" type="BirbPlayer"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(4, 4)
+shape = SubResource("RectangleShape2D_cwh3r")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+offset_left = 4.0
+offset_top = 1.0
+offset_right = 7.0
+offset_bottom = 3.0
+color = Color(0, 0, 0, 1)

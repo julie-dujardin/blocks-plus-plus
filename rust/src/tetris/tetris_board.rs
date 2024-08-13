@@ -3,7 +3,7 @@ use crate::constants::{COLOR_FAILURE, COLOR_FOREGROUND, COLOR_SUCCESS};
 use crate::tetris::block::Block;
 use crate::tetris::piece::Piece;
 use godot::classes::{ColorRect, InputEvent, NinePatchRect, Timer};
-use godot::engine::Line2D;
+use godot::engine::{AnimationPlayer, Line2D};
 use godot::prelude::*;
 use std::collections::HashSet;
 
@@ -13,7 +13,8 @@ pub struct TetrisBoard {
     active_piece: Option<Gd<Piece>>,
     next_pieces: Vec<Gd<Piece>>,
     lines: Vec<[Option<Gd<Block>>; 10]>,
-    game_over: bool,
+    game_playing: bool,
+    score_timed_out: bool,
 
     base: Base<Node2D>,
 }
@@ -25,6 +26,9 @@ impl TetrisBoard {
 
     #[signal]
     fn scored();
+
+    #[signal]
+    fn score_timed_out();
 
     #[func]
     fn reset(&mut self) {
@@ -45,14 +49,20 @@ impl TetrisBoard {
         }
 
         for piece in &mut self.next_pieces {
-            piece.clone().free();
+            if piece.is_instance_valid() {
+                piece.clone().free();
+            }
         }
         self.next_pieces.clear();
         if let Some(piece) = &mut self.active_piece {
-            piece.clone().free();
+            if piece.is_instance_valid() {
+                piece.clone().free();
+            }
         }
         self.active_piece = None;
         self.base().get_node_as::<ColorRect>("NextFail").hide();
+
+        self.base().get_node_as::<Line2D>("LineScoreTimeout").show();
 
         self.base_mut().hide();
         self.reset_color();
@@ -64,23 +74,26 @@ impl TetrisBoard {
     }
 
     fn set_color(&mut self, color: Color) {
-        self.base_mut()
+        self.base()
             .get_node_as::<NinePatchRect>("BorderBoard")
             .set_modulate(color);
-        self.base_mut()
+        self.base()
             .get_node_as::<NinePatchRect>("BorderNext")
             .set_modulate(color);
     }
 
     #[func]
     fn on_parent_game_over(&mut self) {
-        self.game_over = true;
+        self.game_playing = false;
         self.base().get_node_as::<Timer>("TimerSuccess").stop();
+        self.base()
+            .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+            .pause();
     }
 
     fn handle_game_over(&mut self, no_piece_left: bool) {
-        if !self.game_over {
-            self.game_over = true;
+        if self.game_playing {
+            self.game_playing = false;
             self.base_mut().emit_signal("game_over".into(), &[]);
 
             if no_piece_left {
@@ -96,12 +109,18 @@ impl TetrisBoard {
     }
 
     fn score_up(&mut self, count: usize) {
-        self.base_mut()
+        self.base()
             .get_node_as::<NinePatchRect>("BorderBoard")
             .set_modulate(COLOR_SUCCESS);
         self.base().get_node_as::<Timer>("TimerSuccess").start();
         self.base_mut()
             .emit_signal("scored".into(), &[(count as i64 * 3).to_variant()]);
+
+        if !self.score_timed_out {
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
+        }
 
         if !self.base().get_parent().unwrap().is_class("Window".into()) {
             let mut breakout_board = self
@@ -114,6 +133,17 @@ impl TetrisBoard {
             breakout_board_bind.push_new_line(count as u64);
             breakout_board_bind.on_game_started();
         }
+    }
+
+    #[func]
+    fn on_parent_score_timed_out(&mut self) {
+        self.base().get_node_as::<Line2D>("LineScoreTimeout").hide();
+    }
+
+    #[func]
+    fn on_score_timed_out(&mut self, _anim_name: Variant) {
+        self.base_mut().emit_signal("score_timed_out".into(), &[]);
+        self.score_timed_out = true;
     }
 
     fn check_collision_with_lines(&mut self) -> bool {
@@ -234,7 +264,18 @@ impl TetrisBoard {
     }
 
     pub fn add_next_piece(&mut self, mut piece: Gd<Piece>) {
-        self.game_over = false;
+        if !self.game_playing {
+            self.game_playing = true;
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .play_ex()
+                .name("score_timeout".into())
+                .done();
+            self.base()
+                .get_node_as::<AnimationPlayer>("ScoreTimeoutPlayer")
+                .seek(0.);
+        }
+
         let mut piece_down_timer = self.base().get_node_as::<Timer>("TimerPieceDown");
         piece_down_timer.start();
 
@@ -265,7 +306,7 @@ impl TetrisBoard {
     }
 
     pub fn spawn_new_piece(&mut self) {
-        if !self.game_over {
+        if self.game_playing {
             let piece_opt = self.next_pieces.pop();
 
             match piece_opt {
@@ -294,7 +335,7 @@ impl TetrisBoard {
 
     #[func]
     fn down_piece(&mut self) -> bool {
-        if self.game_over {
+        if !self.game_playing {
             return false;
         }
 
@@ -384,7 +425,8 @@ impl INode2D for TetrisBoard {
             active_piece: None,
             next_pieces: vec![],
             lines: vec![],
-            game_over: false,
+            game_playing: false,
+            score_timed_out: false,
             base,
         };
 
@@ -396,7 +438,7 @@ impl INode2D for TetrisBoard {
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
-        if self.active_piece.is_some() && !self.game_over {
+        if self.active_piece.is_some() && self.game_playing {
             if event.is_action_pressed("down".into()) {
                 self.drop_piece();
             } else if event.is_action_pressed("up".into()) {

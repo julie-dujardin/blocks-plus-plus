@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://b5iydxdsydel7"]
+[gd_scene load_steps=10 format=3 uid="uid://b5iydxdsydel7"]
 
 [ext_resource type="PackedScene" uid="uid://lbhsqlii2lu7" path="res://scenes/breakout/ball.tscn" id="1_01ybq"]
 [ext_resource type="PackedScene" uid="uid://grehn0f7rrgi" path="res://scenes/breakout/breakout_player.tscn" id="2_vgool"]
@@ -19,6 +19,26 @@ polygon = PackedVector2Array(424, 288, 424, 0, 0, 0, 0, 288, 432, 288)
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_j0y4m"]
 a = Vector2(424, 0)
 b = Vector2(0, 0)
+
+[sub_resource type="Animation" id="Animation_2e52l"]
+resource_name = "score_timeout"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ScoreTimeoutLine:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_irwd0"]
+_data = {
+"score_timeout": SubResource("Animation_2e52l")
+}
 
 [node name="BreakoutBoard" type="BreakoutBoard"]
 
@@ -64,6 +84,8 @@ position = Vector2(208, 232)
 
 [node name="BreakoutPlayer" parent="." instance=ExtResource("2_vgool")]
 position = Vector2(192, 256)
+collision_layer = 1
+collision_mask = 1
 
 [node name="TimerSuccess" type="Timer" parent="."]
 wait_time = 0.4
@@ -72,7 +94,18 @@ one_shot = true
 [node name="TimerNewLine" type="Timer" parent="."]
 wait_time = 10.0
 
+[node name="ScoreTimeoutLine" type="Line2D" parent="."]
+points = PackedVector2Array(0, 304, 424, 304)
+width = 1.0
+
+[node name="ScoreTimeoutPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_irwd0")
+}
+speed_scale = 0.1
+
 [connection signal="broke_brick" from="Ball" to="." method="on_broke_brick"]
 [connection signal="game_over" from="Ball" to="." method="on_game_over"]
 [connection signal="timeout" from="TimerSuccess" to="." method="reset_color"]
 [connection signal="timeout" from="TimerNewLine" to="." method="push_new_line" binds= [1]]
+[connection signal="animation_finished" from="ScoreTimeoutPlayer" to="." method="on_score_timed_out"]
