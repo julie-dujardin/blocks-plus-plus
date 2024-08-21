@@ -6,6 +6,7 @@ env:
   CARGO_TERM_COLOR: always
   EMSCRIPTEN_VERSION: 3.1.39
   GODOT_VERSION: 4.3.0
+  GODOT_BRANCH: 4.3
   GODOT_PROJECT_PATH: godot
 
 concurrency:
@@ -160,7 +161,7 @@ jobs:
           workflow_search: true
           workflow_conclusion: success
           name: templates-${{ env.GODOT_VERSION }}
-          path: /home/runner/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/
+          path: /home/runner/.local/share/godot/export_templates/${{ env.GODOT_BRANCH }}.stable/
 
       - name: Build
         run: |
