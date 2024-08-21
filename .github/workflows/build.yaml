@@ -5,7 +5,7 @@ on: push
 env:
   CARGO_TERM_COLOR: always
   EMSCRIPTEN_VERSION: 3.1.39
-  GODOT_VERSION: 4.2.2
+  GODOT_VERSION: 4.3.0
   GODOT_PROJECT_PATH: godot
 
 concurrency:
@@ -139,7 +139,7 @@ jobs:
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v1
         with:
-          version: ${{ env.GODOT_VERSION }}-stable
+          version: ${{ env.GODOT_VERSION }}
           use-dotnet: false
           path: godot-bin
 
