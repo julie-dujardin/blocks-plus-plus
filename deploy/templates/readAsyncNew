@@ -1,1 +1,1 @@
-readAsync=(url,onload,onerror)=>{if(url.endsWith(".side.wasm")){url="https://godot-engine.static.ilus.pw/{{{DIR}}}/index.side.wasm"}
+readAsync=url=>{if(url.endsWith(".side.wasm")){url="https://godot-engine.static.ilus.pw/{{{DIR}}}/index.side.wasm"}
