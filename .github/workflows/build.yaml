@@ -204,7 +204,7 @@ jobs:
           # ugly hack to force godot to pull the engine from another domain
           export build_type=${{ matrix.build_type }}
           sed -i -e "s|{{{DIR}}}|${build_type}_${GODOT_VERSION}_${engine_hash[0]}|g" deploy/templates/readAsyncNew
-          sed -i -e '/readAsync = (url, onload, onerror) => {/{r deploy/templates/readAsyncNew' -e 'd;}' wasm32/index.js
+          sed -i -e "s|readAsync=(url,onload,onerror)=>{|$(sed 's:/:\\/:g' deploy/templates/readAsyncNew)|" wasm32/index.js
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
