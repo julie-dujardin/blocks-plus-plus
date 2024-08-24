@@ -3,7 +3,7 @@
 dlink_enabled = "yes"
 disable_3d = "yes"
 optimize = "size"
-disable_advanced_gui = "yes"
+disable_advanced_gui = "no"
 # deprecated = "no"
 minizip = "no"
 brotli = "no"
