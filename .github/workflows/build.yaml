@@ -79,6 +79,7 @@ jobs:
       - name: Cache
         uses: Swatinem/rust-cache@v2
         with:
+          key: ${{ matrix.platform.build_for }}-${{ matrix.build_type }}
           workspaces: |
             rust
       - name: Build
