@@ -1,5 +1,6 @@
 # Default ignored files
 /shelf/
+/dbnavigator.xml
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/

@@ -25,37 +25,14 @@ offset_left = 432.0
 offset_top = 200.0
 offset_right = 728.0
 offset_bottom = 248.0
-focus_neighbor_bottom = NodePath("../ButtonDifficulty")
 theme = ExtResource("2_66ttw")
 text = "Play"
-
-[node name="ButtonDifficulty" type="OptionButton" parent="."]
-offset_left = 432.0
-offset_top = 272.0
-offset_right = 728.0
-offset_bottom = 320.0
-focus_neighbor_top = NodePath("../ButtonPlay")
-focus_neighbor_bottom = NodePath("../ButtonQuit")
-theme = ExtResource("2_66ttw")
-alignment = 1
-selected = 2
-item_count = 4
-popup/item_0/text = "Difficulty"
-popup/item_0/disabled = true
-popup/item_0/separator = true
-popup/item_1/text = "Easy"
-popup/item_1/id = 1
-popup/item_2/text = "Balanced"
-popup/item_2/id = 2
-popup/item_3/text = "Hard"
-popup/item_3/id = 3
 
 [node name="ButtonQuit" type="Button" parent="."]
 offset_left = 432.0
 offset_top = 344.0
 offset_right = 728.0
 offset_bottom = 392.0
-focus_neighbor_top = NodePath("../ButtonDifficulty")
 theme = ExtResource("2_66ttw")
 text = "Quit"
 
