@@ -4,8 +4,9 @@ on: push
 
 env:
   CARGO_TERM_COLOR: always
-  EMSCRIPTEN_VERSION: 3.1.39
-  GODOT_VERSION: 4.2.2
+  EMSCRIPTEN_VERSION: 3.1.64
+  GODOT_VERSION: 4.3.0
+  GODOT_BRANCH: 4.3
   GODOT_PROJECT_PATH: godot
 
 concurrency:
@@ -78,6 +79,7 @@ jobs:
       - name: Cache
         uses: Swatinem/rust-cache@v2
         with:
+          key: ${{ matrix.platform.build_for }}-${{ matrix.build_type }}
           workspaces: |
             rust
       - name: Build
@@ -139,7 +141,7 @@ jobs:
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v1
         with:
-          version: ${{ env.GODOT_VERSION }}-stable
+          version: ${{ env.GODOT_VERSION }}
           use-dotnet: false
           path: godot-bin
 
@@ -157,10 +159,10 @@ jobs:
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: compile_godot.yaml
-          workflow_search: true
+          search_artifacts: true
           workflow_conclusion: success
           name: templates-${{ env.GODOT_VERSION }}
-          path: /home/runner/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/
+          path: /home/runner/.local/share/godot/export_templates/${{ env.GODOT_BRANCH }}.stable/
 
       - name: Build
         run: |
@@ -197,13 +199,6 @@ jobs:
       - name: Prepare cloudflare publish
         run: |
           cp deploy/cloudflare-pages/* wasm32/
-          # exclude the engine file from cloudflare pages because it's too big
-          export engine_hash=($(sha256sum wasm32/index.side.wasm))
-          rm wasm32/index.side.wasm
-          # ugly hack to force godot to pull the engine from another domain
-          export build_type=${{ matrix.build_type }}
-          sed -i -e "s|{{{DIR}}}|${build_type}_${GODOT_VERSION}_${engine_hash[0]}|g" deploy/templates/readAsyncNew
-          sed -i -e '/readAsync = (url, onload, onerror) => {/{r deploy/templates/readAsyncNew' -e 'd;}' wasm32/index.js
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
