@@ -158,7 +158,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: compile_godot.yaml
-          workflow_search: true
+          search_artifacts: true
           workflow_conclusion: success
           name: templates-${{ env.GODOT_VERSION }}
           path: /home/runner/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/
