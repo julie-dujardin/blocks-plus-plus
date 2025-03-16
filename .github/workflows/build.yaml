@@ -154,17 +154,22 @@ jobs:
         with:
           name: rust-linux-x86_64-debug
           path: rust/target/x86_64-unknown-linux-gnu/debug/
-      - name: Download custom templates
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: compile_godot.yaml
-          search_artifacts: true
-          workflow_conclusion: success
-          name: templates-${{ env.GODOT_VERSION }}
-          path: /home/runner/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/
+#      - name: Download custom templates
+#        uses: dawidd6/action-download-artifact@v6
+#        with:
+#          workflow: compile_godot.yaml
+#          search_artifacts: true
+#          workflow_conclusion: success
+#          name: templates-${{ env.GODOT_VERSION }}
+#          path: /home/runner/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/
 
       - name: Build
         run: |
+          wget https://github.com/godotengine/godot-builds/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz
+          unzip Godot_v4.2.2-stable_export_templates.tpz
+          mkdir -p /home/runner/.local/share/godot/export_templates/
+          mv templates /home/runner/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/
+          
           tree /home/runner/.local/share/godot
           mkdir -v -p build/${{ matrix.platform.build_for }}
           cd $GODOT_PROJECT_PATH
