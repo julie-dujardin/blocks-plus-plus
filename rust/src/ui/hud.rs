@@ -14,7 +14,9 @@ impl Hud {
 
     #[func]
     fn on_start_button_pressed(&mut self) {
-        self.base_mut().emit_signal("start_game".into(), &[]);
+        let difficulty = 2;
+        self.base_mut()
+            .emit_signal("start_game".into(), &[difficulty.to_variant()]);
         self.base_mut().hide();
     }
 

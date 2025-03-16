@@ -12,9 +12,9 @@ font_size = 50
 [node name="Hud" type="Hud"]
 
 [node name="LabelTitle" type="Label" parent="."]
-offset_top = 128.0
+offset_top = 64.0
 offset_right = 1152.0
-offset_bottom = 191.0
+offset_bottom = 128.0
 text = "Blocks ++"
 label_settings = SubResource("LabelSettings_jk1ty")
 horizontal_alignment = 1
@@ -22,19 +22,17 @@ vertical_alignment = 1
 
 [node name="ButtonPlay" type="Button" parent="."]
 offset_left = 432.0
-offset_top = 240.0
+offset_top = 200.0
 offset_right = 728.0
-offset_bottom = 288.0
-focus_neighbor_bottom = NodePath("../ButtonQuit")
+offset_bottom = 248.0
 theme = ExtResource("2_66ttw")
 text = "Play"
 
 [node name="ButtonQuit" type="Button" parent="."]
 offset_left = 432.0
-offset_top = 320.0
+offset_top = 344.0
 offset_right = 728.0
-offset_bottom = 368.0
-focus_neighbor_top = NodePath("../ButtonPlay")
+offset_bottom = 392.0
 theme = ExtResource("2_66ttw")
 text = "Quit"
 

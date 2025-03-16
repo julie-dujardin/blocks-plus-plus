@@ -3,8 +3,8 @@
 dlink_enabled = "yes"
 disable_3d = "yes"
 optimize = "size"
-disable_advanced_gui = "yes"
-deprecated = "no"
+disable_advanced_gui = "no"  # Needed for OptionButton
+deprecated = "yes"  # Needed for gdext in godot 4.3, for now
 minizip = "no"
 brotli = "no"
 vulkan = "no"

@@ -24,7 +24,7 @@ You can now open the Godot project and run a dev build, or export the game.
 
 If you open the Godot project when the lib is missing, Godot will automatically convert the custom Godot-Rust types to their base objects (Node2D...). If that happens, reset those changes with git and check your cargo build settings.
 
-For wasm, I could only get the rust build to work in CI: locally built rust libs always fail when the export is opened in browser (`null function or function signature mismatch`). The CI build is pretty stable and is deployed automatically.
+For wasm, debug builds always fail when the export is opened in browser (`null function or function signature mismatch`).
 
 ## Credits
 

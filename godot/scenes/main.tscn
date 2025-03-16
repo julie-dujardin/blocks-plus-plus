@@ -72,7 +72,7 @@ position = Vector2(0, 424)
 
 [node name="LabelGameOver" type="Label" parent="."]
 visible = false
-offset_top = 512.0
+offset_top = 486.0
 offset_right = 1152.0
 offset_bottom = 647.0
 theme = ExtResource("4_bonvd")
@@ -109,6 +109,13 @@ one_shot = true
 wait_time = 3.0
 one_shot = true
 
+[connection signal="global_game_init" from="." to="Select0" method="handle_game_init"]
+[connection signal="global_game_init" from="." to="Select1" method="handle_game_init"]
+[connection signal="global_game_init" from="." to="Select2" method="handle_game_init"]
+[connection signal="global_game_init" from="." to="Select3" method="handle_game_init"]
+[connection signal="global_game_init" from="." to="Tetris" method="handle_game_init"]
+[connection signal="global_game_init" from="." to="BreakoutBoard" method="handle_game_init"]
+[connection signal="global_game_init" from="." to="SnekBoard" method="handle_game_init"]
 [connection signal="global_game_over" from="." to="Select0" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="Select1" method="handle_game_over"]
 [connection signal="global_game_over" from="." to="Select2" method="handle_game_over"]
